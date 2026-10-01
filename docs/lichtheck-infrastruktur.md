@@ -2,52 +2,57 @@
 
 Stand: 2026-10-01 · Status: Entwurf, noch nichts installiert
 
-Leitlinie: **Heute 1 Node, einfach betreibbar. Später 2 Nodes + Quorum-Gerät, ohne Umbau.**
+Leitlinie: **1 Eigenbau-Server daheim, einfach betreibbar, gute Backups. Kein Cluster nötig.**
 
-Rahmen: ca. 100 Nutzer, eigene Hardware statt VPS.
+Rahmen: ca. 50 Nutzer (Ortsverein), Budget max. 1.500 €, Server zusätzlich für lokale KI-Modelle.
+
+> Die Phasen unten beschreiben die Ausbaustufen. Aktuell umgesetzt wird nur Stufe A (1 Node).
+> Cluster/HA (Stufe B) erst bei deutlichem Wachstum.
 
 ---
 
-## Standorte
+## Standort
 
 ```
-Feuerwehrhaus (Produktion)                 Daheim (Backup / Quorum)
-┌──────────────────────────────┐           ┌──────────────────────────┐
-│ Node 1 ─┐                    │ WireGuard │ PBS-Host                 │
-│ Node 2 ─┼─ 10G-Switch ─ USV  │◄─────────►│  ├ Proxmox Backup Server │
-│         └─ Router ─ Internet │           │  ├ corosync-qnetd        │
-└──────────────┬───────────────┘           │  └ etcd-Witness          │
-               │ Cloudflare Tunnel         └────────────┬─────────────┘
-           Cloudflare ◄── Nutzer                        │ verschlüsselt
-                                             Offsite: Storage Box / S3
+Daheim                                         Extern
+┌────────────────────────────────────┐
+│ Eigenbau-Server (Proxmox)          │
+│  ├ VM lichtheck (Docker, PG, Redis)│── Cloudflare Tunnel ──► Nutzer
+│  ├ VM ki (GPU-Passthrough, Ollama) │
+│  └ USV                             │── pgBackRest / PBS ──► Hetzner Storage Box
+└────────────────────────────────────┘                        (verschlüsselt)
 ```
 
-- Proxmox-Cluster nur an **einem** Standort, weil Corosync < 5 ms Latenz braucht.
-- QDevice und etcd-Witness vertragen WAN-Latenz und stehen deshalb daheim → dritte Stimme an einem anderen Ort.
-- Keine Portfreigaben: App über Cloudflare Tunnel, Standortkopplung über WireGuard (ausgehend initiiert).
-- Vorab klären: Zustimmung Träger/Gemeinde, Raum/Rack/Lüftung, Stromkosten (~10 €/Monat), AV-Vereinbarung für Daten daheim, Upload ≥ 20–50 Mbit/s.
+- Keine Portfreigaben, Zugriff über Cloudflare Tunnel, Admin über WireGuard.
+- Ressourcen für Lichtheck fest reserviert, KI darf den Verein nicht ausbremsen.
+- Vorab klären: AV-Vereinbarung mit dem Verein (Mitgliederdaten daheim), Upload ≥ 20 Mbit/s.
 
-## Hardware (Budget max. 1.500 €, gebraucht)
+## Hardware (Eigenbau, Budget 1.500 €)
 
-Für 100 Nutzer reichen Business-Mini-PCs: leise, ~10–20 W, 24/7-tauglich.
+| Teil | Modell | ca. € |
+|---|---|---|
+| CPU | AMD Ryzen 7 7700 (8C/16T, 65 W) | 200 |
+| Board | B650 ATX, z. B. ASUS TUF Gaming B650-Plus | 140 |
+| RAM | 2 × Kingston FURY Beast KF556C36BWEA-32 (64 GB, Dual-Channel) | 220 |
+| SSD | 2 × 2 TB NVMe (Samsung 990 Pro / WD SN850X), ZFS-Mirror | 260 |
+| GPU | NVIDIA RTX 4060 Ti 16 GB | 420 |
+| Netzteil | 750–850 W, 80+ Gold | 100 |
+| Gehäuse + Kühler | Fractal Pop Air + Arctic Freezer 36 | 110 |
+| USV | APC Back-UPS Pro 900 (USB → NUT-Shutdown) | 150 |
+| **Summe** | | **≈ 1.600** |
 
-| Teil | Modell | Anzahl | ca. € |
-|---|---|---|---|
-| Node 1 + 2 | Lenovo ThinkCentre M920q, i5-8500T/i7-8700T, 32 GB RAM | 2 | 2 × 220 |
-| VM-Storage | Micron 7400 PRO 960 GB M.2 2280 (PLP) | 2 | 2 × 130 |
-| Mirror-Partner | Samsung PM893 480 GB SATA (PLP) → ZFS-Mirror mit NVMe | 2 | 2 × 70 |
-| 10 GbE (optional) | M920q-PCIe-Riser + Intel X520-DA1/X710 SFP+ | 2 | 2 × 60 |
-| Switch | MikroTik CRS305-1G-4S+IN (4 × SFP+) + 3 DAC | 1 | 180 |
-| USV | APC Back-UPS Pro 900 (USB → NUT-Shutdown) | 1 | 150 |
-| PBS daheim | 3. M920q oder gebrauchter Office-PC + 2 × 4 TB HDD (Mirror) | 1 | 250 |
-| **Summe mit 10 GbE** | | | **≈ 1.500** |
-| **Summe ohne 10 GbE** | 1 GbE reicht für 100 Nutzer, später nachrüstbar | | **≈ 1.200** |
+Sparoptionen: USV später (−150 €) oder 1 TB SSDs (−100 €) → **≈ 1.450 €**.
+Upgrade KI: RTX 3090 24 GB gebraucht statt 4060 Ti (+300 €) → Modelle bis ~34B.
 
-Abweichung vom Auftrag: 10 GbE optional statt Pflicht. Bei 100 Nutzern ist 1 GbE kein Engpass; ZFS-Replikation und Corosync laufen problemlos.
+VM-Aufteilung:
 
-Grenzen: 1 CPU, kein ECC-RAM, kein BMC/IPMI, 1 Netzteil → Ausfall eines Nodes wird durch den 2. Node abgefangen. Bei Wachstum Upgrade auf EPYC-Server (H12SSL-i) ohne Architekturänderung.
+| VM | vCPU | RAM | Disk | Hinweis |
+|---|---|---|---|---|
+| lichtheck | 4 | 12 GB (fest) | 150 GB | Docker: Laravel, Horizon, Redis, PostgreSQL, cloudflared |
+| ki | 8 | 40 GB | 1 TB | GPU-Passthrough, Ollama, Open WebUI |
+| Reserve Host | – | 12 GB | – | Proxmox, ZFS-ARC begrenzt auf 8 GB |
 
-Ausbaureihenfolge: Node 1 + PBS + Switch + USV → Go-Live → Node 2 → Cluster/HA.
+Grenzen: kein ECC, kein BMC, ein Netzteil → Absicherung über Backups (RPO ≤ 1 min DB, RTO ≈ 1–2 h auf Ersatz-PC oder VPS).
 
 ---
 
