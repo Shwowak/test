@@ -47,7 +47,7 @@ Anforderungen: AM5, DDR5, 10 GbE SFP+, 6–8 × SATA, mehrere M.2, PCIe 4.0, Jon
 Später: HDDs für Daten/Backup, GPU, RAM-Ausbau, USV.
 
 Einschränkungen:
-- **512 GB RAM ist auf AM5 nicht möglich.** Maximum 4 DIMMs → 192 GB (4 × 48) bzw. 256 GB (4 × 64, aktuelles BIOS nötig). Mit 4 Modulen sinkt der RAM-Takt. 512 GB erfordert EPYC/Threadripper (> Budget, höherer Verbrauch).
+- **RAM-Ziel: max. 192–256 GB** (Entscheidung: kein 512-GB-Ziel). 4 DIMMs → 192 GB (4 × 48) bzw. 256 GB (4 × 64, aktuelles BIOS nötig). Mit 4 Modulen sinkt der RAM-Takt.
 - Ausbau auf 256 GB ersetzt die 32-GB-Module (4 × 64 GB kaufen).
 - Kein ECC, kein BMC. Alternative: ASRock Rack B650D4U (ECC, IPMI) ≈ +300 € → über Budget.
 - Leerlauf geschätzt 40–60 W ohne GPU/HDDs.
