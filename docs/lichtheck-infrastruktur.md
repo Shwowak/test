@@ -27,22 +27,30 @@ Daheim                                         Extern
 - Ressourcen für Lichtheck fest reserviert, KI darf den Verein nicht ausbremsen.
 - Vorab klären: AV-Vereinbarung mit dem Verein (Mitgliederdaten daheim), Upload ≥ 20 Mbit/s.
 
-## Hardware (Eigenbau, Budget 1.500 €)
+## Hardware (Eigenbau, neu, Startbudget ≤ 1.500 €)
+
+Anforderungen: AM5, DDR5, 10 GbE SFP+, 6–8 × SATA, mehrere M.2, PCIe 4.0, Jonsbo N5, niedriger Verbrauch, GPU später.
 
 | Teil | Modell | ca. € |
 |---|---|---|
-| CPU | AMD Ryzen 7 7700 (8C/16T, 65 W) | 200 |
-| Board | B650 ATX, z. B. ASUS TUF Gaming B650-Plus | 140 |
-| RAM | 2 × Kingston FURY Beast KF556C36BWEA-32 (64 GB, Dual-Channel) | 220 |
-| SSD | 2 × 2 TB NVMe (Samsung 990 Pro / WD SN850X), ZFS-Mirror | 260 |
-| GPU | NVIDIA RTX 4060 Ti 16 GB | 420 |
-| Netzteil | 750–850 W, 80+ Gold | 100 |
-| Gehäuse + Kühler | Fractal Pop Air + Arctic Freezer 36 | 110 |
-| USV | APC Back-UPS Pro 900 (USB → NUT-Shutdown) | 150 |
-| **Summe** | | **≈ 1.600** |
+| CPU | AMD Ryzen 5 9600 (6C/12T, 65 W) | 190 |
+| Board | ASUS TUF Gaming B650-Plus (4 × SATA, 2–3 × M.2, PCIe 4.0 x16) | 180 |
+| SATA-Erweiterung | ASM1166 PCIe-Karte (+6 SATA) → 10 SATA gesamt | 40 |
+| Netz | Intel X710-DA2 (2 × SFP+, ~4 W) | 200 |
+| RAM | 2 × Kingston FURY Beast KF556C36BWEA-32 (64 GB) | 220 |
+| SSD | 2 × 1 TB NVMe PCIe 4.0 (Samsung 990 Pro), ZFS-Mirror | 180 |
+| Gehäuse | Jonsbo N5 | 250 |
+| Netzteil | be quiet! Pure Power 12 M 750 W (Reserve für GPU) | 110 |
+| Kühler | Thermalright Peerless Assassin 120 SE | 40 |
+| **Summe** | | **≈ 1.410** |
 
-Sparoptionen: USV später (−150 €) oder 1 TB SSDs (−100 €) → **≈ 1.450 €**.
-Upgrade KI: RTX 3090 24 GB gebraucht statt 4060 Ti (+300 €) → Modelle bis ~34B.
+Später: HDDs für Daten/Backup, GPU, RAM-Ausbau, USV.
+
+Einschränkungen:
+- **512 GB RAM ist auf AM5 nicht möglich.** Maximum 4 DIMMs → 192 GB (4 × 48) bzw. 256 GB (4 × 64, aktuelles BIOS nötig). Mit 4 Modulen sinkt der RAM-Takt. 512 GB erfordert EPYC/Threadripper (> Budget, höherer Verbrauch).
+- Ausbau auf 256 GB ersetzt die 32-GB-Module (4 × 64 GB kaufen).
+- Kein ECC, kein BMC. Alternative: ASRock Rack B650D4U (ECC, IPMI) ≈ +300 € → über Budget.
+- Leerlauf geschätzt 40–60 W ohne GPU/HDDs.
 
 VM-Aufteilung:
 
