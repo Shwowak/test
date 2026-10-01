@@ -25,42 +25,27 @@ Feuerwehrhaus (Produktion)                 Daheim (Backup / Quorum)
 - Proxmox-Cluster nur an **einem** Standort, weil Corosync < 5 ms Latenz braucht.
 - QDevice und etcd-Witness vertragen WAN-Latenz und stehen deshalb daheim → dritte Stimme an einem anderen Ort.
 - Keine Portfreigaben: App über Cloudflare Tunnel, Standortkopplung über WireGuard (ausgehend initiiert).
-- Vorab klären: Zustimmung Träger/Gemeinde, Raum/Rack/Lüftung, Stromkosten (~50–80 €/Monat), AV-Vereinbarung für Daten daheim, Upload ≥ 20–50 Mbit/s.
+- Vorab klären: Zustimmung Träger/Gemeinde, Raum/Rack/Lüftung, Stromkosten (~10 €/Monat), AV-Vereinbarung für Daten daheim, Upload ≥ 20–50 Mbit/s.
 
-## Hardware (Richtpreise 2026, gebraucht/neu gemischt)
+## Hardware (Budget max. 1.500 €, gebraucht)
 
-### Je Node (2×)
+Für 100 Nutzer reichen Business-Mini-PCs: leise, ~10–20 W, 24/7-tauglich.
 
-| Teil | Modell | ca. € |
-|---|---|---|
-| Board | Supermicro H12SSL-i | 600–900 |
-| CPU | AMD EPYC 7313P (16C) | 400–580 |
-| Kühler | Dynatron A26 (2U) oder Noctua NH-U9 TR4-SP3 (4U) | 60–90 |
-| RAM | 8 × 16 GB DDR4-3200 ECC RDIMM (alle 8 Kanäle) | 250–350 |
-| VM-Storage | 2 × Micron 7450 PRO 1,92 TB M.2 22110 (PLP), ZFS-Mirror | 700–1.100 |
-| Boot | 2 × Samsung PM893 240/480 GB SATA, ZFS-Mirror | 100–150 |
-| Netz | Intel X710-DA2 oder Mellanox ConnectX-4 Lx (2 × SFP+) | 50–100 |
-| Gehäuse | 2U/4U Rack mit redundantem Netzteil (z. B. Supermicro CSE-825, Inter-Tech 4U) | 200–400 |
-| **Summe** | | **≈ 2.400–3.700** |
+| Teil | Modell | Anzahl | ca. € |
+|---|---|---|---|
+| Node 1 + 2 | Lenovo ThinkCentre M920q, i5-8500T/i7-8700T, 32 GB RAM | 2 | 2 × 220 |
+| VM-Storage | Micron 7400 PRO 960 GB M.2 2280 (PLP) | 2 | 2 × 130 |
+| Mirror-Partner | Samsung PM893 480 GB SATA (PLP) → ZFS-Mirror mit NVMe | 2 | 2 × 70 |
+| 10 GbE (optional) | M920q-PCIe-Riser + Intel X520-DA1/X710 SFP+ | 2 | 2 × 60 |
+| Switch | MikroTik CRS305-1G-4S+IN (4 × SFP+) + 3 DAC | 1 | 180 |
+| USV | APC Back-UPS Pro 900 (USB → NUT-Shutdown) | 1 | 150 |
+| PBS daheim | 3. M920q oder gebrauchter Office-PC + 2 × 4 TB HDD (Mirror) | 1 | 250 |
+| **Summe mit 10 GbE** | | | **≈ 1.500** |
+| **Summe ohne 10 GbE** | 1 GbE reicht für 100 Nutzer, später nachrüstbar | | **≈ 1.200** |
 
-### Gemeinsam Feuerwehrhaus
+Abweichung vom Auftrag: 10 GbE optional statt Pflicht. Bei 100 Nutzern ist 1 GbE kein Engpass; ZFS-Replikation und Corosync laufen problemlos.
 
-| Teil | Modell | ca. € |
-|---|---|---|
-| Switch | MikroTik CRS309-1G-8S+IN (8 × SFP+) | 250 |
-| Kabel | 4–6 × SFP+ DAC | 80–120 |
-| USV | APC SMT1500RMI2U / Eaton 5PX 1500 (Rack, Netzwerkkarte für Shutdown) | 500–900 |
-| Rack | 12U Wandschrank/Rack | 150–300 |
-
-### Daheim
-
-| Teil | Modell | ca. € |
-|---|---|---|
-| PBS-Host | Minisforum MS-01 oder gebrauchter Fujitsu/Dell-Tower | 300–600 |
-| Backup-Disks | 2 × 4–8 TB (ZFS-Mirror) | 200–400 |
-| USV klein | APC Back-UPS 700 | 100 |
-
-**Gesamt ≈ 6.500–9.000 €** · Offsite-Speicher z. B. Hetzner Storage Box 1 TB ≈ 4 €/Monat.
+Grenzen: 1 CPU, kein ECC-RAM, kein BMC/IPMI, 1 Netzteil → Ausfall eines Nodes wird durch den 2. Node abgefangen. Bei Wachstum Upgrade auf EPYC-Server (H12SSL-i) ohne Architekturänderung.
 
 Ausbaureihenfolge: Node 1 + PBS + Switch + USV → Go-Live → Node 2 → Cluster/HA.
 
@@ -211,9 +196,9 @@ Voraussetzungen: Sessions/Cache/Queue in Redis (gemeinsam), Uploads in S3-kompat
 
 | VM | vCPU | RAM | Disk | Hinweis |
 |---|---|---|---|---|
-| app-1 | 6 | 12 GB | 80 GB | Debian 13, Docker Compose |
-| db-1 | 8 | 32 GB | 200 GB | eigenes zvol, `recordsize`/`volblocksize` 16k, `shared_buffers` 25 % RAM |
-| mon | 2 | 4 GB | 100 GB | |
+| app-1 | 3 | 8 GB | 60 GB | Debian 13, Docker Compose |
+| db-1 | 3 | 12 GB | 150 GB | eigenes zvol, `recordsize`/`volblocksize` 16k, `shared_buffers` 25 % RAM |
+| mon | 1 | 3 GB | 50 GB | |
 
 VM-Einstellungen: `virtio-scsi-single`, `iothread`, `discard`, `cpu: host`, QEMU-Guest-Agent.
 
@@ -226,7 +211,7 @@ VM-Einstellungen: `virtio-scsi-single`, `iothread`, `discard`, `cpu: host`, QEMU
 | Shared Storage (NAS/iSCSI) | eigener neuer SPOF |
 | Ceph | ≥ 3 Nodes, ideal 25 GbE, viel RAM/CPU, hoher Betriebsaufwand. Erst ab ≥ 3 Nodes mit Live-Failover-Bedarf |
 
-Hardware je Node: siehe Abschnitt „Hardware“ (H12SSL-i, EPYC 7313P, 128 GB, 2 × NVMe PLP).
+Hardware je Node: siehe Abschnitt „Hardware“ (M920q, 32 GB, NVMe + SATA mit PLP).
 
 ### Quorum (Stufe B)
 
