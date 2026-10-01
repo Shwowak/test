@@ -27,30 +27,36 @@ Daheim                                         Extern
 - Ressourcen für Lichtheck fest reserviert, KI darf den Verein nicht ausbremsen.
 - Vorab klären: AV-Vereinbarung mit dem Verein (Mitgliederdaten daheim), Upload ≥ 20 Mbit/s.
 
-## Hardware (Eigenbau, neu, Startbudget ≤ 1.500 €)
-
-Anforderungen: AM5, DDR5, 10 GbE SFP+, 6–8 × SATA, mehrere M.2, PCIe 4.0, Jonsbo N5, niedriger Verbrauch, GPU später.
+## Hardware (final: AM5 / ProArt X870E-Creator, neu)
 
 | Teil | Modell | ca. € |
 |---|---|---|
-| CPU | AMD Ryzen 5 9600 (6C/12T, 65 W) | 190 |
-| Board | ASUS TUF Gaming B650-Plus (4 × SATA, 2–3 × M.2, PCIe 4.0 x16) | 180 |
-| SATA-Erweiterung | ASM1166 PCIe-Karte (+6 SATA) → 10 SATA gesamt | 40 |
-| Netz | Intel X710-DA2 (2 × SFP+, ~4 W) | 200 |
-| RAM | 2 × Kingston FURY Beast KF556C36BWEA-32 (64 GB) | 220 |
-| SSD | 2 × 1 TB NVMe PCIe 4.0 (Samsung 990 Pro), ZFS-Mirror | 180 |
+| CPU | AMD Ryzen 7 9700X (8C/16T, 65 W) | 300 |
+| Board | ASUS ProArt X870E-Creator WiFi (10 GbE + 2,5 GbE, 4 × M.2, 2 × PCIe 5.0 x16) | 480 |
+| RAM | 64 GB DDR5-5600/6000 Kit (2 × 32 GB), ohne RGB | 200–300 |
+| NVMe | 2 × 2 TB Samsung 990 Pro, ZFS-Mirror (Proxmox, VMs, DB) | 300 |
 | Gehäuse | Jonsbo N5 | 250 |
-| Netzteil | be quiet! Pure Power 12 M 750 W (Reserve für GPU) | 110 |
+| Netzteil | be quiet! Pure Power 12 M 850 W (GPU-Reserve) | 130 |
 | Kühler | Thermalright Peerless Assassin 120 SE | 40 |
-| **Summe** | | **≈ 1.410** |
+| **Summe** | | **≈ 1.700–1.800** |
 
-Später: HDDs für Daten/Backup, GPU, RAM-Ausbau, USV.
+Unter 1.500 €: Ryzen 5 9600 (−110 €) + 2 × 1 TB NVMe (−120 €) → **≈ 1.500–1.570 €**.
 
-Einschränkungen:
-- **RAM-Ziel: max. 192–256 GB** (Entscheidung: kein 512-GB-Ziel). 4 DIMMs → 192 GB (4 × 48) bzw. 256 GB (4 × 64, aktuelles BIOS nötig). Mit 4 Modulen sinkt der RAM-Takt.
-- Ausbau auf 256 GB ersetzt die 32-GB-Module (4 × 64 GB kaufen).
-- Kein ECC, kein BMC. Alternative: ASRock Rack B650D4U (ECC, IPMI) ≈ +300 € → über Budget.
-- Leerlauf geschätzt 40–60 W ohne GPU/HDDs.
+Später: HDDs für NAS (CMR, z. B. WD Red Plus / IronWolf) als ZFS-Mirror/RAIDZ, ASM1166 SATA-Karte, GPU, RAM bis 192–256 GB (4 DIMMs → niedriger Takt).
+
+Hinweise:
+- 10 GbE onboard ist RJ45 (kein SFP+). SFP+ nur per Zusatzkarte.
+- M.2-Plätze teilen teils Lanes mit USB4/PCIe → Handbuch prüfen.
+- RAM: vor Inbetriebnahme MemTest86 über Nacht, EXPO optional.
+
+## Backup
+
+| Ziel | Was | Intervall |
+|---|---|---|
+| Synology (lokal) | Proxmox-VM-Backups (vzdump via NFS/SMB oder PBS-Datastore), pgBackRest-Repo | täglich VMs, WAL laufend |
+| Offsite (Storage Box/S3) | verschlüsselte Kopie (Synology Hyper Backup / pgBackRest Repo 2) | täglich |
+
+Synology steht im selben Haus → ohne Offsite kein Schutz bei Brand/Diebstahl.
 
 VM-Aufteilung:
 
