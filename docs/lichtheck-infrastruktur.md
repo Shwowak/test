@@ -4,6 +4,66 @@ Stand: 2026-10-01 · Status: Entwurf, noch nichts installiert
 
 Leitlinie: **Heute 1 Node, einfach betreibbar. Später 2 Nodes + Quorum-Gerät, ohne Umbau.**
 
+Rahmen: ca. 100 Nutzer, eigene Hardware statt VPS.
+
+---
+
+## Standorte
+
+```
+Feuerwehrhaus (Produktion)                 Daheim (Backup / Quorum)
+┌──────────────────────────────┐           ┌──────────────────────────┐
+│ Node 1 ─┐                    │ WireGuard │ PBS-Host                 │
+│ Node 2 ─┼─ 10G-Switch ─ USV  │◄─────────►│  ├ Proxmox Backup Server │
+│         └─ Router ─ Internet │           │  ├ corosync-qnetd        │
+└──────────────┬───────────────┘           │  └ etcd-Witness          │
+               │ Cloudflare Tunnel         └────────────┬─────────────┘
+           Cloudflare ◄── Nutzer                        │ verschlüsselt
+                                             Offsite: Storage Box / S3
+```
+
+- Proxmox-Cluster nur an **einem** Standort, weil Corosync < 5 ms Latenz braucht.
+- QDevice und etcd-Witness vertragen WAN-Latenz und stehen deshalb daheim → dritte Stimme an einem anderen Ort.
+- Keine Portfreigaben: App über Cloudflare Tunnel, Standortkopplung über WireGuard (ausgehend initiiert).
+- Vorab klären: Zustimmung Träger/Gemeinde, Raum/Rack/Lüftung, Stromkosten (~50–80 €/Monat), AV-Vereinbarung für Daten daheim, Upload ≥ 20–50 Mbit/s.
+
+## Hardware (Richtpreise 2026, gebraucht/neu gemischt)
+
+### Je Node (2×)
+
+| Teil | Modell | ca. € |
+|---|---|---|
+| Board | Supermicro H12SSL-i | 600–900 |
+| CPU | AMD EPYC 7313P (16C) | 400–580 |
+| Kühler | Dynatron A26 (2U) oder Noctua NH-U9 TR4-SP3 (4U) | 60–90 |
+| RAM | 8 × 16 GB DDR4-3200 ECC RDIMM (alle 8 Kanäle) | 250–350 |
+| VM-Storage | 2 × Micron 7450 PRO 1,92 TB M.2 22110 (PLP), ZFS-Mirror | 700–1.100 |
+| Boot | 2 × Samsung PM893 240/480 GB SATA, ZFS-Mirror | 100–150 |
+| Netz | Intel X710-DA2 oder Mellanox ConnectX-4 Lx (2 × SFP+) | 50–100 |
+| Gehäuse | 2U/4U Rack mit redundantem Netzteil (z. B. Supermicro CSE-825, Inter-Tech 4U) | 200–400 |
+| **Summe** | | **≈ 2.400–3.700** |
+
+### Gemeinsam Feuerwehrhaus
+
+| Teil | Modell | ca. € |
+|---|---|---|
+| Switch | MikroTik CRS309-1G-8S+IN (8 × SFP+) | 250 |
+| Kabel | 4–6 × SFP+ DAC | 80–120 |
+| USV | APC SMT1500RMI2U / Eaton 5PX 1500 (Rack, Netzwerkkarte für Shutdown) | 500–900 |
+| Rack | 12U Wandschrank/Rack | 150–300 |
+
+### Daheim
+
+| Teil | Modell | ca. € |
+|---|---|---|
+| PBS-Host | Minisforum MS-01 oder gebrauchter Fujitsu/Dell-Tower | 300–600 |
+| Backup-Disks | 2 × 4–8 TB (ZFS-Mirror) | 200–400 |
+| USV klein | APC Back-UPS 700 | 100 |
+
+**Gesamt ≈ 6.500–9.000 €** · Offsite-Speicher z. B. Hetzner Storage Box 1 TB ≈ 4 €/Monat.
+
+Ausbaureihenfolge: Node 1 + PBS + Switch + USV → Go-Live → Node 2 → Cluster/HA.
+
 ---
 
 ## Phase 1 – Anforderungen
@@ -166,7 +226,7 @@ VM-Einstellungen: `virtio-scsi-single`, `iothread`, `discard`, `cpu: host`, QEMU
 | Shared Storage (NAS/iSCSI) | eigener neuer SPOF |
 | Ceph | ≥ 3 Nodes, ideal 25 GbE, viel RAM/CPU, hoher Betriebsaufwand. Erst ab ≥ 3 Nodes mit Live-Failover-Bedarf |
 
-Hardware-Richtwert je Node: 1 CPU 16–24 Kerne, 128 GB ECC-RAM, 2 × 1,92 TB NVMe (PLP), 2 × 10 GbE SFP+, redundante Netzteile, IPMI/BMC.
+Hardware je Node: siehe Abschnitt „Hardware“ (H12SSL-i, EPYC 7313P, 128 GB, 2 × NVMe PLP).
 
 ### Quorum (Stufe B)
 
