@@ -33,14 +33,16 @@ Daheim                                         Extern
 |---|---|---|
 | CPU | AMD Ryzen 7 9700X (8C/16T, 65 W) | 300 |
 | Board | ASUS ProArt X870E-Creator WiFi (10 GbE + 2,5 GbE, 4 × M.2, 2 × PCIe 5.0 x16) | 480 |
-| RAM | 64 GB DDR5-5600/6000 Kit (2 × 32 GB), ohne RGB | 200–300 |
+| RAM | 32 GB DDR5-6000 Kit (2 × 16 GB), z. B. Corsair Vengeance RS – Start, Ausbau bei fallenden Preisen | 430 |
 | NVMe | 2 × 2 TB Samsung 990 Pro, ZFS-Mirror (Proxmox, VMs, DB) | 300 |
 | Gehäuse | Jonsbo N5 | 250 |
 | Netzteil | be quiet! Pure Power 12 M 850 W (GPU-Reserve) | 130 |
 | Kühler | Thermalright Peerless Assassin 120 SE | 40 |
-| **Summe** | | **≈ 1.700–1.800** |
+| **Summe** | | **≈ 1.930** |
 
-Unter 1.500 €: Ryzen 5 9600 (−110 €) + 2 × 1 TB NVMe (−120 €) → **≈ 1.500–1.570 €**.
+Sparvariante: Ryzen 5 9600 (−110 €) + 2 × 1 TB NVMe (−120 €) → **≈ 1.700 €**. Für 1.500 €: zusätzlich günstigeres Gehäuse statt Jonsbo N5.
+
+RAM-Aufteilung (32 GB): Proxmox + ZFS 6 GB (ARC max 4 GB), Lichtheck-VM 8 GB, Docker/weitere VMs 8 GB, Reserve 10 GB.
 
 Später: HDDs für NAS (CMR, z. B. WD Red Plus / IronWolf) als ZFS-Mirror/RAIDZ, ASM1166 SATA-Karte, GPU, RAM bis 192–256 GB (4 DIMMs → niedriger Takt).
 
