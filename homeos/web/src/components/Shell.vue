@@ -11,6 +11,13 @@ const emit = defineEmits(['logout'])
 const dashboards = ref([])
 const activeId = ref(null)
 const editing = ref(false)
+const railHidden = ref(false)
+try { railHidden.value = localStorage.getItem('homeos.railHidden') === '1' } catch {}
+function toggleRail() {
+  railHidden.value = !railHidden.value
+  try { localStorage.setItem('homeos.railHidden', railHidden.value ? '1' : '0') } catch {}
+  requestAnimationFrame(() => window.dispatchEvent(new Event('resize')))
+}
 const meta = ref(null)
 const sources = ref([])
 const showSources = ref(false)
@@ -93,8 +100,9 @@ const icons = ['⌂', '◈', '⚡', '☀', '♨', '☎', '♫', '⚙', '⛨', '�
 </script>
 
 <template>
-  <div class="shell" @touchstart.passive="onTouchStart" @touchend.passive="onTouchEnd">
-    <nav class="rail">
+  <div class="shell" :class="{ 'no-rail': railHidden }" @touchstart.passive="onTouchStart" @touchend.passive="onTouchEnd">
+    <nav v-show="!railHidden" class="rail">
+      <button class="tab" aria-label="Seitenleiste ausblenden" @click="toggleRail"><span class="ico">⟨</span><span class="nm">Ausblenden</span></button>
       <button v-for="d in dashboards" :key="d.id" class="tab" :class="{ on: d.id === activeId }" @click="select(d.id)">
         <span class="ico">{{ d.icon }}</span><span class="nm">{{ d.name }}</span>
       </button>
@@ -112,6 +120,7 @@ const icons = ['⌂', '◈', '⚡', '☀', '♨', '☎', '♫', '⚙', '⛨', '�
           <h1>{{ active?.name ?? '—' }}</h1>
         </div>
         <div class="actions">
+          <button v-if="railHidden" class="btn icon" aria-label="Seitenleiste einblenden" @click="toggleRail">☰</button>
           <button v-if="active && meta" class="btn" @click="cycleStyle">◐ {{ meta.dashboardStyles[active.style] }}</button>
           <button v-if="editing && active" class="btn" @click="editDashboard">Dashboard ✎</button>
           <button class="btn" :class="{ active: editing, primary: editing }" @click="editing = !editing">

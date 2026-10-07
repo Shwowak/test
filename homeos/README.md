@@ -13,7 +13,7 @@ Aufrufen: `http://<server>:8080` · Anmeldung mit `HOMEOS_ADMIN_USER` / `HOMEOS_
 
 ## Bedienung (Touch)
 
-- Linke Leiste: Dashboards wechseln, Wischen links/rechts wechselt ebenfalls
+- Linke Leiste: Dashboards wechseln, Wischen links/rechts wechselt ebenfalls; „⟨ Ausblenden“ versteckt die Leiste, ☰ oben rechts holt sie zurück (wird gemerkt)
 - **✎ Bearbeiten**: Widgets verschieben (ziehen), Größe ändern (Ecke unten rechts), ⚙ zum Konfigurieren, „＋ Widget hinzufügen“, „＋ Neu“ für Dashboards
 - **Quellen**: Datenquellen anlegen, danach im Widget auswählen
 - **◐ Design** wechselt pro Dashboard: Nahtlos (ohne Rahmen), Kacheln (HUD), Glas
