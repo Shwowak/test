@@ -8,6 +8,25 @@ Design-Richtung (Moodboard): dunkel, Glas-Kacheln, Neon-Akzente (Cyan/Magenta/Go
 
 ---
 
+## Design-Vorgabe (aus Moodboard)
+
+| Element | Umsetzung |
+|---|---|
+| Hintergrund | fast schwarz bis Nachtblau (`#05070D` → `#0B1220`), dezente Sterne/Code-/Platinen-Textur mit sehr geringer Deckkraft |
+| Kacheln | dunkles Glas (`rgba(15,23,42,.6)`, `backdrop-filter: blur(12px)`), 1px-Rand `rgba(56,189,248,.15)`, Radius 14px |
+| Akzente | Cyan `#22D3EE`, Blau `#3B82F6`, Magenta `#EC4899`, Violett `#8B5CF6`, Gold/Orange `#F59E0B` |
+| Diagramme | leuchtende Linien mit Glow (`shadowBlur`), Verlaufsflächen, Balken mit Farbverlauf Cyan→Blau, Ringe/Gauges mit Neon-Bogen |
+| Zahlen/KPIs | groß, Monospace-Ziffern (z. B. „JetBrains Mono“/„Orbitron“), Einheit klein und gedimmt |
+| Typo | „Inter“ für Text, Labels in Großbuchstaben mit Sperrung, gedimmtes Grau `#94A3B8` |
+| Status | Grün/Gelb/Rot als leuchtende Punkte; Warnung pulsierend |
+| Bewegung | sanftes Einblenden, Werte zählen hoch, Glow-Puls bei Live-Daten; `prefers-reduced-motion` respektieren |
+| Branding | Gold-Platinenleitungen (wie Bild 1) als Logo/Header-Ornament |
+| Layout | linke Navigationsleiste, oben KPI-Leiste, darunter freies Widget-Raster; Hochformat für Wand-Tablet |
+
+Diagramm-Bibliothek: **ECharts** (Glow, Verläufe, Gauges, Echtzeit). Themes umschaltbar, Neon-Dark als Standard.
+
+---
+
 ## 1. Vergleich bestehender Dashboard-Software
 
 | Software | Schwerpunkt | Stärken | Schwächen für unser Ziel |
