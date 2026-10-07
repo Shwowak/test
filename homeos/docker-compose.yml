@@ -1,0 +1,17 @@
+services:
+  homeos:
+    build: .
+    container_name: homeos
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      HOMEOS_ADMIN_USER: ${HOMEOS_ADMIN_USER:-admin}
+      HOMEOS_ADMIN_PASSWORD: ${HOMEOS_ADMIN_PASSWORD:?HOMEOS_ADMIN_PASSWORD in .env setzen}
+      HOMEOS_SECURE_COOKIE: ${HOMEOS_SECURE_COOKIE:-false}
+      TZ: Europe/Berlin
+    volumes:
+      - homeos-data:/data
+
+volumes:
+  homeos-data:
