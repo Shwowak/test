@@ -156,8 +156,8 @@ const icons = ['⌂', '◈', '⚡', '☀', '♨', '☎', '♫', '⚙', '⛨', '�
 .tab:active { transform: scale(0.95); }
 .tab.add { border: 1px dashed var(--line-strong); color: var(--cyan); }
 .spacer { flex: 1; }
-.main { flex: 1; min-width: 0; overflow-y: auto; padding: 20px 20px 40px; }
-.top { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; padding: 0 6px 14px; }
+.main { flex: 1; min-width: 0; overflow-y: auto; padding: 0; }
+.top { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; padding: 16px 20px; }
 .top h1 { margin: 4px 0 0; font-size: 34px; font-weight: 300; letter-spacing: 0.02em; }
 .actions { display: flex; gap: 10px; }
 .empty { color: var(--dim); font-size: 20px; padding: 40px 6px; }
@@ -169,7 +169,6 @@ const icons = ['⌂', '◈', '⚡', '☀', '♨', '☎', '♫', '⚙', '⛨', '�
   .rail { width: auto; flex-direction: row; padding: 6px; border-right: 0; border-top: 1px solid var(--line); overflow-x: auto; }
   .tab { min-width: 76px; min-height: 64px; }
   .spacer { display: none; }
-  .main { padding: 14px 10px 30px; }
   .top h1 { font-size: 26px; }
 }
 </style>

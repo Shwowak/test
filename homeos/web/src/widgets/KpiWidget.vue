@@ -14,6 +14,7 @@ const text = computed(() => {
 <template>
   <div class="k">
     <div class="v" :style="{ color, textShadow: `0 0 22px ${color}88` }">{{ text }}<span class="u">{{ data?.unit }}</span></div>
+    <div class="bar" :style="{ background: `linear-gradient(90deg, ${color}, transparent)`, boxShadow: `0 0 12px ${color}` }" />
     <div v-if="data?.label" class="label">{{ data.label }}</div>
   </div>
 </template>
@@ -21,5 +22,6 @@ const text = computed(() => {
 <style scoped>
 .k { height: 100%; display: flex; flex-direction: column; justify-content: center; container-type: size; }
 .v { font-family: var(--mono); font-size: clamp(28px, 48cqh, 110px); line-height: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar { height: 2px; width: 60%; margin: 12px 0 8px; opacity: 0.8; }
 .u { font-size: 0.38em; color: var(--dim); margin-left: 8px; }
 </style>

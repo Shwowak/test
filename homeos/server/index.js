@@ -39,7 +39,7 @@ export const WIDGET_TYPES = {
     fields: [
       { key: 'values', label: 'Werte, kommagetrennt (bei festem Wert)', type: 'list', static: true },
       { key: 'path', label: 'JSON-Pfad zu einer Zahlenliste', type: 'text', for: ['rest_json'] },
-      { key: 'style', label: 'Darstellung', type: 'select', options: { line: 'Linie', bar: 'Balken' } },
+      { key: 'style', label: 'Darstellung', type: 'select', options: { line: 'Linie (Neon)', wave: 'Doppelwelle', bar: 'Balken', spectrum: 'Spektrum (bunt)' } },
       { key: 'unit', label: 'Einheit', type: 'text' },
       { key: 'color', label: 'Farbe', type: 'color' },
     ],

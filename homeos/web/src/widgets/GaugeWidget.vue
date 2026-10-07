@@ -36,6 +36,12 @@ useChart(el, () => {
         rich: { u: { fontSize: 15, color: '#94a3b8', padding: [0, 0, 0, 4] } },
       },
       data: [{ value: isNaN(v) ? 0 : v }],
+    }, {
+      type: 'gauge', min: 0, max: 60, startAngle: 220, endAngle: -40, radius: '100%', center: ['50%', '58%'],
+      axisLine: { show: false }, progress: { show: false }, pointer: { show: false }, detail: { show: false }, title: { show: false },
+      splitLine: { show: false }, axisLabel: { show: false },
+      axisTick: { distance: -6, length: 4, splitNumber: 1, lineStyle: { color: 'rgba(34,211,238,0.35)', width: 1 } },
+      data: [],
     }],
   }
 }, () => [props.data, props.widget.config])

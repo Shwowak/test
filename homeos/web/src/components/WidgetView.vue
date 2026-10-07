@@ -57,7 +57,8 @@ watch(() => props.widget, schedule, { deep: true })
 
 <style scoped>
 .w { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 16px 18px; }
-.title { flex: none; margin-bottom: 6px; padding-right: 52px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.title { flex: none; margin-bottom: 6px; font-size: 11px; display: flex; align-items: center; gap: 8px; padding-right: 52px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .content { flex: 1; min-height: 0; position: relative; }
 .err { position: absolute; left: 12px; right: 12px; bottom: 10px; font-size: 12px; color: #fda4af; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.title::before { content: ''; width: 6px; height: 6px; flex: none; background: var(--cyan); box-shadow: 0 0 8px var(--cyan); }
 </style>
