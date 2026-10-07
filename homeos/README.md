@@ -11,6 +11,24 @@ docker compose up -d --build
 
 Aufrufen: `http://<server>:8080` · Anmeldung mit `HOMEOS_ADMIN_USER` / `HOMEOS_ADMIN_PASSWORD` (wird nur beim ersten Start angelegt).
 
+## Automatische Updates (empfohlen)
+
+Jeder Push nach GitHub baut per GitHub Actions ein Image `ghcr.io/shwowak/homeos:latest`. Watchtower auf dem Server prüft alle 5 Minuten und aktualisiert den Container automatisch (Daten bleiben im Volume).
+
+Einmalig auf dem Server:
+
+```
+mkdir homeos && cd homeos
+curl -fsSLO https://raw.githubusercontent.com/shwowak/test/claude/zen-cray-34x5xu/homeos/docker-compose.server.yml   # oder Datei kopieren
+nano .env                          # HOMEOS_ADMIN_PASSWORD=...
+docker login ghcr.io -u <github-user>   # Passwort = Token mit Recht read:packages
+docker compose -f docker-compose.server.yml up -d
+```
+
+- `docker login` ist nötig, solange das Paket privat ist (GitHub → Packages → homeos → Package settings → ggf. „Public“).
+- Update sofort statt nach 5 Min.: `docker compose -f docker-compose.server.yml pull && docker compose -f docker-compose.server.yml up -d`
+- Build-Status: GitHub → Actions → „HomeOS Docker Image“.
+
 ## Bedienung (Touch)
 
 - Linke Leiste: Dashboards wechseln, Wischen links/rechts wechselt ebenfalls; „⟨ Ausblenden“ versteckt die Leiste, ☰ oben rechts holt sie zurück (wird gemerkt)
