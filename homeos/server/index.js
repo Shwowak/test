@@ -102,22 +102,25 @@ app.post('/api/logout', async (req, reply) => {
 
 app.get('/api/me', async req => req.user)
 
-app.get('/api/meta', async () => ({ widgetTypes: WIDGET_TYPES, sourceTypes: SOURCE_TYPES }))
+export const DASHBOARD_STYLES = { seamless: 'Nahtlos', tiles: 'Kacheln (HUD)', glass: 'Glas' }
+const styleOf = s => (DASHBOARD_STYLES[s] ? s : 'seamless')
+
+app.get('/api/meta', async () => ({ widgetTypes: WIDGET_TYPES, sourceTypes: SOURCE_TYPES, dashboardStyles: DASHBOARD_STYLES }))
 
 app.get('/api/dashboards', async () => db.prepare('SELECT * FROM dashboards ORDER BY position, id').all())
 
 app.post('/api/dashboards', async req => {
-  const { name, icon } = req.body ?? {}
+  const { name, icon, style } = req.body ?? {}
   const pos = db.prepare('SELECT COALESCE(MAX(position), -1) + 1 p FROM dashboards').get().p
-  const id = db.prepare('INSERT INTO dashboards (name, icon, position) VALUES (?, ?, ?)').run(String(name || 'Neues Dashboard'), String(icon || '◈'), pos).lastInsertRowid
+  const id = db.prepare('INSERT INTO dashboards (name, icon, position, style) VALUES (?, ?, ?, ?)').run(String(name || 'Neues Dashboard'), String(icon || '◈'), pos, styleOf(style)).lastInsertRowid
   return db.prepare('SELECT * FROM dashboards WHERE id = ?').get(id)
 })
 
 app.put('/api/dashboards/:id', async (req, reply) => {
-  const { name, icon, position } = req.body ?? {}
+  const { name, icon, position, style } = req.body ?? {}
   const d = db.prepare('SELECT * FROM dashboards WHERE id = ?').get(req.params.id)
   if (!d) return reply.code(404).send({ error: 'Nicht gefunden' })
-  db.prepare('UPDATE dashboards SET name = ?, icon = ?, position = ? WHERE id = ?').run(String(name ?? d.name), String(icon ?? d.icon), Number(position ?? d.position), d.id)
+  db.prepare('UPDATE dashboards SET name = ?, icon = ?, position = ?, style = ? WHERE id = ?').run(String(name ?? d.name), String(icon ?? d.icon), Number(position ?? d.position), styleOf(style ?? d.style), d.id)
   return db.prepare('SELECT * FROM dashboards WHERE id = ?').get(d.id)
 })
 

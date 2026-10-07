@@ -29,6 +29,9 @@ CREATE TABLE IF NOT EXISTS widgets (
   config TEXT NOT NULL DEFAULT '{}');
 `)
 
+const cols = db.prepare('PRAGMA table_info(dashboards)').all().map(c => c.name)
+if (!cols.includes('style')) db.exec("ALTER TABLE dashboards ADD COLUMN style TEXT NOT NULL DEFAULT 'seamless'")
+
 export function hashPassword(pw) {
   const salt = randomBytes(16)
   return salt.toString('hex') + ':' + scryptSync(pw, salt, 64).toString('hex')
@@ -62,5 +65,11 @@ export function seed() {
     w('chart', 'Firewall Blocks / h', 6, 5, 6, 3, { style: 'spectrum', values: [12, 18, 9, 22, 30, 14, 26, 19, 33, 21, 15, 28, 24, 17] })
     w('chart', 'Bandbreite', 0, 8, 6, 3, { style: 'line', color: '#22D3EE', unit: 'Mbit/s', values: [120, 180, 90, 240, 310, 200, 160, 280, 350, 260, 190, 230] })
     w('chart', 'Wasser', 6, 8, 6, 3, { style: 'bar', color: '#3B82F6', unit: 'l', values: [80, 120, 95, 140, 110, 160, 130] })
+    const tech = db.prepare("INSERT INTO dashboards (name, icon, position, style) VALUES ('Technik', '⚙', 1, 'tiles')").run().lastInsertRowid
+    const t = (type, title, x, y, ww, h, cfg = {}) => add.run(tech, type, title, x, y, ww, h, JSON.stringify(cfg))
+    t('gauge', 'CPU', 0, 0, 4, 3, { value: 42, max: 100, unit: '%', color: '#8B5CF6' })
+    t('gauge', 'RAM', 4, 0, 4, 3, { value: 68, max: 100, unit: '%', color: '#22D3EE' })
+    t('gauge', 'Temperatur', 8, 0, 4, 3, { value: 51, max: 90, unit: '°C', color: '#F59E0B' })
+    t('chart', 'Firewall Blocks / h', 0, 3, 12, 3, { style: 'spectrum', values: [12, 18, 9, 22, 30, 14, 26, 19, 33, 21, 15, 28, 24, 17, 20, 31, 11, 25] })
   }
 }

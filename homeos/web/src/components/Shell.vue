@@ -63,7 +63,7 @@ function fullscreen() {
 }
 
 function newDashboard() {
-  dashForm.value = { name: '', icon: '◈' }
+  dashForm.value = { name: '', icon: '◈', style: 'seamless' }
 }
 function editDashboard() {
   dashForm.value = { ...active.value }
@@ -75,6 +75,13 @@ async function saveDashboard() {
   await loadDashboards()
   select(d.id)
 }
+async function cycleStyle() {
+  const keys = Object.keys(meta.value.dashboardStyles)
+  const next = keys[(keys.indexOf(active.value.style) + 1) % keys.length]
+  await api('PUT', `/dashboards/${active.value.id}`, { style: next })
+  active.value.style = next
+}
+
 async function deleteDashboard() {
   if (!confirm(`Dashboard „${dashForm.value.name}“ mit allen Widgets löschen?`)) return
   await api('DELETE', `/dashboards/${dashForm.value.id}`)
@@ -105,6 +112,7 @@ const icons = ['⌂', '◈', '⚡', '☀', '♨', '☎', '♫', '⚙', '⛨', '�
           <h1>{{ active?.name ?? '—' }}</h1>
         </div>
         <div class="actions">
+          <button v-if="active && meta" class="btn" @click="cycleStyle">◐ {{ meta.dashboardStyles[active.style] }}</button>
           <button v-if="editing && active" class="btn" @click="editDashboard">Dashboard ✎</button>
           <button class="btn" :class="{ active: editing, primary: editing }" @click="editing = !editing">
             {{ editing ? 'Fertig' : '✎ Bearbeiten' }}
@@ -123,6 +131,12 @@ const icons = ['⌂', '◈', '⚡', '☀', '♨', '☎', '♫', '⚙', '⛨', '�
     <Sheet v-if="dashForm" :title="dashForm.id ? 'Dashboard bearbeiten' : 'Neues Dashboard'" @close="dashForm = null">
       <form @submit.prevent="saveDashboard">
         <div class="field"><label>Name</label><input v-model="dashForm.name" required placeholder="z. B. Küche, Energie, Netzwerk"></div>
+        <div class="field">
+          <label>Design</label>
+          <div class="styles">
+            <button v-for="(l, k) in meta.dashboardStyles" :key="k" type="button" class="btn" :class="{ active: dashForm.style === k }" @click="dashForm.style = k">{{ l }}</button>
+          </div>
+        </div>
         <div class="field">
           <label>Symbol</label>
           <div class="icons">
@@ -162,6 +176,7 @@ const icons = ['⌂', '◈', '⚡', '☀', '♨', '☎', '♫', '⚙', '⛨', '�
 .actions { display: flex; gap: 10px; }
 .empty { color: var(--dim); font-size: 20px; padding: 40px 6px; }
 .icons { display: grid; grid-template-columns: repeat(auto-fill, minmax(56px, 1fr)); gap: 8px; }
+.styles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .row { display: flex; gap: 12px; align-items: center; }
 .grow { flex: 1; }
 @media (max-width: 700px) {

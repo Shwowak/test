@@ -16,6 +16,7 @@ Aufrufen: `http://<server>:8080` · Anmeldung mit `HOMEOS_ADMIN_USER` / `HOMEOS_
 - Linke Leiste: Dashboards wechseln, Wischen links/rechts wechselt ebenfalls
 - **✎ Bearbeiten**: Widgets verschieben (ziehen), Größe ändern (Ecke unten rechts), ⚙ zum Konfigurieren, „＋ Widget hinzufügen“, „＋ Neu“ für Dashboards
 - **Quellen**: Datenquellen anlegen, danach im Widget auswählen
+- **◐ Design** wechselt pro Dashboard: Nahtlos (ohne Rahmen), Kacheln (HUD), Glas
 - **Vollbild** für Wand-Tablet/Kiosk
 
 ## Widgets
