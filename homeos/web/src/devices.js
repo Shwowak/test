@@ -4,6 +4,7 @@ import { api } from './api.js'
 export const store = reactive({ devices: {}, rooms: [], integrations: [], registry: null, loaded: false })
 export const connected = ref(false)
 
+export const listeners = new Set()
 let ws = null
 let retry = 1000
 let started = false
@@ -34,6 +35,7 @@ function connect() {
   }
   ws.onmessage = ev => {
     const { type, payload } = JSON.parse(ev.data)
+    for (const fn of listeners) fn(type, payload)
     if (type === 'device.state') {
       const d = store.devices[payload.id]
       if (d) Object.assign(d, { state: payload.state, connection: payload.connection, battery: payload.battery ?? d.battery, last_seen: payload.last_seen })

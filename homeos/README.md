@@ -57,6 +57,13 @@ docker compose -f docker-compose.server.yml up -d
 - **Live**: Zustände per WebSocket (`/api/v1/events`) in Echtzeit
 - **Widgets**: „Gerät“ und „Raum“ für Dashboards
 
+## Phase 3 (Meldungen & Automationen)
+
+- **Meldungen**: Stufen Info / Warnung / Kritisch / Notfall · Info+Warnung als Toast, Kritisch/Notfall als Vollbild mit „Bestätigen“ (Notfall pulsiert + Alarmton) · Glocke mit Zähler, Meldungszentrale (auch Wischen von oben) · `POST /api/v1/notifications` für externe Systeme
+- **Automationen** (Leiste → Regeln): WENN (Uhrzeit, Sonne ± Versatz, Intervall, Gerätezustand, Geräteverbindung, Systemstart) · UND NUR WENN (Zeitraum, Wochentag, hell/dunkel, Gerätezustand) · DANN (Gerät schalten, Meldung mit `{device.name}`/`{value}`, Dashboard zeigen, Display an/dimmen/aus, Ton, Warten, andere Automation)
+- Sperrzeit, Schleifenschutz, „Jetzt ausführen“, Verlauf · läuft serverseitig ohne offenes Display
+- **Einstellungen → Allgemein**: Standort (für Sonnenauf-/untergang) und Zeitzone
+
 ## Widgets
 
 | Typ | Datenquellen |

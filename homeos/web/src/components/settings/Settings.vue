@@ -7,6 +7,7 @@ import LogsSettings from './LogsSettings.vue'
 import VersionsSettings from './VersionsSettings.vue'
 import SystemSettings from './SystemSettings.vue'
 import IntegrationsSettings from './IntegrationsSettings.vue'
+import GeneralSettings from './GeneralSettings.vue'
 
 defineProps({ meta: Object })
 const emit = defineEmits(['changed'])
@@ -16,6 +17,7 @@ const can = p => user.value?.permissions?.includes(p)
 
 const tabs = computed(() => [
   { id: 'profile', icon: '☺', show: true },
+  { id: 'general', icon: '⌖', show: true },
   { id: 'integrations', icon: '⌁', show: can('devices.manage') },
   { id: 'users', icon: '⚇', show: can('users.manage') },
   { id: 'versions', icon: '⟲', show: can('versions.view') },
@@ -34,6 +36,7 @@ const tab = ref('profile')
     </nav>
     <div class="pane">
       <ProfileSettings v-if="tab === 'profile'" :meta="meta" />
+      <GeneralSettings v-else-if="tab === 'general'" />
       <IntegrationsSettings v-else-if="tab === 'integrations'" />
       <UsersSettings v-else-if="tab === 'users'" :meta="meta" />
       <VersionsSettings v-else-if="tab === 'versions'" @restored="emit('changed')" />

@@ -20,7 +20,8 @@
     "settings": "Einstellungen",
     "fullscreen": "Vollbild",
     "logout": "Abmelden",
-    "devices": "Geräte"
+    "devices": "Geräte",
+    "automations": "Regeln"
   },
   "login": {
     "user": "Benutzer",
@@ -129,7 +130,8 @@
       "versions": "Versionen",
       "logs": "Protokoll",
       "system": "System",
-      "integrations": "Integrationen"
+      "integrations": "Integrationen",
+      "general": "Allgemein"
     }
   },
   "profile": {
@@ -180,7 +182,9 @@
       "system": "System",
       "room": "Raum",
       "integration": "Integration",
-      "device": "Gerät"
+      "device": "Gerät",
+      "automation": "Automation",
+      "settings": "Einstellungen"
     },
     "action": {
       "create": "angelegt",
@@ -243,7 +247,12 @@
       "integration_connected": "Integration verbunden",
       "integration_connecting": "Integration verbindet",
       "integration_disconnected": "Integration getrennt",
-      "integration_error": "Integrationsfehler"
+      "integration_error": "Integrationsfehler",
+      "automation_ran": "Automation ausgeführt",
+      "automation_failed": "Automation fehlgeschlagen",
+      "automation_loop_blocked": "Automation blockiert (Schleife)",
+      "notification_critical": "Kritische Meldung",
+      "notification_emergency": "Notfall-Meldung"
     }
   },
   "system": {
@@ -490,5 +499,131 @@
   "restOptions": {
     "sensor": "Sensor",
     "switch": "Schalter"
+  },
+  "general": {
+    "place": "Ort",
+    "lat": "Breitengrad",
+    "lon": "Längengrad",
+    "timezone": "Zeitzone",
+    "sunrise": "Sonnenaufgang",
+    "sunset": "Sonnenuntergang",
+    "locate": "Standort ermitteln",
+    "saved": "Gespeichert."
+  },
+  "notifications": {
+    "title": "Meldungen",
+    "acknowledge": "Bestätigen",
+    "ack_all": "Alle bestätigen",
+    "empty": "Keine Meldungen.",
+    "unread": "Keine offenen Meldungen | 1 offene Meldung | {n} offene Meldungen",
+    "more": "+ {n} weitere",
+    "levels": {
+      "info": "Info",
+      "warning": "Warnung",
+      "critical": "Kritisch",
+      "emergency": "Notfall"
+    }
+  },
+  "automations": {
+    "title": "Wenn – Dann",
+    "hint": "Regeln laufen lokal auf dem Server, auch ohne geöffnetes Display.",
+    "new": "Neue Automation",
+    "edit": "Automation bearbeiten",
+    "empty": "Noch keine Automationen.",
+    "enabled": "Aktiv",
+    "run": "Jetzt",
+    "history": "Verlauf",
+    "never": "Noch nie ausgeführt",
+    "last_run": "Zuletzt {date} · {n}×",
+    "cooldown": "Sperrzeit (s)",
+    "confirm_delete": "Automation „{name}“ löschen?",
+    "groups": {
+      "triggers": "Wenn",
+      "conditions": "Und nur wenn",
+      "actions": "Dann"
+    },
+    "triggers": {
+      "time": "Uhrzeit",
+      "sun": "Sonne",
+      "interval": "Intervall",
+      "device_state": "Gerätezustand",
+      "device_connection": "Geräteverbindung",
+      "startup": "Systemstart"
+    },
+    "conditions": {
+      "time_between": "Zeitraum",
+      "weekday": "Wochentag",
+      "dark": "Hell/Dunkel",
+      "device_state": "Gerätezustand"
+    },
+    "actions": {
+      "device_command": "Gerät schalten",
+      "notify": "Meldung",
+      "dashboard": "Dashboard zeigen",
+      "display": "Display",
+      "sound": "Ton",
+      "delay": "Warten",
+      "run_automation": "Automation starten"
+    },
+    "fields": {
+      "at": "Uhrzeit",
+      "days": "Tage (leer = täglich)",
+      "event": "Ereignis",
+      "offset": "Versatz (min)",
+      "minutes": "Minuten",
+      "device_id": "Gerät",
+      "capability": "Eigenschaft",
+      "op": "Vergleich",
+      "value": "Wert",
+      "to": "Wird",
+      "from": "Von",
+      "is": "Ist",
+      "level": "Stufe",
+      "title": "Titel",
+      "message": "Text",
+      "dashboard_id": "Dashboard",
+      "state": "Zustand",
+      "tone": "Ton",
+      "seconds": "Sekunden",
+      "automation_id": "Automation"
+    },
+    "options": {
+      "sunrise": "Sonnenaufgang",
+      "sunset": "Sonnenuntergang",
+      "changed": "ändert sich",
+      "eq": "gleich",
+      "ne": "ungleich",
+      "gt": "größer als",
+      "lt": "kleiner als",
+      "becomes_true": "wird an",
+      "becomes_false": "wird aus",
+      "is_true": "ist an",
+      "is_false": "ist aus",
+      "offline": "offline",
+      "online": "online",
+      "dark": "dunkel",
+      "light": "hell",
+      "info": "Info",
+      "warning": "Warnung",
+      "critical": "Kritisch",
+      "emergency": "Notfall",
+      "on": "an",
+      "dim": "gedimmt",
+      "off": "aus",
+      "chime": "Gong",
+      "alert": "Hinweis",
+      "alarm": "Alarm",
+      "true": "an",
+      "false": "aus"
+    },
+    "days": {
+      "0": "So",
+      "1": "Mo",
+      "2": "Di",
+      "3": "Mi",
+      "4": "Do",
+      "5": "Fr",
+      "6": "Sa"
+    }
   }
 }

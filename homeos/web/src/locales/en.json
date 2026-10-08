@@ -20,7 +20,8 @@
     "settings": "Settings",
     "fullscreen": "Fullscreen",
     "logout": "Log out",
-    "devices": "Devices"
+    "devices": "Devices",
+    "automations": "Rules"
   },
   "login": {
     "user": "User",
@@ -129,7 +130,8 @@
       "versions": "Versions",
       "logs": "Logs",
       "system": "System",
-      "integrations": "Integrations"
+      "integrations": "Integrations",
+      "general": "General"
     }
   },
   "profile": {
@@ -180,7 +182,9 @@
       "system": "System",
       "room": "Room",
       "integration": "Integration",
-      "device": "Device"
+      "device": "Device",
+      "automation": "Automation",
+      "settings": "Settings"
     },
     "action": {
       "create": "created",
@@ -243,7 +247,12 @@
       "integration_connected": "Integration connected",
       "integration_connecting": "Integration connecting",
       "integration_disconnected": "Integration disconnected",
-      "integration_error": "Integration error"
+      "integration_error": "Integration error",
+      "automation_ran": "Automation ran",
+      "automation_failed": "Automation failed",
+      "automation_loop_blocked": "Automation blocked (loop)",
+      "notification_critical": "Critical notification",
+      "notification_emergency": "Emergency notification"
     }
   },
   "system": {
@@ -490,5 +499,131 @@
   "restOptions": {
     "sensor": "Sensor",
     "switch": "Switch"
+  },
+  "general": {
+    "place": "Place",
+    "lat": "Latitude",
+    "lon": "Longitude",
+    "timezone": "Time zone",
+    "sunrise": "Sunrise",
+    "sunset": "Sunset",
+    "locate": "Detect location",
+    "saved": "Saved."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "acknowledge": "Acknowledge",
+    "ack_all": "Acknowledge all",
+    "empty": "No notifications.",
+    "unread": "No open notifications | 1 open notification | {n} open notifications",
+    "more": "+ {n} more",
+    "levels": {
+      "info": "Info",
+      "warning": "Warning",
+      "critical": "Critical",
+      "emergency": "Emergency"
+    }
+  },
+  "automations": {
+    "title": "When – Then",
+    "hint": "Rules run locally on the server, even with no display open.",
+    "new": "New automation",
+    "edit": "Edit automation",
+    "empty": "No automations yet.",
+    "enabled": "Enabled",
+    "run": "Run",
+    "history": "History",
+    "never": "Never run",
+    "last_run": "Last {date} · {n}×",
+    "cooldown": "Cooldown (s)",
+    "confirm_delete": "Delete automation “{name}”?",
+    "groups": {
+      "triggers": "When",
+      "conditions": "And only if",
+      "actions": "Then"
+    },
+    "triggers": {
+      "time": "Time",
+      "sun": "Sun",
+      "interval": "Interval",
+      "device_state": "Device state",
+      "device_connection": "Device connection",
+      "startup": "System start"
+    },
+    "conditions": {
+      "time_between": "Time range",
+      "weekday": "Weekday",
+      "dark": "Light/Dark",
+      "device_state": "Device state"
+    },
+    "actions": {
+      "device_command": "Control device",
+      "notify": "Notification",
+      "dashboard": "Show dashboard",
+      "display": "Display",
+      "sound": "Sound",
+      "delay": "Wait",
+      "run_automation": "Run automation"
+    },
+    "fields": {
+      "at": "Time",
+      "days": "Days (empty = daily)",
+      "event": "Event",
+      "offset": "Offset (min)",
+      "minutes": "Minutes",
+      "device_id": "Device",
+      "capability": "Property",
+      "op": "Comparison",
+      "value": "Value",
+      "to": "Becomes",
+      "from": "From",
+      "is": "Is",
+      "level": "Level",
+      "title": "Title",
+      "message": "Text",
+      "dashboard_id": "Dashboard",
+      "state": "State",
+      "tone": "Tone",
+      "seconds": "Seconds",
+      "automation_id": "Automation"
+    },
+    "options": {
+      "sunrise": "Sunrise",
+      "sunset": "Sunset",
+      "changed": "changes",
+      "eq": "equals",
+      "ne": "not equal",
+      "gt": "greater than",
+      "lt": "less than",
+      "becomes_true": "turns on",
+      "becomes_false": "turns off",
+      "is_true": "is on",
+      "is_false": "is off",
+      "offline": "offline",
+      "online": "online",
+      "dark": "dark",
+      "light": "light",
+      "info": "Info",
+      "warning": "Warning",
+      "critical": "Critical",
+      "emergency": "Emergency",
+      "on": "on",
+      "dim": "dimmed",
+      "off": "off",
+      "chime": "Chime",
+      "alert": "Alert",
+      "alarm": "Alarm",
+      "true": "on",
+      "false": "off"
+    },
+    "days": {
+      "0": "Sun",
+      "1": "Mon",
+      "2": "Tue",
+      "3": "Wed",
+      "4": "Thu",
+      "5": "Fri",
+      "6": "Sat"
+    }
   }
 }

@@ -7,14 +7,20 @@ import Sheet from './Sheet.vue'
 import SourceManager from './SourceManager.vue'
 import Settings from './settings/Settings.vue'
 import DevicesView from './devices/DevicesView.vue'
+import AutomationsView from './automations/AutomationsView.vue'
+import AlertLayer from './notify/AlertLayer.vue'
+import NotificationCenter from './notify/NotificationCenter.vue'
+import { notes, unread, loadNotifications } from '../notifications.js'
 import { startLive, stopLive, loadIntegrations } from '../devices.js'
-import { onBeforeUnmount } from 'vue'
+import { onBeforeUnmount, watch } from 'vue'
 
 const { t } = useI18n()
 const user = inject('user')
 const can = p => user.value?.permissions?.includes(p)
 const emit = defineEmits(['logout'])
 const showSettings = ref(false)
+const showNotes = ref(false)
+watch(() => notes.dashboard, x => { if (x && dashboards.value.some(d => d.id === x.id)) select(x.id) })
 const view = ref('dashboard')
 
 const dashboards = ref([])
@@ -47,6 +53,7 @@ onBeforeUnmount(stopLive)
 
 onMounted(async () => {
   if (can('devices.view')) { startLive(); loadIntegrations().catch(() => {}) }
+  if (can('notifications.view')) loadNotifications().catch(() => {})
   meta.value = await api('GET', '/meta')
   const saved = Number(localStorage.getItem('homeos.dashboard'))
   await Promise.all([loadDashboards(), loadSources()])
@@ -66,14 +73,18 @@ function step(dir) {
 }
 
 let touchX = null
+let touchY = 0
 function onTouchStart(e) {
   if (editing.value || view.value !== 'dashboard' || e.touches.length !== 1) return
   touchX = e.touches[0].clientX
+  touchY = e.touches[0].clientY
 }
 function onTouchEnd(e) {
   if (touchX === null) return
   const dx = e.changedTouches[0].clientX - touchX
   touchX = null
+  const dy = e.changedTouches[0].clientY - touchY
+  if (touchY < 60 && dy > 120 && can('notifications.view')) { showNotes.value = true; return }
   if (Math.abs(dx) > 120) step(dx < 0 ? 1 : -1)
 }
 
@@ -123,6 +134,7 @@ const icons = ['⌂', '◈', '⚡', '☀', '♨', '☎', '♫', '⚙', '⛨', '�
       <button v-if="editing" class="tab add" @click="newDashboard"><span class="ico">＋</span><span class="nm">{{ t('common.new') }}</span></button>
       <div class="spacer" />
       <button v-if="can('devices.view')" class="tab" :class="{ on: view === 'devices' }" @click="view = 'devices'; editing = false"><span class="ico">▦</span><span class="nm">{{ t('nav.devices') }}</span></button>
+      <button v-if="can('automations.view')" class="tab" :class="{ on: view === 'automations' }" @click="view = 'automations'; editing = false"><span class="ico">⟳</span><span class="nm">{{ t('nav.automations') }}</span></button>
       <button v-if="can('sources.view')" class="tab" @click="showSources = true"><span class="ico">⌬</span><span class="nm">{{ t('nav.sources') }}</span></button>
       <button class="tab" @click="showSettings = true"><span class="ico">⚙</span><span class="nm">{{ t('nav.settings') }}</span></button>
       <button class="tab" @click="fullscreen"><span class="ico">⛶</span><span class="nm">{{ t('nav.fullscreen') }}</span></button>
@@ -132,10 +144,11 @@ const icons = ['⌂', '◈', '⚡', '☀', '♨', '☎', '♫', '⚙', '⛨', '�
     <section class="main">
       <header class="top">
         <div>
-          <div class="label">{{ view === 'devices' ? t('nav.devices') : t('dashboard.label') }}</div>
-          <h1>{{ view === 'devices' ? t('devices.title') : active?.name ?? '—' }}</h1>
+          <div class="label">{{ view === 'devices' ? t('nav.devices') : view === 'automations' ? t('nav.automations') : t('dashboard.label') }}</div>
+          <h1>{{ view === 'devices' ? t('devices.title') : view === 'automations' ? t('automations.title') : active?.name ?? '—' }}</h1>
         </div>
         <div class="actions">
+          <button v-if="can('notifications.view')" class="btn icon bell" :class="{ hot: unread }" :aria-label="t('notifications.title')" @click="showNotes = true">🔔<span v-if="unread" class="badge">{{ unread }}</span></button>
           <button v-if="railHidden" class="btn icon" :aria-label="t('nav.show')" @click="toggleRail">☰</button>
           <button v-if="view === 'dashboard' && active && meta" class="btn" @click="cycleStyle">◐ {{ t('styles.' + active.style) }}</button>
           <button v-if="editing && active" class="btn" @click="editDashboard">{{ t('dashboard.label') }} ✎</button>
@@ -146,9 +159,15 @@ const icons = ['⌂', '◈', '⚡', '☀', '♨', '☎', '♫', '⚙', '⛨', '�
       </header>
 
       <DevicesView v-if="view === 'devices'" />
+      <AutomationsView v-else-if="view === 'automations'" />
       <Board v-else-if="active && meta" :key="active.id" :dashboard="active" :editing="editing" :meta="meta" :sources="sources" />
       <p v-else-if="meta" class="empty">{{ t('dashboard.empty') }}</p>
     </section>
+
+    <Sheet v-if="showNotes" :title="t('notifications.title')" @close="showNotes = false">
+      <NotificationCenter />
+    </Sheet>
+    <AlertLayer />
 
     <Sheet v-if="showSources" :title="t('sources.title')" @close="showSources = false">
       <SourceManager :meta="meta" :sources="sources" @changed="loadSources" />
@@ -209,6 +228,9 @@ const icons = ['⌂', '◈', '⚡', '☀', '♨', '☎', '♫', '⚙', '⛨', '�
 .styles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .row { display: flex; gap: 12px; align-items: center; }
 .grow { flex: 1; }
+.bell { position: relative; }
+.bell.hot { box-shadow: 0 0 16px rgba(34, 211, 238, 0.35); }
+.badge { position: absolute; top: -6px; right: -6px; min-width: 22px; height: 22px; padding: 0 5px; border-radius: 11px; background: #ef4444; color: #fff; font-size: 13px; line-height: 22px; }
 @media (max-width: 700px) {
   .shell { flex-direction: column-reverse; }
   .rail { width: auto; flex-direction: row; padding: 6px; border-right: 0; border-top: 1px solid var(--line); overflow-x: auto; }
