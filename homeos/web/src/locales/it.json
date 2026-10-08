@@ -1,0 +1,84 @@
+{
+  "common": {
+    "save": "Salva",
+    "delete": "Elimina",
+    "edit": "Modifica",
+    "done": "Fatto",
+    "new": "Nuovo",
+    "name": "Nome",
+    "back": "Indietro",
+    "close": "Chiudi",
+    "saved": "Salvato"
+  },
+  "nav": {
+    "hide": "Nascondi",
+    "show": "Mostra barra",
+    "sources": "Sorgenti",
+    "settings": "Impostazioni",
+    "fullscreen": "Schermo intero",
+    "logout": "Esci"
+  },
+  "login": {
+    "user": "Utente",
+    "password": "Password",
+    "pin": "PIN",
+    "submit": "Accedi"
+  },
+  "dashboard": {
+    "label": "Dashboard",
+    "new": "Nuova dashboard",
+    "edit": "Modifica dashboard",
+    "style": "Stile",
+    "icon": "Icona"
+  },
+  "styles": {
+    "seamless": "Continuo",
+    "tiles": "Riquadri (HUD)",
+    "glass": "Vetro"
+  },
+  "widget": {
+    "add": "Aggiungi widget",
+    "new": "Nuovo widget",
+    "edit": "Modifica widget",
+    "type": "Tipo",
+    "title": "Titolo",
+    "source": "Sorgente dati"
+  },
+  "widgetTypes": {
+    "clock": "Orologio e data",
+    "text": "Testo / nota",
+    "kpi": "Valore (KPI)",
+    "gauge": "Indicatore",
+    "chart": "Grafico",
+    "calendar": "Appuntamenti",
+    "switch": "Interruttore",
+    "iframe": "Incorpora sito"
+  },
+  "calendar": {
+    "today": "Oggi",
+    "tomorrow": "Domani",
+    "all_day": "tutto il giorno",
+    "none": "Nessun appuntamento"
+  },
+  "switch": {
+    "on": "Acceso",
+    "off": "Spento"
+  },
+  "settings": {
+    "title": "Impostazioni",
+    "language": "Lingua",
+    "tabs": {
+      "profile": "Profilo",
+      "users": "Utenti",
+      "versions": "Versioni",
+      "logs": "Registro",
+      "system": "Sistema"
+    }
+  },
+  "roles": {
+    "admin": "Amministratore",
+    "user": "Utente",
+    "restricted": "Limitato",
+    "guest": "Ospite"
+  }
+}

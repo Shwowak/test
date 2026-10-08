@@ -1,14 +1,16 @@
 <script setup>
-defineProps({ title: String })
+defineProps({ title: String, wide: Boolean })
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n()
 const emit = defineEmits(['close'])
 </script>
 
 <template>
   <div class="backdrop" @click.self="emit('close')">
-    <div class="sheet" role="dialog" :aria-label="title">
+    <div class="sheet" :class="{ wide }" role="dialog" :aria-label="title">
       <header>
         <h2>{{ title }}</h2>
-        <button class="btn icon" aria-label="Schließen" @click="emit('close')">✕</button>
+        <button class="btn icon" :aria-label="t('common.close')" @click="emit('close')">✕</button>
       </header>
       <div class="body"><slot /></div>
     </div>
@@ -24,6 +26,7 @@ const emit = defineEmits(['close'])
 }
 header { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px; border-bottom: 1px solid var(--line); }
 h2 { margin: 0; font-size: 24px; font-weight: 400; }
+.sheet.wide { width: min(980px, 100%); }
 .body { flex: 1; overflow-y: auto; padding: 20px; user-select: text; }
 @keyframes slide { from { transform: translateX(40px); opacity: 0; } }
 @media (max-width: 700px) { .backdrop { align-items: flex-end; } .sheet { height: 88%; border-left: 0; border-top: 1px solid var(--line-strong); border-radius: 20px 20px 0 0; } }

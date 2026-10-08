@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { api } from '../api.js'
+import { errorText } from '../i18n.js'
 import ClockWidget from '../widgets/ClockWidget.vue'
 import TextWidget from '../widgets/TextWidget.vue'
 import KpiWidget from '../widgets/KpiWidget.vue'
@@ -30,7 +31,7 @@ async function refresh() {
     data.value = await api('GET', `/widgets/${props.widget.id}/data`)
     error.value = ''
   } catch (e) {
-    error.value = e.message
+    error.value = errorText(e) + (e.details?.message ? ` (${e.details.message})` : '')
   }
 }
 

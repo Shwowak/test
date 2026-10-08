@@ -5,6 +5,9 @@ import { api } from '../api.js'
 import WidgetView from './WidgetView.vue'
 import WidgetEditor from './WidgetEditor.vue'
 import Sheet from './Sheet.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({ dashboard: Object, editing: Boolean, meta: Object, sources: Array })
 
@@ -68,14 +71,14 @@ async function saved() {
       >
         <div class="grid-stack-item-content" :class="{ edit: editing }">
           <WidgetView :widget="w" :editing="editing" />
-          <button v-if="editing" class="btn icon cfg no-drag" aria-label="Widget bearbeiten" @click="editorFor = w">⚙</button>
+          <button v-if="editing" class="btn icon cfg no-drag" :aria-label="t('widget.edit')" @click="editorFor = w">⚙</button>
         </div>
       </div>
     </div>
 
-    <button v-if="editing" class="btn primary add" @click="addWidget">＋ Widget hinzufügen</button>
+    <button v-if="editing" class="btn primary add" @click="addWidget">＋ {{ t('widget.add') }}</button>
 
-    <Sheet v-if="editorFor" :title="editorFor.id ? 'Widget bearbeiten' : 'Neues Widget'" @close="editorFor = null">
+    <Sheet v-if="editorFor" :title="editorFor.id ? t('widget.edit') : t('widget.new')" @close="editorFor = null">
       <WidgetEditor :widget="editorFor" :dashboard-id="dashboard.id" :meta="meta" :sources="sources" @saved="saved" />
     </Sheet>
   </div>

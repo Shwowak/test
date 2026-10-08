@@ -1,0 +1,84 @@
+{
+  "common": {
+    "save": "Opslaan",
+    "delete": "Verwijderen",
+    "edit": "Bewerken",
+    "done": "Klaar",
+    "new": "Nieuw",
+    "name": "Naam",
+    "back": "Terug",
+    "close": "Sluiten",
+    "saved": "Opgeslagen"
+  },
+  "nav": {
+    "hide": "Verbergen",
+    "show": "Zijbalk tonen",
+    "sources": "Bronnen",
+    "settings": "Instellingen",
+    "fullscreen": "Volledig scherm",
+    "logout": "Afmelden"
+  },
+  "login": {
+    "user": "Gebruiker",
+    "password": "Wachtwoord",
+    "pin": "PIN",
+    "submit": "Aanmelden"
+  },
+  "dashboard": {
+    "label": "Dashboard",
+    "new": "Nieuw dashboard",
+    "edit": "Dashboard bewerken",
+    "style": "Stijl",
+    "icon": "Pictogram"
+  },
+  "styles": {
+    "seamless": "Naadloos",
+    "tiles": "Tegels (HUD)",
+    "glass": "Glas"
+  },
+  "widget": {
+    "add": "Widget toevoegen",
+    "new": "Nieuwe widget",
+    "edit": "Widget bewerken",
+    "type": "Type",
+    "title": "Titel",
+    "source": "Gegevensbron"
+  },
+  "widgetTypes": {
+    "clock": "Klok & datum",
+    "text": "Tekst / notitie",
+    "kpi": "Waarde (KPI)",
+    "gauge": "Meter",
+    "chart": "Grafiek",
+    "calendar": "Afspraken",
+    "switch": "Schakelaar",
+    "iframe": "Website insluiten"
+  },
+  "calendar": {
+    "today": "Vandaag",
+    "tomorrow": "Morgen",
+    "all_day": "hele dag",
+    "none": "Geen afspraken"
+  },
+  "switch": {
+    "on": "Aan",
+    "off": "Uit"
+  },
+  "settings": {
+    "title": "Instellingen",
+    "language": "Taal",
+    "tabs": {
+      "profile": "Profiel",
+      "users": "Gebruikers",
+      "versions": "Versies",
+      "logs": "Logboek",
+      "system": "Systeem"
+    }
+  },
+  "roles": {
+    "admin": "Beheerder",
+    "user": "Gebruiker",
+    "restricted": "Beperkt",
+    "guest": "Gast"
+  }
+}

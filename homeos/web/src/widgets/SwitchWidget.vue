@@ -1,6 +1,9 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { api } from '../api.js'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({ widget: Object, data: Object, editing: Boolean })
 const emit = defineEmits(['changed'])
@@ -22,7 +25,7 @@ async function toggle() {
 <template>
   <button class="sw no-drag" :class="{ on, busy }" :aria-pressed="on" @click="toggle">
     <span class="knob" />
-    <span class="state">{{ data ? (on ? 'An' : data.value === 'off' ? 'Aus' : data.value) : '…' }}</span>
+    <span class="state">{{ data ? (on ? t('switch.on') : data.value === 'off' ? t('switch.off') : data.value) : '…' }}</span>
   </button>
 </template>
 

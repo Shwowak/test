@@ -1,5 +1,8 @@
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { locale } = useI18n()
 
 const props = defineProps({ widget: Object, data: Object })
 const color = computed(() => props.widget.config.color || '#22D3EE')
@@ -7,7 +10,7 @@ const text = computed(() => {
   const v = props.data?.value
   if (v === null || v === undefined) return '—'
   const d = props.widget.config.decimals
-  return typeof v === 'number' && d !== undefined && d !== '' ? v.toLocaleString('de-DE', { minimumFractionDigits: d, maximumFractionDigits: d }) : String(v)
+  return typeof v === 'number' && d !== undefined && d !== '' ? v.toLocaleString(locale.value, { minimumFractionDigits: d, maximumFractionDigits: d }) : String(v)
 })
 </script>
 

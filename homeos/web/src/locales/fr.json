@@ -1,0 +1,84 @@
+{
+  "common": {
+    "save": "Enregistrer",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "done": "Terminé",
+    "new": "Nouveau",
+    "name": "Nom",
+    "back": "Retour",
+    "close": "Fermer",
+    "saved": "Enregistré"
+  },
+  "nav": {
+    "hide": "Masquer",
+    "show": "Afficher la barre",
+    "sources": "Sources",
+    "settings": "Paramètres",
+    "fullscreen": "Plein écran",
+    "logout": "Déconnexion"
+  },
+  "login": {
+    "user": "Utilisateur",
+    "password": "Mot de passe",
+    "pin": "PIN",
+    "submit": "Se connecter"
+  },
+  "dashboard": {
+    "label": "Tableau de bord",
+    "new": "Nouveau tableau",
+    "edit": "Modifier le tableau",
+    "style": "Style",
+    "icon": "Icône"
+  },
+  "styles": {
+    "seamless": "Continu",
+    "tiles": "Tuiles (HUD)",
+    "glass": "Verre"
+  },
+  "widget": {
+    "add": "Ajouter un widget",
+    "new": "Nouveau widget",
+    "edit": "Modifier le widget",
+    "type": "Type",
+    "title": "Titre",
+    "source": "Source de données"
+  },
+  "widgetTypes": {
+    "clock": "Horloge & date",
+    "text": "Texte / note",
+    "kpi": "Valeur (KPI)",
+    "gauge": "Jauge",
+    "chart": "Graphique",
+    "calendar": "Rendez-vous",
+    "switch": "Interrupteur",
+    "iframe": "Intégrer un site"
+  },
+  "calendar": {
+    "today": "Aujourd'hui",
+    "tomorrow": "Demain",
+    "all_day": "toute la journée",
+    "none": "Aucun rendez-vous"
+  },
+  "switch": {
+    "on": "Marche",
+    "off": "Arrêt"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "language": "Langue",
+    "tabs": {
+      "profile": "Profil",
+      "users": "Utilisateurs",
+      "versions": "Versions",
+      "logs": "Journal",
+      "system": "Système"
+    }
+  },
+  "roles": {
+    "admin": "Administrateur",
+    "user": "Utilisateur",
+    "restricted": "Restreint",
+    "guest": "Invité"
+  }
+}

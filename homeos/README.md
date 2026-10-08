@@ -37,6 +37,16 @@ docker compose -f docker-compose.server.yml up -d
 - **◐ Design** wechselt pro Dashboard: Nahtlos (ohne Rahmen), Kacheln (HUD), Glas
 - **Vollbild** für Wand-Tablet/Kiosk
 
+## Phase 1 (Kern)
+
+- **API v1**: `/api/v1/…`, OpenAPI-Doku unter `/api/docs`
+- **Benutzer & Rollen**: Administrator, Benutzer, Eingeschränkt, Gast · Login per Passwort oder PIN-Ziffernfeld · Sperre nach 10 Fehlversuchen (15 min)
+- **Automatische Sicherung bei jeder Änderung**: Einstellungen → Versionen → Wiederherstellen
+- **Protokoll**: Kategorien, Stufen, Suche, Zeitraum, Export CSV/JSON
+- **Systemstatus**: Version, Laufzeit, CPU, RAM, Speicher, Datenbestand
+- **Sprachen**: Deutsch, Englisch (vollständig), Französisch, Spanisch, Italienisch, Niederländisch (Bedienoberfläche) – pro Benutzer wählbar
+- Datenbank-Migrationen laufen beim Start automatisch, bestehende Daten bleiben erhalten
+
 ## Widgets
 
 | Typ | Datenquellen |

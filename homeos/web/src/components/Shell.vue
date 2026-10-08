@@ -1,12 +1,17 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, inject } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { api } from '../api.js'
 import Board from './Board.vue'
 import Sheet from './Sheet.vue'
 import SourceManager from './SourceManager.vue'
+import Settings from './settings/Settings.vue'
 
-defineProps({ user: Object })
+const { t } = useI18n()
+const user = inject('user')
+const can = p => user.value?.permissions?.includes(p)
 const emit = defineEmits(['logout'])
+const showSettings = ref(false)
 
 const dashboards = ref([])
 const activeId = ref(null)
@@ -31,7 +36,7 @@ async function loadDashboards() {
 }
 
 async function loadSources() {
-  sources.value = await api('GET', '/sources')
+  sources.value = can('sources.view') ? await api('GET', '/sources') : []
 }
 
 onMounted(async () => {
@@ -83,14 +88,15 @@ async function saveDashboard() {
   select(d.id)
 }
 async function cycleStyle() {
-  const keys = Object.keys(meta.value.dashboardStyles)
+  if (!can('dashboards.edit')) return
+  const keys = meta.value.dashboardStyles
   const next = keys[(keys.indexOf(active.value.style) + 1) % keys.length]
   await api('PUT', `/dashboards/${active.value.id}`, { style: next })
   active.value.style = next
 }
 
 async function deleteDashboard() {
-  if (!confirm(`Dashboard „${dashForm.value.name}“ mit allen Widgets löschen?`)) return
+  if (!confirm(t('dashboard.confirm_delete', { name: dashForm.value.name }))) return
   await api('DELETE', `/dashboards/${dashForm.value.id}`)
   dashForm.value = null
   await loadDashboards()
@@ -102,60 +108,65 @@ const icons = ['⌂', '◈', '⚡', '☀', '♨', '☎', '♫', '⚙', '⛨', '�
 <template>
   <div class="shell" :class="{ 'no-rail': railHidden }" @touchstart.passive="onTouchStart" @touchend.passive="onTouchEnd">
     <nav v-show="!railHidden" class="rail">
-      <button class="tab" aria-label="Seitenleiste ausblenden" @click="toggleRail"><span class="ico">⟨</span><span class="nm">Ausblenden</span></button>
+      <button class="tab" :aria-label="t('nav.hide')" @click="toggleRail"><span class="ico">⟨</span><span class="nm">{{ t('nav.hide') }}</span></button>
       <button v-for="d in dashboards" :key="d.id" class="tab" :class="{ on: d.id === activeId }" @click="select(d.id)">
         <span class="ico">{{ d.icon }}</span><span class="nm">{{ d.name }}</span>
       </button>
-      <button v-if="editing" class="tab add" @click="newDashboard"><span class="ico">＋</span><span class="nm">Neu</span></button>
+      <button v-if="editing" class="tab add" @click="newDashboard"><span class="ico">＋</span><span class="nm">{{ t('common.new') }}</span></button>
       <div class="spacer" />
-      <button class="tab" @click="showSources = true"><span class="ico">⌬</span><span class="nm">Quellen</span></button>
-      <button class="tab" @click="fullscreen"><span class="ico">⛶</span><span class="nm">Vollbild</span></button>
-      <button class="tab" @click="emit('logout')"><span class="ico">⏻</span><span class="nm">Abmelden</span></button>
+      <button v-if="can('sources.view')" class="tab" @click="showSources = true"><span class="ico">⌬</span><span class="nm">{{ t('nav.sources') }}</span></button>
+      <button class="tab" @click="showSettings = true"><span class="ico">⚙</span><span class="nm">{{ t('nav.settings') }}</span></button>
+      <button class="tab" @click="fullscreen"><span class="ico">⛶</span><span class="nm">{{ t('nav.fullscreen') }}</span></button>
+      <button class="tab" @click="emit('logout')"><span class="ico">⏻</span><span class="nm">{{ t('nav.logout') }}</span></button>
     </nav>
 
     <section class="main">
       <header class="top">
         <div>
-          <div class="label">Dashboard</div>
+          <div class="label">{{ t('dashboard.label') }}</div>
           <h1>{{ active?.name ?? '—' }}</h1>
         </div>
         <div class="actions">
-          <button v-if="railHidden" class="btn icon" aria-label="Seitenleiste einblenden" @click="toggleRail">☰</button>
-          <button v-if="active && meta" class="btn" @click="cycleStyle">◐ {{ meta.dashboardStyles[active.style] }}</button>
-          <button v-if="editing && active" class="btn" @click="editDashboard">Dashboard ✎</button>
-          <button class="btn" :class="{ active: editing, primary: editing }" @click="editing = !editing">
-            {{ editing ? 'Fertig' : '✎ Bearbeiten' }}
+          <button v-if="railHidden" class="btn icon" :aria-label="t('nav.show')" @click="toggleRail">☰</button>
+          <button v-if="active && meta" class="btn" @click="cycleStyle">◐ {{ t('styles.' + active.style) }}</button>
+          <button v-if="editing && active" class="btn" @click="editDashboard">{{ t('dashboard.label') }} ✎</button>
+          <button v-if="can('dashboards.edit')" class="btn" :class="{ active: editing, primary: editing }" @click="editing = !editing">
+            {{ editing ? t('common.done') : '✎ ' + t('common.edit') }}
           </button>
         </div>
       </header>
 
       <Board v-if="active && meta" :key="active.id" :dashboard="active" :editing="editing" :meta="meta" :sources="sources" />
-      <p v-else-if="meta" class="empty">Noch kein Dashboard. Tippe auf „Bearbeiten“ und dann „＋ Neu“.</p>
+      <p v-else-if="meta" class="empty">{{ t('dashboard.empty') }}</p>
     </section>
 
-    <Sheet v-if="showSources" title="Datenquellen" @close="showSources = false">
+    <Sheet v-if="showSources" :title="t('sources.title')" @close="showSources = false">
       <SourceManager :meta="meta" :sources="sources" @changed="loadSources" />
     </Sheet>
 
-    <Sheet v-if="dashForm" :title="dashForm.id ? 'Dashboard bearbeiten' : 'Neues Dashboard'" @close="dashForm = null">
+    <Sheet v-if="showSettings" :title="t('settings.title')" wide @close="showSettings = false">
+      <Settings :meta="meta" @changed="loadDashboards" />
+    </Sheet>
+
+    <Sheet v-if="dashForm" :title="dashForm.id ? t('dashboard.edit') : t('dashboard.new')" @close="dashForm = null">
       <form @submit.prevent="saveDashboard">
-        <div class="field"><label>Name</label><input v-model="dashForm.name" required placeholder="z. B. Küche, Energie, Netzwerk"></div>
+        <div class="field"><label>{{ t('common.name') }}</label><input v-model="dashForm.name" required :placeholder="t('dashboard.name_placeholder')"></div>
         <div class="field">
-          <label>Design</label>
+          <label>{{ t('dashboard.style') }}</label>
           <div class="styles">
-            <button v-for="(l, k) in meta.dashboardStyles" :key="k" type="button" class="btn" :class="{ active: dashForm.style === k }" @click="dashForm.style = k">{{ l }}</button>
+            <button v-for="k in meta.dashboardStyles" :key="k" type="button" class="btn" :class="{ active: dashForm.style === k }" @click="dashForm.style = k">{{ t('styles.' + k) }}</button>
           </div>
         </div>
         <div class="field">
-          <label>Symbol</label>
+          <label>{{ t('dashboard.icon') }}</label>
           <div class="icons">
             <button v-for="i in icons" :key="i" type="button" class="btn icon" :class="{ active: dashForm.icon === i }" @click="dashForm.icon = i">{{ i }}</button>
           </div>
         </div>
         <div class="row">
-          <button v-if="dashForm.id" type="button" class="btn danger" @click="deleteDashboard">Löschen</button>
+          <button v-if="dashForm.id" type="button" class="btn danger" @click="deleteDashboard">{{ t('common.delete') }}</button>
           <span class="grow" />
-          <button class="btn primary">Speichern</button>
+          <button class="btn primary">{{ t('common.save') }}</button>
         </div>
       </form>
     </Sheet>

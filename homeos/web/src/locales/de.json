@@ -1,0 +1,284 @@
+{
+  "app": {
+    "name": "SmartBoard"
+  },
+  "common": {
+    "save": "Speichern",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "done": "Fertig",
+    "new": "Neu",
+    "name": "Name",
+    "back": "Zurück",
+    "close": "Schließen",
+    "saved": "Gespeichert"
+  },
+  "nav": {
+    "hide": "Ausblenden",
+    "show": "Seitenleiste einblenden",
+    "sources": "Quellen",
+    "settings": "Einstellungen",
+    "fullscreen": "Vollbild",
+    "logout": "Abmelden"
+  },
+  "login": {
+    "user": "Benutzer",
+    "password": "Passwort",
+    "pin": "PIN",
+    "submit": "Anmelden"
+  },
+  "dashboard": {
+    "label": "Dashboard",
+    "new": "Neues Dashboard",
+    "edit": "Dashboard bearbeiten",
+    "style": "Design",
+    "icon": "Symbol",
+    "name_placeholder": "z. B. Küche, Energie, Netzwerk",
+    "empty": "Noch kein Dashboard. Tippe auf „Bearbeiten“ und dann „＋ Neu“.",
+    "confirm_delete": "Dashboard „{name}“ mit allen Widgets löschen?"
+  },
+  "styles": {
+    "seamless": "Nahtlos",
+    "tiles": "Kacheln (HUD)",
+    "glass": "Glas"
+  },
+  "widget": {
+    "add": "Widget hinzufügen",
+    "new": "Neues Widget",
+    "edit": "Widget bearbeiten",
+    "type": "Typ",
+    "title": "Titel",
+    "title_placeholder": "z. B. Wohnzimmer",
+    "source": "Datenquelle",
+    "refresh": "Aktualisierung (Sekunden)",
+    "need_source": "Erst unter „Quellen“ eine passende Datenquelle anlegen: {types}",
+    "confirm_delete": "Widget löschen?",
+    "no_url": "Keine URL"
+  },
+  "widgetTypes": {
+    "clock": "Uhr & Datum",
+    "text": "Text / Notiz",
+    "kpi": "Wert (KPI)",
+    "gauge": "Anzeige (Gauge)",
+    "chart": "Diagramm",
+    "calendar": "Termine",
+    "switch": "Schalter",
+    "iframe": "Webseite einbetten"
+  },
+  "fields": {
+    "value": "Wert",
+    "text": "Text",
+    "path": "JSON-Pfad (z. B. data.temp)",
+    "entity_id": "Entity-ID (z. B. sensor.wohnzimmer_temp)",
+    "unit": "Einheit",
+    "decimals": "Nachkommastellen",
+    "color": "Farbe",
+    "min": "Minimum",
+    "max": "Maximum",
+    "values": "Werte, kommagetrennt",
+    "style": "Darstellung",
+    "limit": "Anzahl",
+    "url": "URL"
+  },
+  "chartStyles": {
+    "line": "Linie (Neon)",
+    "wave": "Doppelwelle",
+    "bar": "Balken",
+    "spectrum": "Spektrum (bunt)"
+  },
+  "sourceTypes": {
+    "static": "Fester Wert",
+    "rest_json": "REST / JSON",
+    "home_assistant": "Home Assistant",
+    "ical": "Kalender (iCal)"
+  },
+  "sourceFields": {
+    "url": "URL",
+    "headers": "Header (JSON)",
+    "token": "Long-Lived Access Token"
+  },
+  "sources": {
+    "title": "Datenquellen",
+    "new": "Neue Quelle",
+    "empty": "Noch keine Datenquellen. Ohne Quelle zeigen Widgets feste Werte.",
+    "name_placeholder": "z. B. Home Assistant Wohnung",
+    "headers_invalid": "Header sind kein gültiges JSON",
+    "confirm_delete": "Quelle „{name}“ löschen? Widgets verlieren die Verbindung."
+  },
+  "calendar": {
+    "today": "Heute",
+    "tomorrow": "Morgen",
+    "all_day": "ganztägig",
+    "none": "Keine Termine"
+  },
+  "switch": {
+    "on": "An",
+    "off": "Aus"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "language": "Sprache",
+    "tabs": {
+      "profile": "Profil",
+      "users": "Benutzer",
+      "versions": "Versionen",
+      "logs": "Protokoll",
+      "system": "System"
+    }
+  },
+  "profile": {
+    "title": "Profil",
+    "password": "Passwort",
+    "current_password": "Aktuelles Passwort",
+    "new_password": "Neues Passwort (min. 8 Zeichen)",
+    "change_password": "Passwort ändern",
+    "pin": "PIN",
+    "pin_set": "PIN ist gesetzt – Anmeldung per Ziffernfeld möglich.",
+    "pin_none": "Keine PIN gesetzt.",
+    "new_pin": "Neue PIN (4–8 Ziffern)",
+    "remove_pin": "PIN entfernen"
+  },
+  "users": {
+    "name": "Benutzername",
+    "display_name": "Anzeigename",
+    "role": "Rolle",
+    "status": "Status",
+    "active": "Aktiv",
+    "disabled": "Gesperrt",
+    "new": "Benutzer anlegen",
+    "reset_password": "Neues Passwort setzen (optional)",
+    "confirm_delete": "Benutzer „{name}“ löschen?"
+  },
+  "roles": {
+    "admin": "Administrator",
+    "user": "Benutzer",
+    "restricted": "Eingeschränkt",
+    "guest": "Gast"
+  },
+  "roles_desc": {
+    "admin": "Alle Rechte inkl. Benutzer und Wiederherstellung",
+    "user": "Dashboards bearbeiten, Geräte steuern, Versionen ansehen",
+    "restricted": "Dashboards ansehen und Geräte steuern",
+    "guest": "Nur ansehen"
+  },
+  "versions": {
+    "hint": "Bei jeder Änderung wird automatisch eine Sicherung angelegt. Wiederherstellen setzt Dashboards, Widgets und Quellen auf den Stand nach dieser Änderung zurück – vorher wird der aktuelle Stand ebenfalls gesichert.",
+    "restore": "Wiederherstellen",
+    "restored": "Stand wiederhergestellt.",
+    "confirm_restore": "Konfiguration auf den Stand vom {date} zurücksetzen?",
+    "empty": "Noch keine Versionen.",
+    "entity": {
+      "dashboard": "Dashboard",
+      "widget": "Widget",
+      "source": "Quelle",
+      "system": "System"
+    },
+    "action": {
+      "create": "angelegt",
+      "update": "geändert",
+      "delete": "gelöscht",
+      "layout": "Anordnung geändert",
+      "restore": "wiederhergestellt"
+    }
+  },
+  "logs": {
+    "category": "Kategorie",
+    "level": "Stufe",
+    "all_categories": "Alle Kategorien",
+    "all_levels": "Alle Stufen",
+    "search": "Suche …",
+    "from": "Von",
+    "to": "Bis",
+    "apply": "Filtern",
+    "empty": "Keine Einträge.",
+    "categories": {
+      "system": "System",
+      "network": "Netzwerk",
+      "bluetooth": "Bluetooth",
+      "plugins": "Plugins",
+      "devices": "Geräte",
+      "automations": "Automationen",
+      "users": "Benutzer",
+      "security": "Sicherheit",
+      "updates": "Updates",
+      "errors": "Fehler"
+    },
+    "levels": {
+      "debug": "Debug",
+      "info": "Info",
+      "warning": "Warnung",
+      "error": "Fehler",
+      "critical": "Kritisch"
+    },
+    "messages": {
+      "login_success": "Anmeldung erfolgreich",
+      "login_failed": "Anmeldung fehlgeschlagen",
+      "logout": "Abgemeldet",
+      "password_changed": "Passwort geändert",
+      "password_reset": "Passwort zurückgesetzt",
+      "pin_changed": "PIN geändert",
+      "user_created": "Benutzer angelegt",
+      "user_updated": "Benutzer geändert",
+      "user_deleted": "Benutzer gelöscht",
+      "version_restored": "Version wiederhergestellt",
+      "system_started": "System gestartet",
+      "device_toggled": "Gerät geschaltet",
+      "device_action_failed": "Gerät schalten fehlgeschlagen",
+      "http_error": "Serverfehler"
+    }
+  },
+  "system": {
+    "version": "Version",
+    "uptime": "Laufzeit System",
+    "app_uptime": "Laufzeit SmartBoard",
+    "cpu": "CPU-Last (1 min)",
+    "load": "{cpus} Kerne",
+    "memory": "Arbeitsspeicher",
+    "process": "Prozess",
+    "storage": "Speicher",
+    "free": "frei",
+    "data": "Daten",
+    "counts": {
+      "users": "Benutzer",
+      "dashboards": "Dashboards",
+      "widgets": "Widgets",
+      "sources": "Quellen",
+      "versions": "Versionen",
+      "logs": "Protokolleinträge"
+    }
+  },
+  "errors": {
+    "generic": "Fehler: {code}",
+    "internal": "Interner Fehler",
+    "unauthorized": "Nicht angemeldet",
+    "forbidden": "Keine Berechtigung",
+    "not_found": "Nicht gefunden",
+    "validation": "Ungültige Eingabe",
+    "login": {
+      "invalid": "Benutzer, Passwort oder PIN falsch",
+      "blocked": "Zu viele Versuche – bitte 15 Minuten warten"
+    },
+    "password": {
+      "too_short": "Passwort zu kurz (min. 8 Zeichen)",
+      "wrong": "Aktuelles Passwort falsch"
+    },
+    "pin": {
+      "invalid": "PIN muss 4–8 Ziffern haben"
+    },
+    "user": {
+      "exists": "Benutzername existiert bereits",
+      "last_admin": "Der letzte Administrator kann nicht entfernt werden",
+      "delete_self": "Eigenes Konto kann nicht gelöscht werden"
+    },
+    "locale": {
+      "invalid": "Unbekannte Sprache"
+    },
+    "source": {
+      "failed": "Datenquelle nicht erreichbar",
+      "type_invalid": "Unbekannter Quellentyp"
+    },
+    "widget": {
+      "type_invalid": "Unbekannter Widget-Typ"
+    }
+  }
+}

@@ -4,7 +4,7 @@ defineProps({ widget: Object, editing: Boolean })
 
 <template>
   <iframe v-if="widget.config.url" :src="widget.config.url" :style="{ pointerEvents: editing ? 'none' : 'auto' }" sandbox="allow-scripts allow-same-origin allow-forms" referrerpolicy="no-referrer" />
-  <p v-else class="label">Keine URL</p>
+  <p v-else class="label">{{ $t('widget.no_url') }}</p>
 </template>
 
 <style scoped>

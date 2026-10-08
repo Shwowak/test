@@ -1,6 +1,10 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { api } from '../api.js'
+import { useI18n } from 'vue-i18n'
+import { errorText } from '../i18n.js'
+
+const { t } = useI18n()
 
 const props = defineProps({ widget: Object, dashboardId: Number, meta: Object, sources: Array })
 const emit = defineEmits(['saved'])
@@ -35,12 +39,12 @@ async function save() {
     else await api('POST', `/dashboards/${props.dashboardId}/widgets`, body)
     emit('saved')
   } catch (e) {
-    error.value = e.message
+    error.value = errorText(e)
   }
 }
 
 async function remove() {
-  if (!confirm('Widget löschen?')) return
+  if (!confirm(t('widget.confirm_delete'))) return
   await api('DELETE', `/widgets/${form.value.id}`)
   emit('saved')
 }
@@ -49,33 +53,33 @@ async function remove() {
 <template>
   <form @submit.prevent="save">
     <div class="field">
-      <label>Typ</label>
+      <label>{{ t('widget.type') }}</label>
       <div class="types">
         <button
-          v-for="(t, key) in meta.widgetTypes" :key="key" type="button" class="btn"
+          v-for="(_, key) in meta.widgetTypes" :key="key" type="button" class="btn"
           :class="{ active: form.type === key }" @click="form.type = key; onTypeChange()"
-        >{{ t.label }}</button>
+        >{{ $t('widgetTypes.' + key) }}</button>
       </div>
     </div>
 
-    <div class="field"><label>Titel</label><input v-model="form.title" placeholder="z. B. Wohnzimmer"></div>
+    <div class="field"><label>{{ t('widget.title') }}</label><input v-model="form.title" :placeholder="t('widget.title_placeholder')"></div>
 
     <div v-if="typeDef.sources.length" class="field">
-      <label>Datenquelle</label>
+      <label>{{ t('widget.source') }}</label>
       <select v-model="form.source_id">
-        <option v-if="typeDef.sources.includes('static')" :value="null">Fester Wert</option>
-        <option v-for="s in allowedSources" :key="s.id" :value="s.id">{{ s.name }} ({{ meta.sourceTypes[s.type].label }})</option>
+        <option v-if="typeDef.sources.includes('static')" :value="null">{{ t('sourceTypes.static') }}</option>
+        <option v-for="s in allowedSources" :key="s.id" :value="s.id">{{ s.name }} ({{ t('sourceTypes.' + s.type) }})</option>
       </select>
       <small v-if="!allowedSources.length && !typeDef.sources.includes('static')" class="hint">
-        Erst unter „Quellen“ eine passende Datenquelle anlegen: {{ typeDef.sources.map(s => meta.sourceTypes[s].label).join(', ') }}
+        {{ t('widget.need_source', { types: typeDef.sources.map(s => t('sourceTypes.' + s)).join(', ') }) }}
       </small>
     </div>
 
     <div v-for="f in visibleFields" :key="f.key" class="field">
-      <label>{{ f.label }}</label>
+      <label>{{ t('fields.' + f.key) }}</label>
       <textarea v-if="f.type === 'textarea'" v-model="form.config[f.key]" />
       <select v-else-if="f.type === 'select'" v-model="form.config[f.key]">
-        <option v-for="(l, v) in f.options" :key="v" :value="v">{{ l }}</option>
+        <option v-for="v in f.options" :key="v" :value="v">{{ t('chartStyles.' + v) }}</option>
       </select>
       <input v-else-if="f.type === 'color'" v-model="form.config[f.key]" type="color">
       <input v-else-if="f.type === 'number'" v-model="form.config[f.key]" type="number" step="any" inputmode="decimal">
@@ -83,15 +87,15 @@ async function remove() {
     </div>
 
     <div class="field">
-      <label>Aktualisierung (Sekunden)</label>
+      <label>{{ t('widget.refresh') }}</label>
       <input v-model.number="form.config.refresh" type="number" min="5" placeholder="30">
     </div>
 
     <p v-if="error" class="error">{{ error }}</p>
     <div class="row">
-      <button v-if="form.id" type="button" class="btn danger" @click="remove">Löschen</button>
+      <button v-if="form.id" type="button" class="btn danger" @click="remove">{{ t('common.delete') }}</button>
       <span class="grow" />
-      <button class="btn primary">Speichern</button>
+      <button class="btn primary">{{ t('common.save') }}</button>
     </div>
   </form>
 </template>

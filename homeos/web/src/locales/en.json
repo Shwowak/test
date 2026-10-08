@@ -1,0 +1,284 @@
+{
+  "app": {
+    "name": "SmartBoard"
+  },
+  "common": {
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "done": "Done",
+    "new": "New",
+    "name": "Name",
+    "back": "Back",
+    "close": "Close",
+    "saved": "Saved"
+  },
+  "nav": {
+    "hide": "Hide",
+    "show": "Show sidebar",
+    "sources": "Sources",
+    "settings": "Settings",
+    "fullscreen": "Fullscreen",
+    "logout": "Log out"
+  },
+  "login": {
+    "user": "User",
+    "password": "Password",
+    "pin": "PIN",
+    "submit": "Sign in"
+  },
+  "dashboard": {
+    "label": "Dashboard",
+    "new": "New dashboard",
+    "edit": "Edit dashboard",
+    "style": "Style",
+    "icon": "Icon",
+    "name_placeholder": "e.g. Kitchen, Energy, Network",
+    "empty": "No dashboard yet. Tap “Edit”, then “＋ New”.",
+    "confirm_delete": "Delete dashboard “{name}” and all its widgets?"
+  },
+  "styles": {
+    "seamless": "Seamless",
+    "tiles": "Tiles (HUD)",
+    "glass": "Glass"
+  },
+  "widget": {
+    "add": "Add widget",
+    "new": "New widget",
+    "edit": "Edit widget",
+    "type": "Type",
+    "title": "Title",
+    "title_placeholder": "e.g. Living room",
+    "source": "Data source",
+    "refresh": "Refresh (seconds)",
+    "need_source": "Create a matching data source under “Sources” first: {types}",
+    "confirm_delete": "Delete widget?",
+    "no_url": "No URL"
+  },
+  "widgetTypes": {
+    "clock": "Clock & date",
+    "text": "Text / note",
+    "kpi": "Value (KPI)",
+    "gauge": "Gauge",
+    "chart": "Chart",
+    "calendar": "Events",
+    "switch": "Switch",
+    "iframe": "Embed website"
+  },
+  "fields": {
+    "value": "Value",
+    "text": "Text",
+    "path": "JSON path (e.g. data.temp)",
+    "entity_id": "Entity ID (e.g. sensor.living_room_temp)",
+    "unit": "Unit",
+    "decimals": "Decimals",
+    "color": "Color",
+    "min": "Minimum",
+    "max": "Maximum",
+    "values": "Values, comma separated",
+    "style": "Style",
+    "limit": "Count",
+    "url": "URL"
+  },
+  "chartStyles": {
+    "line": "Line (neon)",
+    "wave": "Double wave",
+    "bar": "Bars",
+    "spectrum": "Spectrum (colorful)"
+  },
+  "sourceTypes": {
+    "static": "Fixed value",
+    "rest_json": "REST / JSON",
+    "home_assistant": "Home Assistant",
+    "ical": "Calendar (iCal)"
+  },
+  "sourceFields": {
+    "url": "URL",
+    "headers": "Headers (JSON)",
+    "token": "Long-lived access token"
+  },
+  "sources": {
+    "title": "Data sources",
+    "new": "New source",
+    "empty": "No data sources yet. Without a source, widgets show fixed values.",
+    "name_placeholder": "e.g. Home Assistant flat",
+    "headers_invalid": "Headers are not valid JSON",
+    "confirm_delete": "Delete source “{name}”? Widgets will lose their connection."
+  },
+  "calendar": {
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "all_day": "all day",
+    "none": "No events"
+  },
+  "switch": {
+    "on": "On",
+    "off": "Off"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "tabs": {
+      "profile": "Profile",
+      "users": "Users",
+      "versions": "Versions",
+      "logs": "Logs",
+      "system": "System"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "password": "Password",
+    "current_password": "Current password",
+    "new_password": "New password (min. 8 characters)",
+    "change_password": "Change password",
+    "pin": "PIN",
+    "pin_set": "PIN is set – keypad login available.",
+    "pin_none": "No PIN set.",
+    "new_pin": "New PIN (4–8 digits)",
+    "remove_pin": "Remove PIN"
+  },
+  "users": {
+    "name": "Username",
+    "display_name": "Display name",
+    "role": "Role",
+    "status": "Status",
+    "active": "Active",
+    "disabled": "Disabled",
+    "new": "Add user",
+    "reset_password": "Set new password (optional)",
+    "confirm_delete": "Delete user “{name}”?"
+  },
+  "roles": {
+    "admin": "Administrator",
+    "user": "User",
+    "restricted": "Restricted",
+    "guest": "Guest"
+  },
+  "roles_desc": {
+    "admin": "All permissions incl. users and restore",
+    "user": "Edit dashboards, control devices, view versions",
+    "restricted": "View dashboards and control devices",
+    "guest": "View only"
+  },
+  "versions": {
+    "hint": "A backup is created automatically on every change. Restoring resets dashboards, widgets and sources to the state after that change – the current state is backed up first.",
+    "restore": "Restore",
+    "restored": "State restored.",
+    "confirm_restore": "Reset configuration to the state of {date}?",
+    "empty": "No versions yet.",
+    "entity": {
+      "dashboard": "Dashboard",
+      "widget": "Widget",
+      "source": "Source",
+      "system": "System"
+    },
+    "action": {
+      "create": "created",
+      "update": "changed",
+      "delete": "deleted",
+      "layout": "layout changed",
+      "restore": "restored"
+    }
+  },
+  "logs": {
+    "category": "Category",
+    "level": "Level",
+    "all_categories": "All categories",
+    "all_levels": "All levels",
+    "search": "Search …",
+    "from": "From",
+    "to": "To",
+    "apply": "Filter",
+    "empty": "No entries.",
+    "categories": {
+      "system": "System",
+      "network": "Network",
+      "bluetooth": "Bluetooth",
+      "plugins": "Plugins",
+      "devices": "Devices",
+      "automations": "Automations",
+      "users": "Users",
+      "security": "Security",
+      "updates": "Updates",
+      "errors": "Errors"
+    },
+    "levels": {
+      "debug": "Debug",
+      "info": "Info",
+      "warning": "Warning",
+      "error": "Error",
+      "critical": "Critical"
+    },
+    "messages": {
+      "login_success": "Signed in",
+      "login_failed": "Sign-in failed",
+      "logout": "Signed out",
+      "password_changed": "Password changed",
+      "password_reset": "Password reset",
+      "pin_changed": "PIN changed",
+      "user_created": "User created",
+      "user_updated": "User updated",
+      "user_deleted": "User deleted",
+      "version_restored": "Version restored",
+      "system_started": "System started",
+      "device_toggled": "Device toggled",
+      "device_action_failed": "Device action failed",
+      "http_error": "Server error"
+    }
+  },
+  "system": {
+    "version": "Version",
+    "uptime": "System uptime",
+    "app_uptime": "SmartBoard uptime",
+    "cpu": "CPU load (1 min)",
+    "load": "{cpus} cores",
+    "memory": "Memory",
+    "process": "Process",
+    "storage": "Storage",
+    "free": "free",
+    "data": "Data",
+    "counts": {
+      "users": "Users",
+      "dashboards": "Dashboards",
+      "widgets": "Widgets",
+      "sources": "Sources",
+      "versions": "Versions",
+      "logs": "Log entries"
+    }
+  },
+  "errors": {
+    "generic": "Error: {code}",
+    "internal": "Internal error",
+    "unauthorized": "Not signed in",
+    "forbidden": "Permission denied",
+    "not_found": "Not found",
+    "validation": "Invalid input",
+    "login": {
+      "invalid": "Wrong user, password or PIN",
+      "blocked": "Too many attempts – please wait 15 minutes"
+    },
+    "password": {
+      "too_short": "Password too short (min. 8 characters)",
+      "wrong": "Current password is wrong"
+    },
+    "pin": {
+      "invalid": "PIN must have 4–8 digits"
+    },
+    "user": {
+      "exists": "Username already exists",
+      "last_admin": "The last administrator cannot be removed",
+      "delete_self": "You cannot delete your own account"
+    },
+    "locale": {
+      "invalid": "Unknown language"
+    },
+    "source": {
+      "failed": "Data source unreachable",
+      "type_invalid": "Unknown source type"
+    },
+    "widget": {
+      "type_invalid": "Unknown widget type"
+    }
+  }
+}

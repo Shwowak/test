@@ -1,22 +1,19 @@
 export const SOURCE_TYPES = {
-  static: { label: 'Fester Wert', fields: [] },
+  static: { fields: [] },
   rest_json: {
-    label: 'REST / JSON',
     fields: [
-      { key: 'url', label: 'URL', type: 'url', required: true },
-      { key: 'headers', label: 'Header (JSON)', type: 'json' },
+      { key: 'url', type: 'url', required: true },
+      { key: 'headers', type: 'json' },
     ],
   },
   home_assistant: {
-    label: 'Home Assistant',
     fields: [
-      { key: 'url', label: 'URL (z. B. http://homeassistant.local:8123)', type: 'url', required: true },
-      { key: 'token', label: 'Long-Lived Access Token', type: 'secret', required: true },
+      { key: 'url', type: 'url', required: true },
+      { key: 'token', type: 'secret', required: true },
     ],
   },
   ical: {
-    label: 'Kalender (iCal-URL)',
-    fields: [{ key: 'url', label: 'iCal-URL (.ics)', type: 'url', required: true }],
+    fields: [{ key: 'url', type: 'url', required: true }],
   },
 }
 
@@ -95,7 +92,7 @@ export async function resolve(widget, source) {
     return Array.isArray(v) ? { values: v.map(Number), unit: wc.unit ?? '' } : { value: v, unit: wc.unit ?? '' }
   }
   if (source.type === 'home_assistant') {
-    if (!wc.entity_id) throw new Error('Entity-ID fehlt')
+    if (!wc.entity_id) throw new Error('entity_id missing')
     const base = sc.url.replace(/\/$/, '')
     const st = await fetchCached(`ha:${source.id}:${wc.entity_id}`, 5000, () =>
       getJson(`${base}/api/states/${encodeURIComponent(wc.entity_id)}`, { Authorization: `Bearer ${sc.token}` }))
@@ -112,11 +109,11 @@ export async function resolve(widget, source) {
       .sort((a, b) => a.start.localeCompare(b.start)).slice(0, wc.limit ?? 8)
     return { events }
   }
-  throw new Error(`Unbekannter Quellentyp ${source.type}`)
+  throw new Error(`unknown source type ${source.type}`)
 }
 
 export async function callService(source, domain, service, data) {
-  if (source?.type !== 'home_assistant') throw new Error('Schalten nur mit Home Assistant')
+  if (source?.type !== 'home_assistant') throw new Error('switch requires home_assistant')
   const base = source.config.url.replace(/\/$/, '')
   const res = await fetch(`${base}/api/services/${encodeURIComponent(domain)}/${encodeURIComponent(service)}`, {
     method: 'POST',
