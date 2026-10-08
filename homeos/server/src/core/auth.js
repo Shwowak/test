@@ -4,14 +4,15 @@ import { log } from './logger.js'
 
 export const PERMISSIONS = [
   'dashboards.view', 'dashboards.edit', 'sources.view', 'sources.edit', 'devices.view', 'devices.control', 'devices.manage',
+  'notifications.view', 'notifications.manage', 'automations.view', 'automations.manage',
   'users.manage', 'logs.view', 'versions.view', 'versions.restore', 'system.view', 'profile.edit',
 ]
 
 export const ROLES = {
   admin: ['*'],
-  user: ['dashboards.view', 'dashboards.edit', 'sources.view', 'devices.view', 'devices.control', 'devices.manage', 'versions.view', 'system.view', 'profile.edit'],
-  restricted: ['dashboards.view', 'devices.view', 'devices.control', 'profile.edit'],
-  guest: ['dashboards.view', 'devices.view'],
+  user: ['dashboards.view', 'dashboards.edit', 'sources.view', 'devices.view', 'devices.control', 'devices.manage', 'notifications.view', 'notifications.manage', 'automations.view', 'automations.manage', 'versions.view', 'system.view', 'profile.edit'],
+  restricted: ['dashboards.view', 'devices.view', 'devices.control', 'notifications.view', 'notifications.manage', 'profile.edit'],
+  guest: ['dashboards.view', 'devices.view', 'notifications.view'],
 }
 
 export const can = (user, perm) => !!user && (ROLES[user.role] ?? []).some(p => p === '*' || p === perm)

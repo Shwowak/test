@@ -61,6 +61,19 @@ const MIGRATIONS = [
       last_seen TEXT, adopted INTEGER NOT NULL DEFAULT 0, hidden INTEGER NOT NULL DEFAULT 0,
       UNIQUE (integration_id, native_id));
     CREATE INDEX IF NOT EXISTS devices_room ON devices(room_id);`),
+  () => db.exec(`
+    CREATE TABLE IF NOT EXISTS notifications (
+      id INTEGER PRIMARY KEY, ts TEXT NOT NULL, level TEXT NOT NULL, title TEXT NOT NULL, message TEXT,
+      source TEXT NOT NULL DEFAULT 'system', data TEXT, acknowledged_at TEXT, acknowledged_by INTEGER);
+    CREATE INDEX IF NOT EXISTS notifications_open ON notifications(acknowledged_at, level);
+    CREATE TABLE IF NOT EXISTS automations (
+      id INTEGER PRIMARY KEY, name TEXT NOT NULL, enabled INTEGER NOT NULL DEFAULT 1,
+      triggers TEXT NOT NULL DEFAULT '[]', conditions TEXT NOT NULL DEFAULT '[]', actions TEXT NOT NULL DEFAULT '[]',
+      cooldown INTEGER NOT NULL DEFAULT 0, last_run TEXT, run_count INTEGER NOT NULL DEFAULT 0);
+    CREATE TABLE IF NOT EXISTS automation_runs (
+      id INTEGER PRIMARY KEY, automation_id INTEGER NOT NULL REFERENCES automations(id) ON DELETE CASCADE,
+      ts TEXT NOT NULL, trigger TEXT, ok INTEGER NOT NULL, error TEXT, duration_ms INTEGER);
+    CREATE INDEX IF NOT EXISTS automation_runs_a ON automation_runs(automation_id, id);`),
 ]
 
 export function migrate() {

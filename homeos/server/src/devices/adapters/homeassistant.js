@@ -139,8 +139,11 @@ export default class HomeAssistantAdapter {
       return this.reconnect()
     }
     this.ws = ws
+    const guard = setTimeout(() => { if (ws.readyState !== 1) { ws.onclose = null; try { ws.close() } catch {} ; this.ctx.setStatus('disconnected'); this.reconnect() } }, 10000)
+    ws.onopen = () => clearTimeout(guard)
     ws.onmessage = ev => this.onMessage(JSON.parse(ev.data))
     ws.onclose = () => {
+      clearTimeout(guard)
       this.ctx.setStatus('disconnected')
       for (const p of this.pending.values()) p.reject(new Error('closed'))
       this.pending.clear()

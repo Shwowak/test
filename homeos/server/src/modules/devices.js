@@ -211,7 +211,8 @@ export default async function devicesModule(app) {
     const user = userFromToken(req.cookies.homeos_session)
     if (!user || !can(user, 'devices.view')) return socket.close(4401, 'unauthorized')
     const send = type => payload => socket.readyState === 1 && socket.send(JSON.stringify({ type, payload }))
-    const handlers = { 'device.state': send('device.state'), 'device.discovered': send('device.discovered'), 'integration.status': send('integration.status'), 'config.changed': send('config.changed') }
+    const handlers = { 'device.state': send('device.state'), 'device.discovered': send('device.discovered'), 'integration.status': send('integration.status'), 'config.changed': send('config.changed'),
+      notification: send('notification'), 'notification.ack': send('notification.ack'), 'ui.command': send('ui.command'), 'automation.ran': send('automation.ran') }
     for (const [e, h] of Object.entries(handlers)) bus.on(e, h)
     const ping = setInterval(() => socket.readyState === 1 && socket.ping(), 30000)
     socket.on('close', () => {

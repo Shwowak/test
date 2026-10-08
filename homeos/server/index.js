@@ -17,6 +17,8 @@ import sourcesModule from './src/modules/sources.js'
 import adminModule from './src/modules/admin.js'
 import devicesModule from './src/modules/devices.js'
 import { startAll } from './src/devices/engine.js'
+import automationsModule from './src/modules/automations.js'
+import { startAutomations } from './src/automation/engine.js'
 
 seedAdmin()
 seedDemo()
@@ -48,7 +50,7 @@ app.register(async api => {
     if (!user) return reply.code(401).send({ error: 'unauthorized' })
     req.user = user
   })
-  for (const m of [authModule, usersModule, dashboardsModule, sourcesModule, adminModule, devicesModule]) await api.register(m)
+  for (const m of [authModule, usersModule, dashboardsModule, sourcesModule, adminModule, devicesModule, automationsModule]) await api.register(m)
 }, { prefix: '/api/v1' })
 
 const webDir = join(dirname(fileURLToPath(import.meta.url)), '..', 'web', 'dist')
@@ -59,4 +61,5 @@ if (existsSync(webDir)) {
 
 await app.listen({ host: '0.0.0.0', port: Number(process.env.PORT ?? 8080) })
 startAll()
+startAutomations()
 log('system', 'info', 'system.started', { version: process.env.npm_package_version })
