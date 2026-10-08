@@ -212,7 +212,7 @@ Beispiel-Manifest:
 
 | Bereich | Umsetzung |
 |---|---|
-| Backup | verschlüsseltes Archiv (age) aller `/data/*`-Bereiche außer Cache; manuell, zeitgesteuert, lokal/USB/SMB/Cloud; Wiederherstellung mit Vorschau |
+| Backup | **automatische Sicherung bei jeder Änderung**: jede Konfigurationsänderung (Dashboard, Widget, Gerät, Automation, Benutzer, Plugin) erzeugt eine Version mit Zeitstempel und Benutzer → Rücksprung auf jeden Stand per Touch; dazu verschlüsseltes Archiv (age) aller `/data/*`-Bereiche außer Cache; manuell, zeitgesteuert, lokal/USB/SMB/Cloud; Wiederherstellung mit Vorschau |
 | Updates | **RAUC A/B**: OS + Kern als Bundle, signiert; Boot-Zähler → automatischer Rollback; Plugins/Themes separat signiert; Kanäle stable/beta |
 | Recovery | Recovery-Partition: Factory Reset, Backup-Restore, Update per USB |
 | Sicherheit | Argon2id-Passwörter, PIN mit Sperrzeit, TLS (lokale CA bzw. ACME), API-Tokens mit Scopes, Secrets verschlüsselt (TPM/OP-TEE wenn vorhanden, sonst Schlüsseldatei), nftables, Audit-Log, Login-Protokoll, Secure Boot wo Hardware es erlaubt |
