@@ -1,8 +1,9 @@
 import { db, tx } from './db.js'
 import { bus } from './events.js'
 import { log } from './logger.js'
+import { invalidate, startAll } from '../devices/engine.js'
 
-const TABLES = ['dashboards', 'widgets', 'data_sources']
+const TABLES = ['rooms', 'integrations', 'devices', 'dashboards', 'widgets', 'data_sources']
 const KEEP = Number(process.env.HOMEOS_VERSIONS_KEEP ?? 1000)
 
 function snapshot() {
@@ -38,6 +39,8 @@ export function restoreVersion(id, user) {
       }
     }
   })
+  invalidate()
+  startAll()
   log('system', 'warning', 'version.restored', { version: id, from: row.ts }, user?.id)
   recordChange(user, 'system', null, 'restore', `#${id} (${row.ts})`)
   return true

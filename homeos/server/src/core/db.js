@@ -46,6 +46,21 @@ const MIGRATIONS = [
         entity TEXT NOT NULL, entity_id INTEGER, action TEXT NOT NULL, summary TEXT, snapshot TEXT NOT NULL);
       CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT NOT NULL);`)
   },
+  () => db.exec(`
+    CREATE TABLE IF NOT EXISTS rooms (
+      id INTEGER PRIMARY KEY, name TEXT NOT NULL, icon TEXT NOT NULL DEFAULT '▢', position INTEGER NOT NULL DEFAULT 0);
+    CREATE TABLE IF NOT EXISTS integrations (
+      id INTEGER PRIMARY KEY, adapter TEXT NOT NULL, name TEXT NOT NULL, config TEXT NOT NULL DEFAULT '{}',
+      enabled INTEGER NOT NULL DEFAULT 1);
+    CREATE TABLE IF NOT EXISTS devices (
+      id INTEGER PRIMARY KEY, integration_id INTEGER NOT NULL REFERENCES integrations(id) ON DELETE CASCADE,
+      native_id TEXT NOT NULL, name TEXT NOT NULL, type TEXT NOT NULL DEFAULT 'sensor',
+      manufacturer TEXT, model TEXT, room_id INTEGER REFERENCES rooms(id) ON DELETE SET NULL,
+      groups TEXT NOT NULL DEFAULT '[]', capabilities TEXT NOT NULL DEFAULT '[]', state TEXT NOT NULL DEFAULT '{}',
+      meta TEXT NOT NULL DEFAULT '{}', connection TEXT NOT NULL DEFAULT 'unknown', battery REAL, rssi REAL,
+      last_seen TEXT, adopted INTEGER NOT NULL DEFAULT 0, hidden INTEGER NOT NULL DEFAULT 0,
+      UNIQUE (integration_id, native_id));
+    CREATE INDEX IF NOT EXISTS devices_room ON devices(room_id);`),
 ]
 
 export function migrate() {

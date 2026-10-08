@@ -3,6 +3,9 @@ import { ref, computed } from 'vue'
 import { api } from '../api.js'
 import { useI18n } from 'vue-i18n'
 import { errorText } from '../i18n.js'
+import { store, loadDevices } from '../devices.js'
+
+if (!store.loaded) loadDevices().catch(() => {})
 
 const { t } = useI18n()
 
@@ -80,6 +83,12 @@ async function remove() {
       <textarea v-if="f.type === 'textarea'" v-model="form.config[f.key]" />
       <select v-else-if="f.type === 'select'" v-model="form.config[f.key]">
         <option v-for="v in f.options" :key="v" :value="v">{{ t('chartStyles.' + v) }}</option>
+      </select>
+      <select v-else-if="f.type === 'device'" v-model.number="form.config[f.key]">
+        <option v-for="d in Object.values(store.devices).filter(x => x.adopted).sort((a, b) => a.name.localeCompare(b.name))" :key="d.id" :value="d.id">{{ d.name }}</option>
+      </select>
+      <select v-else-if="f.type === 'room'" v-model.number="form.config[f.key]">
+        <option v-for="r in store.rooms" :key="r.id" :value="r.id">{{ r.name }}</option>
       </select>
       <input v-else-if="f.type === 'color'" v-model="form.config[f.key]" type="color">
       <input v-else-if="f.type === 'number'" v-model="form.config[f.key]" type="number" step="any" inputmode="decimal">

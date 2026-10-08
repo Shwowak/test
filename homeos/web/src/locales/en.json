@@ -19,7 +19,8 @@
     "sources": "Sources",
     "settings": "Settings",
     "fullscreen": "Fullscreen",
-    "logout": "Log out"
+    "logout": "Log out",
+    "devices": "Devices"
   },
   "login": {
     "user": "User",
@@ -63,7 +64,9 @@
     "chart": "Chart",
     "calendar": "Events",
     "switch": "Switch",
-    "iframe": "Embed website"
+    "iframe": "Embed website",
+    "device": "Device",
+    "room": "Room"
   },
   "fields": {
     "value": "Value",
@@ -78,7 +81,9 @@
     "values": "Values, comma separated",
     "style": "Style",
     "limit": "Count",
-    "url": "URL"
+    "url": "URL",
+    "device_id": "Device",
+    "room_id": "Room"
   },
   "chartStyles": {
     "line": "Line (neon)",
@@ -123,7 +128,8 @@
       "users": "Users",
       "versions": "Versions",
       "logs": "Logs",
-      "system": "System"
+      "system": "System",
+      "integrations": "Integrations"
     }
   },
   "profile": {
@@ -171,14 +177,18 @@
       "dashboard": "Dashboard",
       "widget": "Widget",
       "source": "Source",
-      "system": "System"
+      "system": "System",
+      "room": "Room",
+      "integration": "Integration",
+      "device": "Device"
     },
     "action": {
       "create": "created",
       "update": "changed",
       "delete": "deleted",
       "layout": "layout changed",
-      "restore": "restored"
+      "restore": "restored",
+      "adopt": "added"
     }
   },
   "logs": {
@@ -224,7 +234,16 @@
       "system_started": "System started",
       "device_toggled": "Device toggled",
       "device_action_failed": "Device action failed",
-      "http_error": "Server error"
+      "http_error": "Server error",
+      "device_discovered": "New device found",
+      "device_online": "Device online",
+      "device_offline": "Device offline",
+      "device_command": "Device controlled",
+      "device_command_failed": "Control failed",
+      "integration_connected": "Integration connected",
+      "integration_connecting": "Integration connecting",
+      "integration_disconnected": "Integration disconnected",
+      "integration_error": "Integration error"
     }
   },
   "system": {
@@ -279,6 +298,197 @@
     },
     "widget": {
       "type_invalid": "Unknown widget type"
+    },
+    "device": {
+      "capability_unknown": "Capability not available",
+      "capability_readonly": "Value cannot be set",
+      "value_invalid": "Invalid value",
+      "command_failed": "Device did not respond"
+    },
+    "integration": {
+      "not_running": "Integration not connected",
+      "adapter_invalid": "Unknown integration",
+      "no_manual_devices": "This integration discovers devices automatically"
     }
+  },
+  "devices": {
+    "title": "All devices",
+    "live": "Live connected",
+    "offline": "Live connection lost",
+    "found": "One new device found | {n} new devices found",
+    "discovered_title": "New devices",
+    "discovered_hint": "These devices were discovered automatically. Select and add them – rooms are taken from areas.",
+    "select_all": "Select all",
+    "select_none": "Clear selection",
+    "adopt": "Nothing selected | Add 1 device | Add {n} devices",
+    "ignore": "Ignore",
+    "empty": "No devices yet. Connect Home Assistant, MQTT or REST under Settings → Integrations.",
+    "type": "Device type",
+    "groups": "Groups",
+    "groups_placeholder": "e.g. Lighting, Ground floor",
+    "connection": "Connection",
+    "integration": "Integration",
+    "manufacturer": "Manufacturer",
+    "model": "Model",
+    "id": "Device ID",
+    "battery": "Battery",
+    "last_seen": "Last seen",
+    "capabilities": "Capabilities",
+    "confirm_delete": "Remove device “{name}”? It will reappear as new if discovered again.",
+    "not_found": "Device not found",
+    "room_empty": "No devices in this room"
+  },
+  "rooms": {
+    "title": "Rooms",
+    "all": "All",
+    "none": "No room",
+    "room": "Room",
+    "add": "Add room",
+    "name_placeholder": "e.g. Living room",
+    "confirm_delete": "Delete room “{name}”? Devices are kept."
+  },
+  "deviceTypes": {
+    "light": "Light",
+    "switch": "Switch",
+    "outlet": "Outlet",
+    "thermostat": "Thermostat",
+    "heating": "Heating",
+    "cover": "Shutter",
+    "blind": "Blind",
+    "door": "Door",
+    "window": "Window",
+    "lock": "Lock",
+    "camera": "Camera",
+    "sensor": "Sensor",
+    "smoke": "Smoke detector",
+    "motion": "Motion sensor",
+    "energy_meter": "Energy meter",
+    "pv": "PV system",
+    "battery": "Battery",
+    "wallbox": "Wallbox",
+    "vehicle": "Vehicle",
+    "media": "Media",
+    "other": "Other"
+  },
+  "capabilities": {
+    "onoff": "On/Off",
+    "brightness": "Brightness",
+    "color": "Color",
+    "position": "Position",
+    "cover": "Control",
+    "target_temperature": "Target temperature",
+    "lock": "Lock",
+    "locked": "Locked",
+    "unlocked": "Unlocked",
+    "temperature": "Temperature",
+    "humidity": "Humidity",
+    "power": "Power",
+    "energy": "Energy",
+    "motion": "Motion",
+    "contact": "Contact",
+    "smoke": "Smoke"
+  },
+  "quantities": {
+    "temperature": "Temperature",
+    "humidity": "Humidity",
+    "power": "Power",
+    "energy": "Energy",
+    "voltage": "Voltage",
+    "current": "Current",
+    "illuminance": "Illuminance",
+    "co2": "CO₂",
+    "pressure": "Pressure",
+    "battery": "Battery",
+    "value": "Value"
+  },
+  "binary": {
+    "default": {
+      "on": "Active",
+      "off": "Inactive"
+    },
+    "motion": {
+      "on": "Motion detected",
+      "off": "No motion"
+    },
+    "contact": {
+      "on": "Open",
+      "off": "Closed"
+    },
+    "smoke": {
+      "on": "SMOKE!",
+      "off": "No smoke"
+    },
+    "moisture": {
+      "on": "Water detected",
+      "off": "Dry"
+    }
+  },
+  "connection": {
+    "online": "Online",
+    "offline": "Offline",
+    "unknown": "Unknown"
+  },
+  "adapters": {
+    "home_assistant": "Home Assistant",
+    "mqtt": "MQTT (Zigbee2MQTT, Tasmota, ESPHome …)",
+    "rest": "REST / HTTP"
+  },
+  "integrations": {
+    "add": "Add integration",
+    "empty": "No integrations yet.",
+    "devices": "no devices | 1 device | {n} devices",
+    "test": "Test connection",
+    "test_ok": "Connection OK – no devices found | Connection OK – 1 device found | Connection OK – {n} devices found",
+    "test_failed": "Connection failed: {error}",
+    "auto_adopt": "Add new devices automatically",
+    "enabled": "Enabled",
+    "confirm_delete": "Delete integration “{name}” and all its devices?",
+    "manual_device": "Add device",
+    "coming": "Matter, Zigbee (direct), Z-Wave, KNX and Modbus follow in phase 7.",
+    "status": {
+      "connected": "connected",
+      "connecting": "connecting …",
+      "disconnected": "disconnected",
+      "error": "error",
+      "stopped": "stopped"
+    },
+    "help": {
+      "home_assistant": "URL of your Home Assistant instance and a long-lived access token (Profile → Security → Create token). All entities are discovered automatically.",
+      "mqtt": "MQTT broker (e.g. Mosquitto). Devices sending Home Assistant discovery (Zigbee2MQTT, Tasmota, ESPHome, Shelly) are detected automatically.",
+      "rest": "For devices with an HTTP interface. Devices are then added manually."
+    }
+  },
+  "integrationFields": {
+    "url": "URL",
+    "token": "Long-lived access token",
+    "username": "Username",
+    "password": "Password",
+    "discovery_prefix": "Discovery prefix",
+    "headers": "Headers (JSON)",
+    "interval": "Poll interval (seconds)"
+  },
+  "integrationPlaceholders": {
+    "home_assistant": {
+      "url": "http://homeassistant.local:8123"
+    },
+    "mqtt": {
+      "url": "mqtt://192.168.1.10:1883",
+      "discovery_prefix": "homeassistant"
+    }
+  },
+  "restFields": {
+    "kind": "Kind",
+    "state_url": "State URL",
+    "state_path": "JSON path to value",
+    "quantity": "Quantity (e.g. temperature)",
+    "unit": "Unit",
+    "on_value": "Value meaning “on”",
+    "on_url": "Turn-on URL",
+    "off_url": "Turn-off URL",
+    "method": "HTTP method"
+  },
+  "restOptions": {
+    "sensor": "Sensor",
+    "switch": "Switch"
   }
 }

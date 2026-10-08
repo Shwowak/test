@@ -6,12 +6,16 @@ import Board from './Board.vue'
 import Sheet from './Sheet.vue'
 import SourceManager from './SourceManager.vue'
 import Settings from './settings/Settings.vue'
+import DevicesView from './devices/DevicesView.vue'
+import { startLive, stopLive, loadIntegrations } from '../devices.js'
+import { onBeforeUnmount } from 'vue'
 
 const { t } = useI18n()
 const user = inject('user')
 const can = p => user.value?.permissions?.includes(p)
 const emit = defineEmits(['logout'])
 const showSettings = ref(false)
+const view = ref('dashboard')
 
 const dashboards = ref([])
 const activeId = ref(null)
@@ -39,7 +43,10 @@ async function loadSources() {
   sources.value = can('sources.view') ? await api('GET', '/sources') : []
 }
 
+onBeforeUnmount(stopLive)
+
 onMounted(async () => {
+  if (can('devices.view')) { startLive(); loadIntegrations().catch(() => {}) }
   meta.value = await api('GET', '/meta')
   const saved = Number(localStorage.getItem('homeos.dashboard'))
   await Promise.all([loadDashboards(), loadSources()])
@@ -47,6 +54,7 @@ onMounted(async () => {
 })
 
 function select(id) {
+  view.value = 'dashboard'
   activeId.value = id
   try { localStorage.setItem('homeos.dashboard', String(id)) } catch {}
 }
@@ -59,7 +67,7 @@ function step(dir) {
 
 let touchX = null
 function onTouchStart(e) {
-  if (editing.value || e.touches.length !== 1) return
+  if (editing.value || view.value !== 'dashboard' || e.touches.length !== 1) return
   touchX = e.touches[0].clientX
 }
 function onTouchEnd(e) {
@@ -109,11 +117,12 @@ const icons = ['⌂', '◈', '⚡', '☀', '♨', '☎', '♫', '⚙', '⛨', '�
   <div class="shell" :class="{ 'no-rail': railHidden }" @touchstart.passive="onTouchStart" @touchend.passive="onTouchEnd">
     <nav v-show="!railHidden" class="rail">
       <button class="tab" :aria-label="t('nav.hide')" @click="toggleRail"><span class="ico">⟨</span><span class="nm">{{ t('nav.hide') }}</span></button>
-      <button v-for="d in dashboards" :key="d.id" class="tab" :class="{ on: d.id === activeId }" @click="select(d.id)">
+      <button v-for="d in dashboards" :key="d.id" class="tab" :class="{ on: view === 'dashboard' && d.id === activeId }" @click="select(d.id)">
         <span class="ico">{{ d.icon }}</span><span class="nm">{{ d.name }}</span>
       </button>
       <button v-if="editing" class="tab add" @click="newDashboard"><span class="ico">＋</span><span class="nm">{{ t('common.new') }}</span></button>
       <div class="spacer" />
+      <button v-if="can('devices.view')" class="tab" :class="{ on: view === 'devices' }" @click="view = 'devices'; editing = false"><span class="ico">▦</span><span class="nm">{{ t('nav.devices') }}</span></button>
       <button v-if="can('sources.view')" class="tab" @click="showSources = true"><span class="ico">⌬</span><span class="nm">{{ t('nav.sources') }}</span></button>
       <button class="tab" @click="showSettings = true"><span class="ico">⚙</span><span class="nm">{{ t('nav.settings') }}</span></button>
       <button class="tab" @click="fullscreen"><span class="ico">⛶</span><span class="nm">{{ t('nav.fullscreen') }}</span></button>
@@ -123,20 +132,21 @@ const icons = ['⌂', '◈', '⚡', '☀', '♨', '☎', '♫', '⚙', '⛨', '�
     <section class="main">
       <header class="top">
         <div>
-          <div class="label">{{ t('dashboard.label') }}</div>
-          <h1>{{ active?.name ?? '—' }}</h1>
+          <div class="label">{{ view === 'devices' ? t('nav.devices') : t('dashboard.label') }}</div>
+          <h1>{{ view === 'devices' ? t('devices.title') : active?.name ?? '—' }}</h1>
         </div>
         <div class="actions">
           <button v-if="railHidden" class="btn icon" :aria-label="t('nav.show')" @click="toggleRail">☰</button>
-          <button v-if="active && meta" class="btn" @click="cycleStyle">◐ {{ t('styles.' + active.style) }}</button>
+          <button v-if="view === 'dashboard' && active && meta" class="btn" @click="cycleStyle">◐ {{ t('styles.' + active.style) }}</button>
           <button v-if="editing && active" class="btn" @click="editDashboard">{{ t('dashboard.label') }} ✎</button>
-          <button v-if="can('dashboards.edit')" class="btn" :class="{ active: editing, primary: editing }" @click="editing = !editing">
+          <button v-if="view === 'dashboard' && can('dashboards.edit')" class="btn" :class="{ active: editing, primary: editing }" @click="editing = !editing">
             {{ editing ? t('common.done') : '✎ ' + t('common.edit') }}
           </button>
         </div>
       </header>
 
-      <Board v-if="active && meta" :key="active.id" :dashboard="active" :editing="editing" :meta="meta" :sources="sources" />
+      <DevicesView v-if="view === 'devices'" />
+      <Board v-else-if="active && meta" :key="active.id" :dashboard="active" :editing="editing" :meta="meta" :sources="sources" />
       <p v-else-if="meta" class="empty">{{ t('dashboard.empty') }}</p>
     </section>
 

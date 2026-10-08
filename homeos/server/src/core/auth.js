@@ -3,15 +3,15 @@ import { db } from './db.js'
 import { log } from './logger.js'
 
 export const PERMISSIONS = [
-  'dashboards.view', 'dashboards.edit', 'sources.view', 'sources.edit', 'devices.control',
+  'dashboards.view', 'dashboards.edit', 'sources.view', 'sources.edit', 'devices.view', 'devices.control', 'devices.manage',
   'users.manage', 'logs.view', 'versions.view', 'versions.restore', 'system.view', 'profile.edit',
 ]
 
 export const ROLES = {
   admin: ['*'],
-  user: ['dashboards.view', 'dashboards.edit', 'sources.view', 'devices.control', 'versions.view', 'system.view', 'profile.edit'],
-  restricted: ['dashboards.view', 'devices.control', 'profile.edit'],
-  guest: ['dashboards.view'],
+  user: ['dashboards.view', 'dashboards.edit', 'sources.view', 'devices.view', 'devices.control', 'devices.manage', 'versions.view', 'system.view', 'profile.edit'],
+  restricted: ['dashboards.view', 'devices.view', 'devices.control', 'profile.edit'],
+  guest: ['dashboards.view', 'devices.view'],
 }
 
 export const can = (user, perm) => !!user && (ROLES[user.role] ?? []).some(p => p === '*' || p === perm)

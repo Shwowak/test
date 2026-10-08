@@ -47,6 +47,16 @@ docker compose -f docker-compose.server.yml up -d
 - **Sprachen**: Deutsch, Englisch (vollständig), Französisch, Spanisch, Italienisch, Niederländisch (Bedienoberfläche) – pro Benutzer wählbar
 - Datenbank-Migrationen laufen beim Start automatisch, bestehende Daten bleiben erhalten
 
+## Phase 2 (Geräte)
+
+- **Universal Device API**: alle Geräte einheitlich (Typ, Raum, Gruppen, Funktionen, Zustand, Verbindung, Batterie) – egal ob Home Assistant, MQTT oder REST
+- **Integrationen** (Einstellungen → Integrationen): Home Assistant (WebSocket, live), MQTT mit Auto-Discovery (Zigbee2MQTT, Tasmota, ESPHome, Shelly), REST/HTTP (manuelle Geräte) · Verbindung testen vor dem Speichern
+- **Automatische Erkennung**: „Neue Geräte gefunden“ → auswählen → hinzufügen, Räume werden aus Home-Assistant-Bereichen übernommen
+- **Gerätemanager** (Leiste → Geräte): nach Räumen gruppiert, direkt steuern (Ein/Aus, Helligkeit, Rollladen, Thermostat, Schloss), Details, umbenennen, Raum/Typ/Gruppen ändern, entfernen
+- **Räume**: anlegen, umbenennen, Symbol, Reihenfolge
+- **Live**: Zustände per WebSocket (`/api/v1/events`) in Echtzeit
+- **Widgets**: „Gerät“ und „Raum“ für Dashboards
+
 ## Widgets
 
 | Typ | Datenquellen |

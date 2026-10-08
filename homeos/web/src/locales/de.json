@@ -19,7 +19,8 @@
     "sources": "Quellen",
     "settings": "Einstellungen",
     "fullscreen": "Vollbild",
-    "logout": "Abmelden"
+    "logout": "Abmelden",
+    "devices": "Geräte"
   },
   "login": {
     "user": "Benutzer",
@@ -63,7 +64,9 @@
     "chart": "Diagramm",
     "calendar": "Termine",
     "switch": "Schalter",
-    "iframe": "Webseite einbetten"
+    "iframe": "Webseite einbetten",
+    "device": "Gerät",
+    "room": "Raum"
   },
   "fields": {
     "value": "Wert",
@@ -78,7 +81,9 @@
     "values": "Werte, kommagetrennt",
     "style": "Darstellung",
     "limit": "Anzahl",
-    "url": "URL"
+    "url": "URL",
+    "device_id": "Gerät",
+    "room_id": "Raum"
   },
   "chartStyles": {
     "line": "Linie (Neon)",
@@ -123,7 +128,8 @@
       "users": "Benutzer",
       "versions": "Versionen",
       "logs": "Protokoll",
-      "system": "System"
+      "system": "System",
+      "integrations": "Integrationen"
     }
   },
   "profile": {
@@ -171,14 +177,18 @@
       "dashboard": "Dashboard",
       "widget": "Widget",
       "source": "Quelle",
-      "system": "System"
+      "system": "System",
+      "room": "Raum",
+      "integration": "Integration",
+      "device": "Gerät"
     },
     "action": {
       "create": "angelegt",
       "update": "geändert",
       "delete": "gelöscht",
       "layout": "Anordnung geändert",
-      "restore": "wiederhergestellt"
+      "restore": "wiederhergestellt",
+      "adopt": "hinzugefügt"
     }
   },
   "logs": {
@@ -224,7 +234,16 @@
       "system_started": "System gestartet",
       "device_toggled": "Gerät geschaltet",
       "device_action_failed": "Gerät schalten fehlgeschlagen",
-      "http_error": "Serverfehler"
+      "http_error": "Serverfehler",
+      "device_discovered": "Neues Gerät gefunden",
+      "device_online": "Gerät online",
+      "device_offline": "Gerät offline",
+      "device_command": "Gerät gesteuert",
+      "device_command_failed": "Steuerung fehlgeschlagen",
+      "integration_connected": "Integration verbunden",
+      "integration_connecting": "Integration verbindet",
+      "integration_disconnected": "Integration getrennt",
+      "integration_error": "Integrationsfehler"
     }
   },
   "system": {
@@ -279,6 +298,197 @@
     },
     "widget": {
       "type_invalid": "Unbekannter Widget-Typ"
+    },
+    "device": {
+      "capability_unknown": "Funktion nicht vorhanden",
+      "capability_readonly": "Wert kann nicht gesetzt werden",
+      "value_invalid": "Ungültiger Wert",
+      "command_failed": "Gerät hat nicht reagiert"
+    },
+    "integration": {
+      "not_running": "Integration nicht verbunden",
+      "adapter_invalid": "Unbekannte Integration",
+      "no_manual_devices": "Diese Integration erkennt Geräte automatisch"
     }
+  },
+  "devices": {
+    "title": "Alle Geräte",
+    "live": "Live verbunden",
+    "offline": "Live-Verbindung getrennt",
+    "found": "Ein neues Gerät gefunden | {n} neue Geräte gefunden",
+    "discovered_title": "Neue Geräte",
+    "discovered_hint": "Diese Geräte wurden automatisch gefunden. Auswählen und hinzufügen – Räume werden aus den Bereichen übernommen.",
+    "select_all": "Alle auswählen",
+    "select_none": "Auswahl aufheben",
+    "adopt": "Nichts ausgewählt | 1 Gerät hinzufügen | {n} Geräte hinzufügen",
+    "ignore": "Ignorieren",
+    "empty": "Noch keine Geräte. Unter Einstellungen → Integrationen Home Assistant, MQTT oder REST verbinden.",
+    "type": "Gerätetyp",
+    "groups": "Gruppen",
+    "groups_placeholder": "z. B. Beleuchtung, Erdgeschoss",
+    "connection": "Verbindung",
+    "integration": "Integration",
+    "manufacturer": "Hersteller",
+    "model": "Modell",
+    "id": "Geräte-ID",
+    "battery": "Batterie",
+    "last_seen": "Zuletzt gesehen",
+    "capabilities": "Funktionen",
+    "confirm_delete": "Gerät „{name}“ entfernen? Es erscheint bei erneuter Erkennung wieder als neues Gerät.",
+    "not_found": "Gerät nicht gefunden",
+    "room_empty": "Keine Geräte in diesem Raum"
+  },
+  "rooms": {
+    "title": "Räume",
+    "all": "Alle",
+    "none": "Ohne Raum",
+    "room": "Raum",
+    "add": "Raum anlegen",
+    "name_placeholder": "z. B. Wohnzimmer",
+    "confirm_delete": "Raum „{name}“ löschen? Die Geräte bleiben erhalten."
+  },
+  "deviceTypes": {
+    "light": "Licht",
+    "switch": "Schalter",
+    "outlet": "Steckdose",
+    "thermostat": "Thermostat",
+    "heating": "Heizung",
+    "cover": "Rollladen",
+    "blind": "Jalousie",
+    "door": "Tür",
+    "window": "Fenster",
+    "lock": "Schloss",
+    "camera": "Kamera",
+    "sensor": "Sensor",
+    "smoke": "Rauchmelder",
+    "motion": "Bewegungsmelder",
+    "energy_meter": "Energiezähler",
+    "pv": "PV-Anlage",
+    "battery": "Batterie",
+    "wallbox": "Wallbox",
+    "vehicle": "Fahrzeug",
+    "media": "Medien",
+    "other": "Sonstiges"
+  },
+  "capabilities": {
+    "onoff": "Ein/Aus",
+    "brightness": "Helligkeit",
+    "color": "Farbe",
+    "position": "Position",
+    "cover": "Steuerung",
+    "target_temperature": "Solltemperatur",
+    "lock": "Schloss",
+    "locked": "Verriegelt",
+    "unlocked": "Entriegelt",
+    "temperature": "Temperatur",
+    "humidity": "Luftfeuchte",
+    "power": "Leistung",
+    "energy": "Energie",
+    "motion": "Bewegung",
+    "contact": "Kontakt",
+    "smoke": "Rauch"
+  },
+  "quantities": {
+    "temperature": "Temperatur",
+    "humidity": "Luftfeuchte",
+    "power": "Leistung",
+    "energy": "Energie",
+    "voltage": "Spannung",
+    "current": "Strom",
+    "illuminance": "Helligkeit",
+    "co2": "CO₂",
+    "pressure": "Luftdruck",
+    "battery": "Batterie",
+    "value": "Wert"
+  },
+  "binary": {
+    "default": {
+      "on": "Aktiv",
+      "off": "Inaktiv"
+    },
+    "motion": {
+      "on": "Bewegung erkannt",
+      "off": "Keine Bewegung"
+    },
+    "contact": {
+      "on": "Offen",
+      "off": "Geschlossen"
+    },
+    "smoke": {
+      "on": "RAUCH!",
+      "off": "Kein Rauch"
+    },
+    "moisture": {
+      "on": "Wasser erkannt",
+      "off": "Trocken"
+    }
+  },
+  "connection": {
+    "online": "Online",
+    "offline": "Offline",
+    "unknown": "Unbekannt"
+  },
+  "adapters": {
+    "home_assistant": "Home Assistant",
+    "mqtt": "MQTT (Zigbee2MQTT, Tasmota, ESPHome …)",
+    "rest": "REST / HTTP"
+  },
+  "integrations": {
+    "add": "Integration hinzufügen",
+    "empty": "Noch keine Integrationen.",
+    "devices": "keine Geräte | 1 Gerät | {n} Geräte",
+    "test": "Verbindung testen",
+    "test_ok": "Verbindung erfolgreich – keine Geräte gefunden | Verbindung erfolgreich – 1 Gerät gefunden | Verbindung erfolgreich – {n} Geräte gefunden",
+    "test_failed": "Verbindung fehlgeschlagen: {error}",
+    "auto_adopt": "Neue Geräte automatisch hinzufügen",
+    "enabled": "Aktiv",
+    "confirm_delete": "Integration „{name}“ und alle ihre Geräte löschen?",
+    "manual_device": "Gerät anlegen",
+    "coming": "Matter, Zigbee (direkt), Z-Wave, KNX und Modbus folgen in Phase 7.",
+    "status": {
+      "connected": "verbunden",
+      "connecting": "verbindet …",
+      "disconnected": "getrennt",
+      "error": "Fehler",
+      "stopped": "gestoppt"
+    },
+    "help": {
+      "home_assistant": "URL deiner Home-Assistant-Instanz und ein Long-Lived Access Token (Profil → Sicherheit → Token erstellen). Alle Entitäten werden automatisch erkannt.",
+      "mqtt": "MQTT-Broker (z. B. Mosquitto). Geräte, die Home-Assistant-Discovery senden (Zigbee2MQTT, Tasmota, ESPHome, Shelly), werden automatisch erkannt.",
+      "rest": "Für Geräte mit HTTP-Schnittstelle. Geräte werden danach manuell angelegt."
+    }
+  },
+  "integrationFields": {
+    "url": "URL",
+    "token": "Long-Lived Access Token",
+    "username": "Benutzername",
+    "password": "Passwort",
+    "discovery_prefix": "Discovery-Präfix",
+    "headers": "Header (JSON)",
+    "interval": "Abfrageintervall (Sekunden)"
+  },
+  "integrationPlaceholders": {
+    "home_assistant": {
+      "url": "http://homeassistant.local:8123"
+    },
+    "mqtt": {
+      "url": "mqtt://192.168.1.10:1883",
+      "discovery_prefix": "homeassistant"
+    }
+  },
+  "restFields": {
+    "kind": "Art",
+    "state_url": "Status-URL",
+    "state_path": "JSON-Pfad zum Wert",
+    "quantity": "Messgröße (z. B. temperature)",
+    "unit": "Einheit",
+    "on_value": "Wert für „An“",
+    "on_url": "URL zum Einschalten",
+    "off_url": "URL zum Ausschalten",
+    "method": "HTTP-Methode"
+  },
+  "restOptions": {
+    "sensor": "Sensor",
+    "switch": "Schalter"
   }
 }

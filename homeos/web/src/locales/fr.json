@@ -16,7 +16,8 @@
     "sources": "Sources",
     "settings": "Paramètres",
     "fullscreen": "Plein écran",
-    "logout": "Déconnexion"
+    "logout": "Déconnexion",
+    "devices": "Appareils"
   },
   "login": {
     "user": "Utilisateur",
@@ -52,7 +53,9 @@
     "chart": "Graphique",
     "calendar": "Rendez-vous",
     "switch": "Interrupteur",
-    "iframe": "Intégrer un site"
+    "iframe": "Intégrer un site",
+    "device": "Appareil",
+    "room": "Pièce"
   },
   "calendar": {
     "today": "Aujourd'hui",
@@ -72,7 +75,8 @@
       "users": "Utilisateurs",
       "versions": "Versions",
       "logs": "Journal",
-      "system": "Système"
+      "system": "Système",
+      "integrations": "Intégrations"
     }
   },
   "roles": {
@@ -80,5 +84,10 @@
     "user": "Utilisateur",
     "restricted": "Restreint",
     "guest": "Invité"
+  },
+  "rooms": {
+    "all": "Tous",
+    "room": "Pièce",
+    "title": "Pièces"
   }
 }

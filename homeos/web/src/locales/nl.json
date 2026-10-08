@@ -16,7 +16,8 @@
     "sources": "Bronnen",
     "settings": "Instellingen",
     "fullscreen": "Volledig scherm",
-    "logout": "Afmelden"
+    "logout": "Afmelden",
+    "devices": "Apparaten"
   },
   "login": {
     "user": "Gebruiker",
@@ -52,7 +53,9 @@
     "chart": "Grafiek",
     "calendar": "Afspraken",
     "switch": "Schakelaar",
-    "iframe": "Website insluiten"
+    "iframe": "Website insluiten",
+    "device": "Apparaat",
+    "room": "Ruimte"
   },
   "calendar": {
     "today": "Vandaag",
@@ -72,7 +75,8 @@
       "users": "Gebruikers",
       "versions": "Versies",
       "logs": "Logboek",
-      "system": "Systeem"
+      "system": "Systeem",
+      "integrations": "Integraties"
     }
   },
   "roles": {
@@ -80,5 +84,10 @@
     "user": "Gebruiker",
     "restricted": "Beperkt",
     "guest": "Gast"
+  },
+  "rooms": {
+    "all": "Alle",
+    "room": "Ruimte",
+    "title": "Ruimtes"
   }
 }

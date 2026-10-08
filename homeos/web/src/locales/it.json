@@ -16,7 +16,8 @@
     "sources": "Sorgenti",
     "settings": "Impostazioni",
     "fullscreen": "Schermo intero",
-    "logout": "Esci"
+    "logout": "Esci",
+    "devices": "Dispositivi"
   },
   "login": {
     "user": "Utente",
@@ -52,7 +53,9 @@
     "chart": "Grafico",
     "calendar": "Appuntamenti",
     "switch": "Interruttore",
-    "iframe": "Incorpora sito"
+    "iframe": "Incorpora sito",
+    "device": "Dispositivo",
+    "room": "Stanza"
   },
   "calendar": {
     "today": "Oggi",
@@ -72,7 +75,8 @@
       "users": "Utenti",
       "versions": "Versioni",
       "logs": "Registro",
-      "system": "Sistema"
+      "system": "Sistema",
+      "integrations": "Integrazioni"
     }
   },
   "roles": {
@@ -80,5 +84,10 @@
     "user": "Utente",
     "restricted": "Limitato",
     "guest": "Ospite"
+  },
+  "rooms": {
+    "all": "Tutti",
+    "room": "Stanza",
+    "title": "Stanze"
   }
 }

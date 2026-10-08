@@ -16,7 +16,8 @@
     "sources": "Fuentes",
     "settings": "Ajustes",
     "fullscreen": "Pantalla completa",
-    "logout": "Cerrar sesión"
+    "logout": "Cerrar sesión",
+    "devices": "Dispositivos"
   },
   "login": {
     "user": "Usuario",
@@ -52,7 +53,9 @@
     "chart": "Gráfico",
     "calendar": "Citas",
     "switch": "Interruptor",
-    "iframe": "Insertar web"
+    "iframe": "Insertar web",
+    "device": "Dispositivo",
+    "room": "Habitación"
   },
   "calendar": {
     "today": "Hoy",
@@ -72,7 +75,8 @@
       "users": "Usuarios",
       "versions": "Versiones",
       "logs": "Registro",
-      "system": "Sistema"
+      "system": "Sistema",
+      "integrations": "Integraciones"
     }
   },
   "roles": {
@@ -80,5 +84,10 @@
     "user": "Usuario",
     "restricted": "Restringido",
     "guest": "Invitado"
+  },
+  "rooms": {
+    "all": "Todos",
+    "room": "Habitación",
+    "title": "Habitaciones"
   }
 }

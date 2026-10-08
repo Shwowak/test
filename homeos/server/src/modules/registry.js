@@ -37,6 +37,8 @@ export const WIDGET_TYPES = {
   calendar: { sources: ['ical'], fields: [{ key: 'limit', type: 'number' }] },
   switch: { sources: ['home_assistant'], fields: [{ key: 'entity_id', type: 'text', for: ['home_assistant'] }] },
   iframe: { sources: [], fields: [{ key: 'url', type: 'url' }] },
+  device: { sources: [], fields: [{ key: 'device_id', type: 'device' }] },
+  room: { sources: [], fields: [{ key: 'room_id', type: 'room' }] },
 }
 
 export const DASHBOARD_STYLES = ['seamless', 'tiles', 'glass']

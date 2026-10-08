@@ -3,6 +3,7 @@ import cookie from '@fastify/cookie'
 import staticFiles from '@fastify/static'
 import swagger from '@fastify/swagger'
 import swaggerUi from '@fastify/swagger-ui'
+import websocket from '@fastify/websocket'
 import { existsSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -14,12 +15,15 @@ import usersModule from './src/modules/users.js'
 import dashboardsModule from './src/modules/dashboards.js'
 import sourcesModule from './src/modules/sources.js'
 import adminModule from './src/modules/admin.js'
+import devicesModule from './src/modules/devices.js'
+import { startAll } from './src/devices/engine.js'
 
 seedAdmin()
 seedDemo()
 
 const app = Fastify({ logger: { level: process.env.LOG_LEVEL ?? 'info' }, trustProxy: process.env.HOMEOS_TRUST_PROXY === 'true' })
 await app.register(cookie)
+await app.register(websocket)
 
 await app.register(swagger, {
   openapi: {
@@ -44,7 +48,7 @@ app.register(async api => {
     if (!user) return reply.code(401).send({ error: 'unauthorized' })
     req.user = user
   })
-  for (const m of [authModule, usersModule, dashboardsModule, sourcesModule, adminModule]) await api.register(m)
+  for (const m of [authModule, usersModule, dashboardsModule, sourcesModule, adminModule, devicesModule]) await api.register(m)
 }, { prefix: '/api/v1' })
 
 const webDir = join(dirname(fileURLToPath(import.meta.url)), '..', 'web', 'dist')
@@ -54,4 +58,5 @@ if (existsSync(webDir)) {
 }
 
 await app.listen({ host: '0.0.0.0', port: Number(process.env.PORT ?? 8080) })
+startAll()
 log('system', 'info', 'system.started', { version: process.env.npm_package_version })
