@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { api } from '../api.js'
 import { errorText, setLocale, LOCALE_NAMES } from '../i18n.js'
+import BtSetup from './BtSetup.vue'
 
 const { t, locale } = useI18n()
 const emit = defineEmits(['login'])
@@ -15,6 +16,8 @@ const error = ref('')
 const busy = ref(false)
 
 const setup = ref(null)
+const btAvailable = ref(false)
+const showBt = ref(false)
 const setupForm = ref({ name: 'admin', password: '', password2: '', pin: '' })
 
 async function doSetup() {
@@ -31,6 +34,7 @@ async function doSetup() {
 
 onMounted(async () => {
   try { const s = await api('GET', '/auth/setup'); if (s.needed) setup.value = s } catch {}
+  api('GET', '/setup/bluetooth').then(r => { btAvailable.value = r.available }).catch(() => {})
   try {
     pinUsers.value = await api('GET', '/auth/pin-users')
     if (pinUsers.value.length) {
@@ -112,6 +116,9 @@ function press(d) {
 
       <p v-if="error" class="error">{{ error }}</p>
 
+      <button v-if="btAvailable" type="button" class="btn full bt" @click="showBt = !showBt">⌨ {{ t('btsetup.button') }}</button>
+      <BtSetup v-if="showBt" class="btpanel" @close="showBt = false" />
+
       <select class="lang" :value="locale" :aria-label="t('settings.language')" @change="setLocale($event.target.value)">
         <option v-for="(n, k) in LOCALE_NAMES" :key="k" :value="k">{{ n }}</option>
       </select>
@@ -133,6 +140,8 @@ h1 { margin: 0; font-size: 26px; letter-spacing: 0.25em; font-weight: 300; }
 .pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .key { min-height: 64px; font-size: 26px; font-family: var(--mono); }
 .full { width: 100%; }
+.bt { margin-top: 14px; }
+.btpanel { margin-top: 12px; padding: 12px; border: 1px solid var(--line); }
 .st { font-weight: 300; text-align: center; margin: 0 0 8px; }
 .hint { color: var(--dim); text-align: center; }
 .lang { margin-top: 18px; width: 100%; min-height: 44px; background: transparent; border: 1px solid var(--line); border-radius: 10px; padding: 0 10px; color: var(--dim); }

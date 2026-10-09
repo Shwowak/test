@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync, statfsSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { requirePerm, HttpError } from '../core/http.js'
 import { log } from '../core/logger.js'
-import { getSetting, setSetting } from '../core/settings.js'
+import { getSetting, setSetting, isLocalIp } from '../core/settings.js'
 import { run, has, canIsolateNetwork } from '../system/exec.js'
 import { displayStatus, setBrightness, setPower, setOutput } from '../system/display.js'
 import { networkStatus, wifiScan, wifiConnect, wifiRadio, forget, setHostname } from '../system/network.js'
@@ -31,6 +31,22 @@ const body = (props, required = []) => ({ body: { type: 'object', required, prop
 export default async function hardwareModule(app) {
   const s = (summary, extra = {}) => ({ tags: ['hardware'], summary, ...extra })
   const manage = requirePerm('system.manage')
+
+  const localOnly = async req => {
+    if (!isDevice()) throw new HttpError(409, 'hardware.unavailable')
+    if (!isLocalIp(req.ip)) throw new HttpError(403, 'setup.local_only')
+  }
+  const INPUT = d => /^input-/.test(d.icon ?? '') || /keyboard|tastatur|mouse|maus|trackpad|keys|mx /i.test(d.name ?? '')
+  const inputView = st => ({ available: !!st.available, powered: st.powered, devices: (st.devices ?? []).map(d => ({ ...d, input: INPUT(d) })).sort((a, b) => b.input - a.input) })
+  const pub = summary => ({ schema: s(summary), config: { public: true }, preHandler: localOnly })
+
+  app.get('/setup/bluetooth', pub('Bluetooth input devices (only on the device display, no login)'), wrap('bluetooth', async () => inputView(await bt.bluetoothStatus())))
+  app.post('/setup/bluetooth/scan', pub('Scan for keyboards/mice (only on the device display, no login)'), wrap('bluetooth', async () => {
+    await bt.power(true).catch(() => {})
+    return inputView(await bt.scan(10))
+  }))
+  app.post('/setup/bluetooth/pair', { ...pub('Pair keyboard/mouse (only on the device display, no login)'), schema: s('Pair keyboard/mouse', body({ address: { type: 'string' } }, ['address'])) },
+    wrap('bluetooth', async req => { await bt.pair(req.body.address); log('bluetooth', 'info', 'bluetooth.pair', { address: req.body.address, setup: true }); return inputView(await bt.bluetoothStatus()) }))
 
   app.get('/hardware', { schema: s('Hardware capabilities of this device'), preHandler: requirePerm('system.view') }, async () => {
     let storage = null

@@ -877,5 +877,11 @@
       "snapshot": "Still image",
       "mjpeg": "MJPEG"
     }
+  },
+  "btsetup": {
+    "button": "Connect Bluetooth keyboard",
+    "title": "Pair keyboard / mouse",
+    "hint": "Put the keyboard into pairing mode (usually hold the Bluetooth key for 3 s), then tap “Pair”.",
+    "done": "“{name}” is connected. You can type now."
   }
 }

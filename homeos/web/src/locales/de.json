@@ -877,5 +877,11 @@
       "snapshot": "Standbild",
       "mjpeg": "MJPEG"
     }
+  },
+  "btsetup": {
+    "button": "Bluetooth-Tastatur verbinden",
+    "title": "Tastatur / Maus koppeln",
+    "hint": "Tastatur in den Kopplungsmodus versetzen (meist Bluetooth-Taste 3 s halten), dann hier auf „Koppeln“ tippen.",
+    "done": "„{name}“ ist verbunden. Du kannst jetzt tippen."
   }
 }
