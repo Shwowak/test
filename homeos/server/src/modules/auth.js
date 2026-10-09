@@ -4,6 +4,7 @@ import {
   passwordProblem, pinProblem, SESSION_DAYS, can, userFromToken,
 } from '../core/auth.js'
 import { getSetting, isLanIp, isLocalIp } from '../core/settings.js'
+import { setupAllowed } from '../system/setupnet.js'
 import { HttpError, badRequest, requirePerm } from '../core/http.js'
 import { log } from '../core/logger.js'
 import { LOCALES } from './registry.js'
@@ -37,17 +38,17 @@ export default async function authModule(app) {
   const local = isLocalIp
 
   app.get('/auth/setup', { schema: { tags: ['auth'], summary: 'First-run setup needed?' }, config: { public: true } },
-    async req => ({ needed: setupNeeded(), local: local(req.ip) }))
+    async req => ({ needed: setupNeeded(), local: local(req.ip), codeRequired: !local(req.ip) && process.env.SMARTBOARD_HAL === '1' }))
 
   app.post('/auth/setup', {
     schema: {
       tags: ['auth'], summary: 'First-run: create the admin (only on the device display, only once)',
-      body: { type: 'object', required: ['name', 'password'], properties: { name: { type: 'string', minLength: 1, maxLength: 40 }, password: { type: 'string' }, pin: { type: 'string' } } },
+      body: { type: 'object', required: ['name', 'password'], properties: { name: { type: 'string', minLength: 1, maxLength: 40 }, password: { type: 'string' }, pin: { type: 'string' }, code: { type: 'string' } } },
     },
     config: { public: true },
   }, async (req, reply) => {
     if (!setupNeeded()) throw new HttpError(409, 'setup.done')
-    if (!local(req.ip)) throw new HttpError(403, 'setup.local_only')
+    if (!setupAllowed(req)) throw new HttpError(403, local(req.ip) ? 'setup.local_only' : 'setup.code_required')
     const pwErr = passwordProblem(req.body.password)
     if (pwErr) throw badRequest(pwErr)
     if (req.body.pin) { const pinErr = pinProblem(req.body.pin); if (pinErr) throw badRequest(pinErr) }

@@ -8,6 +8,7 @@ import { displayStatus, setBrightness, setPower, setOutput } from '../system/dis
 import { networkStatus, wifiScan, wifiConnect, wifiRadio, forget, setHostname } from '../system/network.js'
 import * as bt from '../system/bluetooth.js'
 import { btAuto } from '../system/btauto.js'
+import { setupInfo, setupAllowed, setupNeeded, online, stopHotspot, startHotspot } from '../system/setupnet.js'
 import { audioStatus, setVolume, setMute, setDefault } from '../system/audio.js'
 
 const DATA = dirname(resolve(process.env.HOMEOS_DB ?? './data/homeos.db'))
@@ -40,6 +41,34 @@ export default async function hardwareModule(app) {
   const INPUT = d => /^input-/.test(d.icon ?? '') || /keyboard|tastatur|mouse|maus|trackpad|keys|mx /i.test(d.name ?? '')
   const inputView = st => ({ available: !!st.available, powered: st.powered, auto: { ...btAuto }, devices: (st.devices ?? []).map(d => ({ ...d, input: INPUT(d) })).sort((a, b) => b.input - a.input) })
   const pub = summary => ({ schema: s(summary), config: { public: true }, preHandler: localOnly })
+
+  const setupGuard = async req => {
+    if (!isDevice()) throw new HttpError(409, 'hardware.unavailable')
+    if (!setupNeeded()) throw new HttpError(409, 'setup.done')
+    if (!setupAllowed(req)) throw new HttpError(403, 'setup.code_required')
+  }
+  const sp = summary => ({ schema: s(summary), config: { public: true }, preHandler: setupGuard })
+
+  app.get('/setup/info', { schema: s('First-run info: setup code, addresses, hotspot (display only)'), config: { public: true } }, async req => {
+    if (!isDevice()) return { device: false, needed: setupNeeded() }
+    const info = setupInfo()
+    if (!isLocalIp(req.ip)) { delete info.code; delete info.hotspot }
+    return { device: true, online: await online(), ...info }
+  })
+  app.get('/setup/network', sp('Network status during first-run setup'), wrap('network', async () => ({ online: await online(), ...(await networkStatus()) })))
+  app.get('/setup/network/wifi', sp('Scan WiFi during first-run setup'), wrap('network', () => wifiScan()))
+  app.post('/setup/network/wifi', { ...sp('Connect WiFi during first-run setup'), schema: s('Connect WiFi during first-run setup', body({ ssid: { type: 'string', maxLength: 64 }, password: { type: 'string', maxLength: 128 }, hidden: { type: 'boolean' }, code: { type: 'string' } }, ['ssid'])) },
+    wrap('network', async req => {
+      await stopHotspot()
+      try {
+        await wifiConnect(req.body.ssid, req.body.password, req.body.hidden)
+      } catch (e) {
+        startHotspot().catch(() => {})
+        throw e
+      }
+      log('network', 'info', 'wifi.connected', { ssid: req.body.ssid, setup: true })
+      return { online: await online(), ...setupInfo(), code: undefined }
+    }))
 
   app.get('/setup/bluetooth', pub('Bluetooth input devices (only on the device display, no login)'), wrap('bluetooth', async () => inputView(await bt.bluetoothStatus())))
   app.post('/setup/bluetooth/scan', pub('Scan for keyboards/mice (only on the device display, no login)'), wrap('bluetooth', async () => {

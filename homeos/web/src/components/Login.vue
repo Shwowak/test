@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { api } from '../api.js'
 import { errorText, setLocale, LOCALE_NAMES } from '../i18n.js'
 import BtSetup from './BtSetup.vue'
+import SetupWizard from './SetupWizard.vue'
 
 const { t, locale } = useI18n()
 const emit = defineEmits(['login'])
@@ -94,7 +95,7 @@ function press(d) {
 
 <template>
   <main class="wrap">
-    <form class="card" @submit.prevent="setup ? doSetup() : submit()">
+    <div class="card">
       <div class="logo">
         <svg viewBox="0 0 64 64" width="64" height="64" aria-hidden="true">
           <path d="M8 32h12l6-10h12l6 10h12M20 32v14h24V32M32 8v14M26 46v10M38 46v10" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -106,20 +107,9 @@ function press(d) {
       <p v-if="btAuto?.active || btAuto?.connected" class="btstat" :class="{ ok: btAuto.connected }">
         {{ btAuto.connected ? '✓ ' + t('btsetup.auto_ok', { name: btAuto.connected }) : '⌨ ' + t('btsetup.auto_search') }}
       </p>
-      <template v-if="setup">
-        <h2 class="st">{{ t('setup.title') }}</h2>
-        <p v-if="!setup.local" class="hint">{{ t('setup.local_only') }}</p>
-        <template v-else>
-          <p class="hint">{{ t('setup.hint') }}</p>
-          <div class="field"><label>{{ t('login.user') }}</label><input v-model="setupForm.name" required maxlength="40"></div>
-          <div class="field"><label>{{ t('login.password') }}</label><input id="sp" v-model="setupForm.password" type="password" required autocomplete="new-password"></div>
-          <div class="field"><label>{{ t('setup.repeat') }}</label><input v-model="setupForm.password2" type="password" required autocomplete="new-password"></div>
-          <div class="field"><label>{{ t('setup.pin') }}</label><input v-model="setupForm.pin" inputmode="numeric" pattern="[0-9]{4,8}" autocomplete="off"></div>
-          <button class="btn primary full" :disabled="busy">{{ t('setup.submit') }}</button>
-        </template>
-      </template>
+      <SetupWizard v-if="setup" :local="setup.local" @login="u => emit('login', u)" />
 
-      <template v-else>
+      <form v-else @submit.prevent="submit()">
       <div class="tabs">
         <button type="button" class="btn" :class="{ active: mode === 'pin' }" :disabled="!pinUsers.length" @click="mode = 'pin'">{{ t('login.pin') }}</button>
         <button type="button" class="btn" :class="{ active: mode === 'password' }" @click="mode = 'password'">{{ t('login.password') }}</button>
@@ -143,9 +133,8 @@ function press(d) {
         <div class="field"><label for="p">{{ t('login.password') }}</label><input id="p" v-model="password" type="password" autocomplete="current-password"></div>
         <button class="btn primary full" :disabled="busy">{{ t('login.submit') }}</button>
       </template>
-      </template>
-
       <p v-if="error" class="error">{{ error }}</p>
+      </form>
 
       <button v-if="btAvailable" type="button" class="btn full bt" @click="showBt = !showBt">⌨ {{ t('btsetup.button') }}</button>
       <BtSetup v-if="showBt" class="btpanel" @close="showBt = false" />
@@ -153,7 +142,7 @@ function press(d) {
       <select class="lang" :value="locale" :aria-label="t('settings.language')" @change="setLocale($event.target.value)">
         <option v-for="(n, k) in LOCALE_NAMES" :key="k" :value="k">{{ n }}</option>
       </select>
-    </form>
+    </div>
   </main>
 </template>
 

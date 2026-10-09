@@ -288,7 +288,10 @@
       "ai_answered": "Assistant answered",
       "ai_failed": "Assistant error",
       "camera_register_failed": "Camera not registered with go2rtc",
-      "login_auto": "Signed in automatically"
+      "login_auto": "Signed in automatically",
+      "setup_hotspot": "Setup WiFi started",
+      "setup_hotspot_failed": "Setup WiFi failed to start",
+      "setup_code_rotated": "Setup code renewed after failed attempts"
     }
   },
   "system": {
@@ -371,7 +374,8 @@
     },
     "setup": {
       "done": "Already set up",
-      "local_only": "Only possible on the device"
+      "local_only": "Only possible on the device",
+      "code_required": "Setup code wrong or missing"
     },
     "ai": {
       "no_model": "No AI model configured (Settings → Assistant)",
@@ -821,7 +825,19 @@
     "repeat": "Repeat password",
     "pin": "PIN for quick unlock (optional, 4–8 digits)",
     "submit": "Set up",
-    "mismatch": "Passwords do not match"
+    "mismatch": "Passwords do not match",
+    "step_network": "WiFi",
+    "step_account": "Account",
+    "network_hint": "Choose your WiFi. Without network, updates, weather and calendar won’t work.",
+    "no_networks": "No networks found.",
+    "skip": "Skip (LAN cable)",
+    "connecting": "Connecting…",
+    "code": "Setup code",
+    "code_hint": "The 6-digit code is shown on the SmartBoard display.",
+    "next": "Next",
+    "remote_title": "Set up from phone or PC",
+    "remote_hotspot": "Connect to this WiFi and open the address:",
+    "open": "Address"
   },
   "assistant": {
     "hello": "Ask me something or tell me what to switch.",

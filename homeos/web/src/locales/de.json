@@ -288,7 +288,10 @@
       "ai_answered": "Assistent hat geantwortet",
       "ai_failed": "Assistent-Fehler",
       "camera_register_failed": "Kamera nicht bei go2rtc angemeldet",
-      "login_auto": "Automatisch angemeldet"
+      "login_auto": "Automatisch angemeldet",
+      "setup_hotspot": "Einrichtungs-WLAN gestartet",
+      "setup_hotspot_failed": "Einrichtungs-WLAN konnte nicht starten",
+      "setup_code_rotated": "Einrichtungscode nach Fehlversuchen erneuert"
     }
   },
   "system": {
@@ -371,7 +374,8 @@
     },
     "setup": {
       "done": "Bereits eingerichtet",
-      "local_only": "Nur am Gerät möglich"
+      "local_only": "Nur am Gerät möglich",
+      "code_required": "Einrichtungscode falsch oder fehlt"
     },
     "ai": {
       "no_model": "Kein KI-Modell eingestellt (Einstellungen → Assistent)",
@@ -821,7 +825,19 @@
     "repeat": "Passwort wiederholen",
     "pin": "PIN für schnelles Entsperren (optional, 4–8 Ziffern)",
     "submit": "Einrichten",
-    "mismatch": "Passwörter stimmen nicht überein"
+    "mismatch": "Passwörter stimmen nicht überein",
+    "step_network": "WLAN",
+    "step_account": "Konto",
+    "network_hint": "Wähle dein WLAN. Ohne Netzwerk funktionieren Updates, Wetter und Kalender nicht.",
+    "no_networks": "Keine Netze gefunden.",
+    "skip": "Überspringen (LAN-Kabel)",
+    "connecting": "Verbinde…",
+    "code": "Einrichtungscode",
+    "code_hint": "Den 6-stelligen Code zeigt das SmartBoard-Display an.",
+    "next": "Weiter",
+    "remote_title": "Vom Handy oder PC einrichten",
+    "remote_hotspot": "Mit diesem WLAN verbinden und die Adresse öffnen:",
+    "open": "Adresse"
   },
   "assistant": {
     "hello": "Frag mich etwas oder sag mir, was ich schalten soll.",
