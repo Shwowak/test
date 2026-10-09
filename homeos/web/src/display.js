@@ -10,7 +10,12 @@ try {
   kioskFlag = sessionStorage.getItem('homeos.kiosk') === '1'
 } catch {}
 export const kiosk = kioskFlag
-if (kiosk) document.documentElement.classList.add('kiosk')
+if (kiosk) {
+  const root = document.documentElement
+  root.classList.add('kiosk')
+  window.addEventListener('pointermove', e => root.classList.toggle('touch-only', e.pointerType === 'touch'), { passive: true })
+  window.addEventListener('pointerdown', e => root.classList.toggle('touch-only', e.pointerType === 'touch'), { passive: true })
+}
 
 export async function loadHardware() {
   try { hw.info = await api('GET', '/hardware') } catch { hw.info = { device: false, display: {} } }
