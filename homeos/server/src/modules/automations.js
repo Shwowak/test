@@ -3,6 +3,7 @@ import { notFound, badRequest, requirePerm, HttpError } from '../core/http.js'
 import { recordChange } from '../core/versions.js'
 import { notify, acknowledge, listNotifications, NOTIFICATION_LEVELS } from '../core/notify.js'
 import { allSettings, setSetting, getSetting } from '../core/settings.js'
+import { can } from '../core/auth.js'
 import { sunTimes } from '../automation/sun.js'
 import { TRIGGER_TYPES, CONDITION_TYPES, ACTION_TYPES, automationRow, runAutomation } from '../automation/engine.js'
 
@@ -85,8 +86,9 @@ export default async function automationsModule(app) {
   app.get('/automations/:id/runs', { schema: tA('Run history'), preHandler: requirePerm('automations.view') }, async req =>
     db.prepare('SELECT * FROM automation_runs WHERE automation_id = ? ORDER BY id DESC LIMIT 50').all(req.params.id))
 
-  app.get('/settings', { schema: tS('General settings incl. location and sun times') }, async () => {
+  app.get('/settings', { schema: tS('General settings incl. location and sun times') }, async req => {
     const s = allSettings()
+    if (!can(req.user, 'users.manage')) delete s.network_code
     const sun = sunTimes(new Date(), s.location.lat, s.location.lon)
     return { ...s, sun }
   })
@@ -97,6 +99,7 @@ export default async function automationsModule(app) {
       timezone: { type: 'string', maxLength: 64 },
       features: { type: 'object', properties: { automations: { type: 'boolean' }, control: { type: 'boolean' }, assistant: { type: 'boolean' }, cameras: { type: 'boolean' } } },
       admin_timeout: { type: 'integer', minimum: 0, maximum: 1440 },
+      network_code: { type: 'string', maxLength: 64 },
       autologin: { type: ['object', 'null'], properties: { user_id: { type: 'integer' }, scope: { type: 'string', enum: ['device', 'lan'] } } },
     } } }),
     preHandler: requirePerm('users.manage'),
@@ -108,6 +111,7 @@ export default async function automationsModule(app) {
     if (req.body.location) setSetting('location', req.body.location)
     if (req.body.features) setSetting('features', { ...getSetting('features'), ...req.body.features })
     if (req.body.admin_timeout !== undefined) setSetting('admin_timeout', req.body.admin_timeout)
+    if (req.body.network_code !== undefined) setSetting('network_code', req.body.network_code.trim())
     if (req.body.autologin !== undefined) {
       const a = req.body.autologin
       if (a?.user_id && !db.prepare('SELECT id FROM users WHERE id = ?').get(a.user_id)) throw badRequest('user.not_found')

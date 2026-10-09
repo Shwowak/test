@@ -15,12 +15,14 @@ const users = ref([])
 const auto = ref({ user_id: null, scope: 'device' })
 const feats = ref({ automations: false, control: true, assistant: true, cameras: true })
 const adminTimeout = ref(10)
+const netCode = ref('')
 
 async function load() {
   s.value = await api('GET', '/settings')
   auto.value = { user_id: s.value.autologin?.user_id ?? null, scope: s.value.autologin?.scope ?? 'device' }
   feats.value = { ...feats.value, ...s.value.features }
   adminTimeout.value = s.value.admin_timeout ?? 10
+  netCode.value = s.value.network_code ?? ''
   if (canEdit()) users.value = await api('GET', '/users').catch(() => [])
 }
 onMounted(load)
@@ -28,7 +30,7 @@ onMounted(load)
 async function save() {
   msg.value = ''
   try {
-    await api('PUT', '/settings', { features: feats.value, admin_timeout: Number(adminTimeout.value) || 0, autologin: auto.value.user_id ? auto.value : null, timezone: s.value.timezone, location: { name: s.value.location.name ?? '', lat: Number(s.value.location.lat), lon: Number(s.value.location.lon) } })
+    await api('PUT', '/settings', { features: feats.value, admin_timeout: Number(adminTimeout.value) || 0, network_code: netCode.value, autologin: auto.value.user_id ? auto.value : null, timezone: s.value.timezone, location: { name: s.value.location.name ?? '', lat: Number(s.value.location.lat), lon: Number(s.value.location.lon) } })
     await load()
     await loadFeatures()
     msg.value = t('general.saved')
@@ -59,6 +61,7 @@ function locate() {
       <p class="sun">{{ t('general.features_hint') }}</p>
       <label v-for="k in ['control', 'automations', 'assistant', 'cameras']" :key="k" class="chk"><input v-model="feats[k]" type="checkbox"> {{ t('general.feature.' + k) }}</label>
       <h3>{{ t('general.autologin') }}</h3>
+      <div class="field"><label>{{ t('general.network_code') }}</label><input v-model="netCode" type="text" maxlength="64" autocomplete="off" :placeholder="t('general.network_code_ph')"></div>
       <div class="field"><label>{{ t('general.admin_timeout') }}</label><input v-model="adminTimeout" type="number" min="0" max="1440"></div>
       <div class="two">
         <div class="field">

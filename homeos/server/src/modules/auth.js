@@ -38,7 +38,7 @@ export default async function authModule(app) {
   const local = isLocalIp
 
   app.get('/auth/setup', { schema: { tags: ['auth'], summary: 'First-run setup needed?' }, config: { public: true } },
-    async req => ({ needed: setupNeeded(), local: local(req.ip), codeRequired: !local(req.ip) && process.env.SMARTBOARD_HAL === '1' && !headless() }))
+    async req => ({ needed: setupNeeded(), local: local(req.ip), codeRequired: false }))
 
   app.post('/auth/setup', {
     schema: {
@@ -61,6 +61,17 @@ export default async function authModule(app) {
     return publicUser(user)
   })
 
+  app.post('/auth/netcode', { schema: { tags: ['auth'], summary: 'Enter the network access code (if configured)', body: { type: 'object', required: ['code'], properties: { code: { type: 'string', maxLength: 64 } } } }, config: { public: true } }, async (req, reply) => {
+    const net = getSetting('network_code')
+    if (!net) return { ok: true }
+    if (String(req.body.code) !== net) {
+      await new Promise(r => setTimeout(r, 800))
+      throw new HttpError(401, 'netcode.invalid')
+    }
+    reply.setCookie('homeos_netcode', net, { path: '/', httpOnly: true, sameSite: 'strict', secure, maxAge: 365 * 86400 })
+    return { ok: true }
+  })
+
   app.get('/auth/pin-users', { schema: { tags: ['auth'], summary: 'Users that can log in with PIN (names only)' }, config: { public: true } },
     async () => db.prepare('SELECT name, COALESCE(display_name, name) AS display_name FROM users WHERE pin IS NOT NULL AND disabled = 0 ORDER BY name').all())
 
@@ -74,6 +85,8 @@ export default async function authModule(app) {
   app.get('/auth/me', { schema: { tags: ['auth'], summary: 'Current user (or automatic login if enabled)' }, config: { public: true } }, async (req, reply) => {
     const session = userFromToken(req.cookies.homeos_session)
     if (session) return publicUser(session)
+    const net = getSetting('network_code')
+    if (net && !local(req.ip) && req.cookies.homeos_netcode !== net) throw new HttpError(401, 'netcode.required')
     const auto = getSetting('autologin')
     const allowed = auto?.user_id && (auto.scope === 'lan' ? isLanIp(req.ip) : isLocalIp(req.ip))
     const user = allowed && db.prepare('SELECT * FROM users WHERE id = ? AND disabled = 0').get(auto.user_id)

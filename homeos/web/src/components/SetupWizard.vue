@@ -160,7 +160,6 @@ const stepNo = computed(() => ({ code: 0, network: 1, account: 2 })[step.value] 
         <div class="kv"><span>{{ t('setup.open') }}</span><b>{{ info.hotspot.url }}</b></div>
       </template>
       <div v-else-if="info.online" class="kv"><span>{{ t('setup.open') }}</span><b>{{ info.urls.join('  ·  ') }}</b></div>
-      <div class="kv"><span>{{ t('setup.code') }}</span><b class="code">{{ info.code }}</b></div>
     </div>
   </div>
 </template>

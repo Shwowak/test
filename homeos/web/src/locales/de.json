@@ -607,7 +607,9 @@
       "assistant": "KI-Assistent",
       "cameras": "Kameras"
     },
-    "admin_timeout": "Nach Änderungen automatisch sperren nach (min, 0 = nie)"
+    "admin_timeout": "Nach Änderungen automatisch sperren nach (min, 0 = nie)",
+    "network_code": "Zugangscode fürs Netzwerk (optional – Geräte im Heimnetz müssen ihn einmal eingeben, am Display nie)",
+    "network_code_ph": "leer = kein Code"
   },
   "notifications": {
     "title": "Meldungen",
@@ -959,5 +961,11 @@
     "title": "Entsperren",
     "hint": "Zum Ändern bitte anmelden. Anschauen geht ohne Anmeldung.",
     "submit": "Entsperren"
+  },
+  "netcode": {
+    "hint": "Zugangscode für dieses SmartBoard eingeben.",
+    "code": "Zugangscode",
+    "submit": "Öffnen",
+    "wrong": "Code falsch"
   }
 }

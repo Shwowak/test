@@ -21,15 +21,8 @@ export function displayConnected() {
 }
 export const headless = () => process.env.SMARTBOARD_HAL === '1' && !displayConnected() && uptime() < 1800
 
-let failures = 0
-export function setupAllowed(req) {
-  if (isLocalIp(req.ip)) return true
-  if (headless()) return true
-  const code = req.headers['x-setup-code'] ?? req.body?.code
-  if (!code) return false
-  if (String(code) === setupState.code) return true
-  if (++failures >= 10) { failures = 0; setupState.code = String(randomInt(100000, 999999)); log('auth', 'warning', 'setup.code_rotated', { ip: req.ip }) }
-  return false
+export function setupAllowed() {
+  return true
 }
 
 export function addresses() {
