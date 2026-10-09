@@ -234,11 +234,23 @@ input[type='range']::-moz-range-thumb { width: 32px; height: 32px; border: 0; bo
 .theme-apple .field input, .theme-apple .field select, .theme-apple .field textarea { border: 0; border-radius: 12px; background: rgba(118, 118, 128, 0.2); }
 .theme-apple .field input:focus, .theme-apple .field select:focus, .theme-apple .field textarea:focus { box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.55); }
 
-.theme-apple .grid-stack-item-content,
-.theme-apple .style-tiles .grid-stack-item-content,
+.theme-apple .grid-stack-item-content {
+  inset: 0 !important;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.theme-apple .style-seamless .grid-stack-item-content { border-right: 1px solid rgba(255, 255, 255, 0.06); border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
+.theme-apple .style-tiles .grid-stack-item-content {
+  inset: 2px !important;
+  border-radius: 6px;
+  background: rgba(28, 28, 30, 0.85);
+}
 .theme-apple .style-glass .grid-stack-item-content {
   inset: 6px !important;
-  border: 0;
   border-radius: var(--radius);
   background: rgba(44, 44, 46, 0.55);
   backdrop-filter: blur(30px) saturate(180%);
