@@ -9,6 +9,7 @@ import Settings from './settings/Settings.vue'
 import DevicesView from './devices/DevicesView.vue'
 import AutomationsView from './automations/AutomationsView.vue'
 import AlertLayer from './notify/AlertLayer.vue'
+import AlarmLayer from './alarm/AlarmLayer.vue'
 import NotificationCenter from './notify/NotificationCenter.vue'
 import { notes, unread, loadNotifications } from '../notifications.js'
 import { startIdle, kiosk } from '../display.js'
@@ -240,6 +241,7 @@ const icons = ['⌂', '◈', '⚡', '☀', '♨', '☎', '♫', '⚙', '⛨', '�
       <Assistant :auto-listen="assistant.listen" />
     </Sheet>
     <AlertLayer />
+    <AlarmLayer />
 
     <Sheet v-if="showSources" :title="t('sources.title')" @close="showSources = false">
       <SourceManager :meta="meta" :sources="sources" @changed="loadSources" />

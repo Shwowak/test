@@ -24,6 +24,7 @@ import pluginsModule from './src/modules/plugins.js'
 import hardwareModule, { isDevice } from './src/modules/hardware.js'
 import aiModule from './src/modules/ai.js'
 import camerasModule, { syncCameras } from './src/modules/cameras.js'
+import alarmModule from './src/modules/alarm.js'
 import { keepOutputs } from './src/system/display.js'
 import { startBtAuto } from './src/system/btauto.js'
 import { startSetupNet } from './src/system/setupnet.js'
@@ -68,7 +69,8 @@ app.register(async api => {
     req.user = user
   })
   api.get('/health', { schema: { tags: ['system'], summary: 'Liveness probe' }, config: { public: true } }, async () => ({ ok: true, version: process.env.npm_package_version ?? null }))
-  for (const m of [authModule, usersModule, dashboardsModule, sourcesModule, adminModule, devicesModule, automationsModule, pluginsModule, hardwareModule, aiModule, camerasModule]) await api.register(m)
+  api.addContentTypeParser('application/x-www-form-urlencoded', { parseAs: 'string' }, (req, body, done) => done(null, Object.fromEntries(new URLSearchParams(body))))
+  for (const m of [authModule, usersModule, dashboardsModule, sourcesModule, adminModule, devicesModule, automationsModule, pluginsModule, hardwareModule, aiModule, camerasModule, alarmModule]) await api.register(m)
 }, { prefix: '/api/v1' })
 
 const webDir = join(dirname(fileURLToPath(import.meta.url)), '..', 'web', 'dist')

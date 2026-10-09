@@ -12,6 +12,7 @@ import PluginsSettings from './PluginsSettings.vue'
 import HardwareSettings from './HardwareSettings.vue'
 import AiSettings from './AiSettings.vue'
 import CamerasSettings from './CamerasSettings.vue'
+import AlarmSettings from './AlarmSettings.vue'
 import { features } from '../../features.js'
 
 defineProps({ meta: Object })
@@ -30,6 +31,7 @@ const tabs = computed(() => [
   { id: 'integrations', icon: '⌁', show: can('devices.manage') },
   { id: 'assistant', icon: '✦', show: can('ai.use') && features.assistant },
   { id: 'cameras', icon: '📷', show: can('cameras.view') && features.cameras },
+  { id: 'alarm', icon: '🚨', show: can('users.manage') },
   { id: 'plugins', icon: '⧉', show: can('plugins.view') },
   { id: 'users', icon: '⚇', show: can('users.manage') },
   { id: 'versions', icon: '⟲', show: can('versions.view') },
@@ -54,6 +56,7 @@ const tab = ref('profile')
       <HardwareSettings v-else-if="['display', 'network', 'bluetooth', 'audio', 'update'].includes(tab)" :section="tab" />
       <AiSettings v-else-if="tab === 'assistant'" />
       <CamerasSettings v-else-if="tab === 'cameras'" />
+      <AlarmSettings v-else-if="tab === 'alarm'" />
       <PluginsSettings v-else-if="tab === 'plugins'" />
       <UsersSettings v-else-if="tab === 'users'" :meta="meta" />
       <VersionsSettings v-else-if="tab === 'versions'" @restored="emit('changed')" />

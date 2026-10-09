@@ -146,7 +146,8 @@
       "audio": "Audio",
       "update": "Update",
       "assistant": "Assistent",
-      "cameras": "Kameras"
+      "cameras": "Kameras",
+      "alarm": "Einsatzmonitor"
     }
   },
   "profile": {
@@ -1029,5 +1030,23 @@
     "per_room": "Zusätzlich ein Dashboard pro Raum",
     "run": "Dashboards erstellen",
     "confirm": "Vorher automatisch erstellte Dashboards werden ersetzt. Fortfahren?"
+  },
+  "alarm": {
+    "hint": "Einsatzmonitor wie beim GroupAlarm-Raspberry-Image: Bei einem Alarm schaltet sich der Bildschirm ein, ein Signalton ertönt und der Einsatz wird im Vollbild angezeigt. Danach kehrt das Dashboard automatisch zurück.",
+    "enabled": "Einsatzmonitor aktiv",
+    "monitor_url": "Monitor-Link (GroupAlarm)",
+    "monitor_help": "In GroupAlarm unter Monitore → Token → Link kopieren. Wird bei Alarm im Vollbild angezeigt. Leer lassen für die eigene Alarmanzeige.",
+    "webhook": "Alarm-Webhook",
+    "webhook_help": "In GroupAlarm (Alarmvorlage → Webhook), DIVERA 24/7, alamos oder per Skript als POST mit JSON aufrufen. Felder wie keyword/title, message/text und address werden erkannt. Das Feld end = true beendet den Alarm.",
+    "duration": "Anzeigedauer (Minuten)",
+    "screen_on": "Bildschirm bei Alarm einschalten",
+    "sound": "Signalton",
+    "sound_seconds": "Signalton-Dauer (Sekunden)",
+    "regenerate": "Neuen Webhook-Schlüssel",
+    "test": "Probealarm",
+    "copied": "Kopiert.",
+    "badge": "EINSATZ",
+    "end": "Beenden",
+    "map": "Karte öffnen"
   }
 }

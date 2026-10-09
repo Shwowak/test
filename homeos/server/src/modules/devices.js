@@ -221,7 +221,7 @@ export default async function devicesModule(app) {
     const send = type => payload => socket.readyState === 1 && socket.send(JSON.stringify({ type, payload }))
     const handlers = { 'device.state': send('device.state'), 'device.discovered': send('device.discovered'), 'integration.status': send('integration.status'), 'config.changed': send('config.changed'),
       notification: send('notification'), 'notification.ack': send('notification.ack'), 'ui.command': send('ui.command'), 'automation.ran': send('automation.ran'),
-      'plugin.data': send('plugin.data'), 'plugin.status': send('plugin.status') }
+      'plugin.data': send('plugin.data'), 'plugin.status': send('plugin.status'), alarm: send('alarm') }
     for (const [e, h] of Object.entries(handlers)) bus.on(e, h)
     const ping = setInterval(() => socket.readyState === 1 && socket.ping(), 30000)
     socket.on('close', () => {

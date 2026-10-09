@@ -146,7 +146,8 @@
       "audio": "Audio",
       "update": "Update",
       "assistant": "Assistant",
-      "cameras": "Cameras"
+      "cameras": "Cameras",
+      "alarm": "Incident monitor"
     }
   },
   "profile": {
@@ -1029,5 +1030,23 @@
     "per_room": "Also one dashboard per room",
     "run": "Create dashboards",
     "confirm": "Previously auto-created dashboards will be replaced. Continue?"
+  },
+  "alarm": {
+    "hint": "Incident monitor like the GroupAlarm Raspberry image: on an alarm the screen turns on, a tone sounds and the incident is shown full-screen. The dashboard returns automatically afterwards.",
+    "enabled": "Incident monitor active",
+    "monitor_url": "Monitor link (GroupAlarm)",
+    "monitor_help": "In GroupAlarm under Monitors → Token → copy link. Shown full-screen on alarm. Leave empty for the built-in alarm view.",
+    "webhook": "Alarm webhook",
+    "webhook_help": "Call as POST with JSON from GroupAlarm (alarm template → webhook), DIVERA 24/7, alamos or a script. Fields like keyword/title, message/text and address are recognised. The field end = true ends the alarm.",
+    "duration": "Display time (minutes)",
+    "screen_on": "Turn screen on for alarms",
+    "sound": "Alert tone",
+    "sound_seconds": "Tone duration (seconds)",
+    "regenerate": "New webhook key",
+    "test": "Test alarm",
+    "copied": "Copied.",
+    "badge": "ALARM",
+    "end": "End",
+    "map": "Open map"
   }
 }
