@@ -51,7 +51,14 @@ window.addEventListener('keydown', e => {
   if (e.key !== 'Escape' || (window.__sheets ?? []).length || document.querySelector('.osk')) return
   if (notes.camera) { notes.camera = null; return }
   if (editing.value) { editing.value = false; return }
-  if (view.value !== 'dashboard') view.value = 'dashboard'
+  if (view.value !== 'dashboard') { view.value = 'dashboard'; return }
+  if (railHidden.value) toggleRail()
+})
+window.addEventListener('keydown', e => {
+  if ((window.__sheets ?? []).length || ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) return
+  if (e.key === 'PageDown' || (e.ctrlKey && e.key === 'ArrowRight')) { e.preventDefault(); step(1) }
+  else if (e.key === 'PageUp' || (e.ctrlKey && e.key === 'ArrowLeft')) { e.preventDefault(); step(-1) }
+  else if (e.key === 'Home' && !e.ctrlKey) { e.preventDefault(); if (dashboards.value[0]) select(dashboards.value[0].id) }
 })
 const emit = defineEmits(['logout'])
 const showSettings = ref(false)
@@ -181,6 +188,7 @@ const icons = ['⌂', '◈', '⚡', '☀', '♨', '☎', '♫', '⚙', '⛨', '�
       <button v-if="!isViewer" class="tab" @click="emit('logout')"><span class="ico">{{ features.viewer ? '🔒' : '⏻' }}</span><span class="nm">{{ features.viewer ? t('nav.lock') : t('nav.logout') }}</span></button>
     </nav>
 
+    <button v-if="railHidden" class="edge" :aria-label="t('nav.show')" @click="toggleRail">›</button>
     <section class="main">
       <header class="top">
         <div>
@@ -270,7 +278,10 @@ const icons = ['⌂', '◈', '⚡', '☀', '♨', '☎', '♫', '⚙', '⛨', '�
 .main { flex: 1; min-width: 0; overflow-y: auto; padding: 0; }
 .top { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; padding: 16px 20px; }
 .top h1 { margin: 4px 0 0; font-size: 34px; font-weight: 300; letter-spacing: 0.02em; }
-.actions { display: flex; gap: 10px; }
+.actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; min-width: 0; }
+.top > div:first-child { min-width: 0; }
+.edge { position: fixed; left: 0; top: 0; bottom: 0; width: 22px; z-index: 50; background: linear-gradient(90deg, rgba(34, 211, 238, .18), transparent); border: 0; color: var(--cyan); font-size: 20px; cursor: pointer; opacity: .6; }
+.edge:hover, .edge:focus { opacity: 1; }
 .empty { color: var(--dim); font-size: 20px; padding: 40px 6px; }
 .icons { display: grid; grid-template-columns: repeat(auto-fill, minmax(56px, 1fr)); gap: 8px; }
 .styles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
