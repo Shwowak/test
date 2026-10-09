@@ -1,7 +1,10 @@
 <script setup>
-import { inject } from 'vue'
+import { inject, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { notes, ack } from '../../notifications.js'
+import CameraWidget from '../../widgets/CameraWidget.vue'
+let camTimer = null
+watch(() => notes.camera, c => { clearTimeout(camTimer); if (c) camTimer = setTimeout(() => { notes.camera = null }, Math.max(5000, c.until - Date.now())) })
 
 const { t, d } = useI18n()
 const user = inject('user')
@@ -30,6 +33,11 @@ const icon = { info: 'ℹ', warning: '⚠', critical: '⛔', emergency: '🚨' }
     </div>
   </div>
 
+  <div v-if="notes.camera" class="camov" @click.self="notes.camera = null">
+    <div class="camwrap"><CameraWidget :camera-id="notes.camera.id" fill /></div>
+    <button class="btn camclose" @click="notes.camera = null">✕</button>
+  </div>
+
   <div v-if="notes.display !== 'on' && !notes.overlay.length" class="screen" :class="notes.display" @click="notes.display = 'on'" />
 </template>
 
@@ -47,6 +55,9 @@ const icon = { info: 'ℹ', warning: '⚠', critical: '⛔', emergency: '🚨' }
 .box h2 { font-size: 40px; font-weight: 400; margin: 0; }
 .box p { font-size: 22px; color: #fecaca; margin: 0; }
 .ackbtn { margin-top: 24px; font-size: 22px; min-height: 72px; min-width: 280px; }
+.camov { position: fixed; inset: 0; z-index: 2800; background: rgba(0, 0, 0, .9); display: flex; align-items: center; justify-content: center; }
+.camwrap { position: relative; width: 92vw; height: 86vh; }
+.camclose { position: fixed; top: 16px; right: 16px; min-width: 64px; min-height: 64px; font-size: 26px; }
 .screen { position: fixed; inset: 0; z-index: 2500; background: #000; }
 .screen.dim { background: rgba(0, 0, 0, .7); }
 @keyframes pulse { 50% { background: rgba(160, 10, 20, .92); } }

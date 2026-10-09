@@ -13,13 +13,14 @@ import IframeWidget from '../widgets/IframeWidget.vue'
 import DeviceWidget from '../widgets/DeviceWidget.vue'
 import RoomWidget from '../widgets/RoomWidget.vue'
 import PluginWidget from '../widgets/PluginWidget.vue'
+import CameraWidget from '../widgets/CameraWidget.vue'
 
 const props = defineProps({ widget: Object, editing: Boolean })
 
 const components = {
   clock: ClockWidget, text: TextWidget, kpi: KpiWidget, gauge: GaugeWidget,
   chart: ChartWidget, calendar: CalendarWidget, switch: SwitchWidget, iframe: IframeWidget,
-  device: DeviceWidget, room: RoomWidget, plugin: PluginWidget,
+  device: DeviceWidget, room: RoomWidget, plugin: PluginWidget, camera: CameraWidget,
 }
 const needsData = ['kpi', 'gauge', 'chart', 'calendar', 'switch']
 

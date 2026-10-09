@@ -21,6 +21,8 @@ import automationsModule from './src/modules/automations.js'
 import { startAutomations } from './src/automation/engine.js'
 import pluginsModule from './src/modules/plugins.js'
 import hardwareModule, { isDevice } from './src/modules/hardware.js'
+import aiModule from './src/modules/ai.js'
+import camerasModule, { syncCameras } from './src/modules/cameras.js'
 import { keepOutputs } from './src/system/display.js'
 import { startPlugins, stopPlugins } from './src/plugins/host.js'
 
@@ -57,7 +59,7 @@ app.register(async api => {
     req.user = user
   })
   api.get('/health', { schema: { tags: ['system'], summary: 'Liveness probe' }, config: { public: true } }, async () => ({ ok: true, version: process.env.npm_package_version ?? null }))
-  for (const m of [authModule, usersModule, dashboardsModule, sourcesModule, adminModule, devicesModule, automationsModule, pluginsModule, hardwareModule]) await api.register(m)
+  for (const m of [authModule, usersModule, dashboardsModule, sourcesModule, adminModule, devicesModule, automationsModule, pluginsModule, hardwareModule, aiModule, camerasModule]) await api.register(m)
 }, { prefix: '/api/v1' })
 
 const webDir = join(dirname(fileURLToPath(import.meta.url)), '..', 'web', 'dist')
@@ -70,6 +72,7 @@ await app.listen({ host: '0.0.0.0', port: Number(process.env.PORT ?? 8080) })
 startAll()
 startAutomations()
 startPlugins()
+syncCameras().catch(() => {})
 if (isDevice()) keepOutputs()
 for (const sig of ['SIGTERM', 'SIGINT']) process.once(sig, () => { stopPlugins(); process.exit(0) })
 log('system', 'info', 'system.started', { version: process.env.npm_package_version })

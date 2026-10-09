@@ -3,7 +3,7 @@ import { bus } from './events.js'
 import { log } from './logger.js'
 import { invalidate, startAll } from '../devices/engine.js'
 
-const TABLES = ['rooms', 'integrations', 'devices', 'dashboards', 'widgets', 'data_sources', 'automations', 'plugins']
+const TABLES = ['rooms', 'integrations', 'devices', 'dashboards', 'widgets', 'data_sources', 'automations', 'plugins', 'cameras']
 const KEEP = Number(process.env.HOMEOS_VERSIONS_KEEP ?? 1000)
 
 function snapshot() {

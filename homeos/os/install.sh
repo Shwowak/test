@@ -54,7 +54,7 @@ fetch_file() {
 log "Pakete installieren ($PRETTY_NAME)"
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -q
-PKGS="curl ca-certificates jq xz-utils openssl network-manager bluez pipewire pipewire-pulse wireplumber
+PKGS="curl ca-certificates jq ffmpeg xz-utils openssl network-manager bluez pipewire pipewire-pulse wireplumber
   avahi-daemon nftables unattended-upgrades polkitd ddcutil i2c-tools util-linux fonts-noto-color-emoji fonts-dejavu-core"
 if [ "$KIOSK" = 1 ]; then
   PKGS="$PKGS cage wlr-randr libinput-bin"
@@ -71,6 +71,13 @@ if [ "$(/opt/smartboard/node/bin/node -v 2>/dev/null)" != "v$NODE_VERSION" ]; th
   rm -rf /opt/smartboard/node && mkdir -p /opt/smartboard/node
   tar -xJf /tmp/node.tar.xz -C /opt/smartboard/node --strip-components=1
   rm -f /tmp/node.tar.xz
+fi
+
+log "go2rtc (Kameras)"
+GO2RTC_VERSION=1.9.9
+if [ ! -x /opt/smartboard/go2rtc ] || ! /opt/smartboard/go2rtc -version 2>/dev/null | grep -q "$GO2RTC_VERSION"; then
+  G_ARCH=$([ "$ARCH" = arm64 ] && echo arm64 || echo amd64)
+  curl -fsSL "https://github.com/AlexxIT/go2rtc/releases/download/v$GO2RTC_VERSION/go2rtc_linux_$G_ARCH" -o /opt/smartboard/go2rtc.new && chmod 755 /opt/smartboard/go2rtc.new && mv /opt/smartboard/go2rtc.new /opt/smartboard/go2rtc
 fi
 
 log "Benutzer smartboard"
@@ -124,6 +131,8 @@ fetch_file smartboard-update.service /etc/systemd/system/smartboard-update.servi
 fetch_file smartboard-update-timer.service /etc/systemd/system/smartboard-update-timer.service
 fetch_file smartboard-update.timer /etc/systemd/system/smartboard-update.timer
 fetch_file smartboard-update /usr/local/sbin/smartboard-update && chmod 755 /usr/local/sbin/smartboard-update
+fetch_file go2rtc.service /etc/systemd/system/smartboard-go2rtc.service
+fetch_file go2rtc.yaml /etc/smartboard/go2rtc.yaml
 fetch_file wait-core /usr/local/lib/smartboard/wait-core && chmod 755 /usr/local/lib/smartboard/wait-core
 fetch_file 50-smartboard.rules /etc/polkit-1/rules.d/50-smartboard.rules
 fetch_file 90-smartboard.rules /etc/udev/rules.d/90-smartboard.rules
@@ -153,7 +162,7 @@ for f in /boot/firmware/cmdline.txt /boot/cmdline.txt; do
 done
 
 log "Dienste"
-UNITS="smartboard-core.service smartboard-update.timer nftables.service avahi-daemon.service NetworkManager.service bluetooth.service"
+UNITS="smartboard-core.service smartboard-go2rtc.service smartboard-update.timer nftables.service avahi-daemon.service NetworkManager.service bluetooth.service"
 [ "$KIOSK" = 1 ] && UNITS="$UNITS smartboard-kiosk.service"
 systemctl disable userconfig.service 2>/dev/null || true
 if [ "$KIOSK" = 1 ]; then systemctl set-default graphical.target; fi

@@ -17,4 +17,5 @@ exec "$BROWSER" \
   --autoplay-policy=no-user-gesture-required \
   --password-store=basic --check-for-update-interval=31536000 \
   --enable-features=OverlayScrollbar,TouchpadOverscrollHistoryNavigation:enabled/false \
-  --touch-events=enabled
+  --touch-events=enabled \
+  --use-fake-ui-for-media-stream

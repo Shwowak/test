@@ -81,6 +81,10 @@ const MIGRATIONS = [
       verified INTEGER NOT NULL DEFAULT 0, signer TEXT, installed_at TEXT NOT NULL, updated_at TEXT NOT NULL);
     CREATE TABLE IF NOT EXISTS plugin_storage (plugin_id TEXT NOT NULL, key TEXT NOT NULL, value TEXT NOT NULL, PRIMARY KEY (plugin_id, key));
     CREATE TABLE IF NOT EXISTS plugin_data (plugin_id TEXT NOT NULL, key TEXT NOT NULL, value TEXT NOT NULL, ts TEXT NOT NULL, PRIMARY KEY (plugin_id, key));`),
+  () => db.exec(`
+    CREATE TABLE IF NOT EXISTS cameras (
+      id INTEGER PRIMARY KEY, name TEXT NOT NULL, source TEXT NOT NULL, kind TEXT NOT NULL DEFAULT 'stream',
+      room_id INTEGER REFERENCES rooms(id) ON DELETE SET NULL, enabled INTEGER NOT NULL DEFAULT 1, sort INTEGER NOT NULL DEFAULT 0);`),
 ]
 
 export function migrate() {

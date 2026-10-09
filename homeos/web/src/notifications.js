@@ -1,8 +1,9 @@
 import { reactive, computed } from 'vue'
 import { api } from './api.js'
 import { listeners } from './devices.js'
+import { speak } from './speech.js'
 
-export const notes = reactive({ list: [], toasts: [], overlay: [], display: 'on', dashboard: null })
+export const notes = reactive({ list: [], toasts: [], overlay: [], display: 'on', dashboard: null, camera: null })
 export const unread = computed(() => notes.list.filter(n => !n.acknowledged_at).length)
 
 let audio = null
@@ -77,5 +78,7 @@ listeners.add((type, p) => {
     if (p.action === 'display') notes.display = p.state
     else if (p.action === 'sound') playTone(p.tone)
     else if (p.action === 'dashboard') notes.dashboard = { id: p.dashboard_id, at: Date.now() }
+    else if (p.action === 'camera') { notes.display = 'on'; notes.camera = { id: p.camera_id, until: Date.now() + (p.seconds ?? 60) * 1000 } }
+    else if (p.action === 'speak') speak(p.text)
   }
 })

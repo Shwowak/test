@@ -22,7 +22,8 @@
     "fullscreen": "Fullscreen",
     "logout": "Log out",
     "devices": "Devices",
-    "automations": "Rules"
+    "automations": "Rules",
+    "assistant": "Assistant"
   },
   "login": {
     "user": "User",
@@ -69,7 +70,8 @@
     "iframe": "Embed website",
     "device": "Device",
     "room": "Room",
-    "plugin": "Plugin"
+    "plugin": "Plugin",
+    "camera": "Camera"
   },
   "fields": {
     "value": "Value",
@@ -87,7 +89,8 @@
     "url": "URL",
     "device_id": "Device",
     "room_id": "Room",
-    "plugin_widget": "Plugin widget"
+    "plugin_widget": "Plugin widget",
+    "camera_id": "Camera"
   },
   "chartStyles": {
     "line": "Line (neon)",
@@ -140,7 +143,9 @@
       "network": "Network",
       "bluetooth": "Bluetooth",
       "audio": "Audio",
-      "update": "Update"
+      "update": "Update",
+      "assistant": "Assistant",
+      "cameras": "Cameras"
     }
   },
   "profile": {
@@ -194,7 +199,8 @@
       "device": "Device",
       "automation": "Automation",
       "settings": "Settings",
-      "plugin": "Plugin"
+      "plugin": "Plugin",
+      "camera": "Camera"
     },
     "action": {
       "create": "created",
@@ -225,7 +231,9 @@
       "users": "Users",
       "security": "Security",
       "updates": "Updates",
-      "errors": "Errors"
+      "errors": "Errors",
+      "ai": "Assistant",
+      "cameras": "Cameras"
     },
     "levels": {
       "debug": "Debug",
@@ -276,7 +284,11 @@
       "bluetooth_disconnect": "Bluetooth disconnected",
       "bluetooth_remove": "Bluetooth device removed",
       "system_power": "Reboot/power off",
-      "update_requested": "Update requested"
+      "update_requested": "Update requested",
+      "ai_answered": "Assistant answered",
+      "ai_failed": "Assistant error",
+      "camera_register_failed": "Camera not registered with go2rtc",
+      "login_auto": "Signed in automatically"
     }
   },
   "system": {
@@ -360,6 +372,24 @@
     "setup": {
       "done": "Already set up",
       "local_only": "Only possible on the device"
+    },
+    "ai": {
+      "no_model": "No AI model configured (Settings → Assistant)",
+      "unreachable": "AI server not reachable",
+      "no_stt": "No speech recognition configured (Settings → Assistant)",
+      "no_tts": "No speech output configured",
+      "stt_failed": "Speech recognition failed",
+      "tts_failed": "Speech output failed",
+      "bad_audio": "Invalid recording"
+    },
+    "privacy": {
+      "microphone_off": "Microphone is disabled in privacy settings",
+      "cameras_off": "Cameras are disabled in privacy settings"
+    },
+    "cameras": {
+      "no_go2rtc": "This camera needs go2rtc",
+      "unreachable": "Camera not reachable",
+      "no_live": "No live view available"
     }
   },
   "devices": {
@@ -612,7 +642,9 @@
       "display": "Display",
       "sound": "Sound",
       "delay": "Wait",
-      "run_automation": "Run automation"
+      "run_automation": "Run automation",
+      "camera": "Show camera",
+      "speak": "Speak"
     },
     "fields": {
       "at": "Time",
@@ -634,7 +666,9 @@
       "state": "State",
       "tone": "Tone",
       "seconds": "Seconds",
-      "automation_id": "Automation"
+      "automation_id": "Automation",
+      "camera_id": "Camera",
+      "text": "Text"
     },
     "options": {
       "sunrise": "Sunrise",
@@ -788,5 +822,60 @@
     "pin": "PIN for quick unlock (optional, 4–8 digits)",
     "submit": "Set up",
     "mismatch": "Passwords do not match"
+  },
+  "assistant": {
+    "hello": "Ask me something or tell me what to switch.",
+    "examples": "Turn off the living room light;What is the weather tomorrow?;Which appointments do I have this week?;How much power did we produce today?",
+    "placeholder": "Message…",
+    "listening": "Listening…",
+    "speak": "Speak",
+    "mic_denied": "No microphone access",
+    "no_model": "No AI model selected yet – Settings → Assistant.",
+    "tools": {
+      "get_devices": "Devices",
+      "get_weather": "Weather",
+      "get_calendar": "Calendar",
+      "get_energy": "Energy",
+      "list_automations": "Rules",
+      "create_notification": "Notification"
+    }
+  },
+  "ai": {
+    "privacy": "Privacy",
+    "allow_mic": "Allow microphone (voice control)",
+    "allow_cameras": "Allow cameras",
+    "llm": "AI model",
+    "llm_hint": "Runs locally: Ollama (e.g. on your Mac or a home server). Or any OpenAI-compatible server (LM Studio, vLLM, LocalAI).",
+    "provider": "Provider",
+    "openai_compat": "OpenAI-compatible",
+    "model": "Model",
+    "reload": "Reload models",
+    "model_hint": "Recommended (tool support): qwen2.5:7b, qwen3:8b, llama3.1:8b. Download: “ollama pull qwen2.5:7b”.",
+    "voice": "Voice",
+    "voice_hint": "Speech recognition (Whisper) and speech output (Piper) via an OpenAI-compatible speech server, e.g. “speaches” as a Docker container. Without one, the browser reads answers aloud.",
+    "stt_url": "Speech recognition URL",
+    "stt_model": "Recognition model",
+    "tts_url": "Speech output URL",
+    "tts_model": "Voice model",
+    "tts_voice": "Voice",
+    "speak_replies": "Read answers aloud",
+    "test_voice": "Test voice",
+    "test_sentence": "Hello, I am your SmartBoard."
+  },
+  "cameras": {
+    "privacy_off": "Cameras disabled",
+    "privacy_off_hint": "Cameras are off for privacy. Enable under Settings → Assistant → Privacy.",
+    "not_found": "Camera not found",
+    "offline": "Camera not reachable",
+    "add": "Add camera",
+    "source": "Address",
+    "source_hint": "rtsp://… (IP camera, via go2rtc) · http(s)://…/snapshot.jpg (still image) · http(s)://…mjpg (MJPEG). Credentials in the address are hidden.",
+    "go2rtc_hint": "go2rtc converts RTSP/ONVIF/HomeKit cameras. Automatic on the SmartBoard device; with Docker start the “alexxit/go2rtc” container with port 1984 and enter it here.",
+    "confirm_delete": "Remove camera “{name}”?",
+    "kinds": {
+      "stream": "Stream",
+      "snapshot": "Still image",
+      "mjpeg": "MJPEG"
+    }
   }
 }

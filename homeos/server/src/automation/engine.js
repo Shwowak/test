@@ -28,6 +28,8 @@ export const ACTION_TYPES = {
   dashboard: { fields: [{ key: 'dashboard_id', type: 'dashboard' }] },
   display: { fields: [{ key: 'state', type: 'select', options: ['on', 'dim', 'off'] }] },
   sound: { fields: [{ key: 'tone', type: 'select', options: ['chime', 'alert', 'alarm'] }] },
+  camera: { fields: [{ key: 'camera_id', type: 'camera' }, { key: 'seconds', type: 'number' }] },
+  speak: { fields: [{ key: 'text', type: 'text' }] },
   delay: { fields: [{ key: 'seconds', type: 'number' }] },
   run_automation: { fields: [{ key: 'automation_id', type: 'automation' }] },
 }
@@ -116,6 +118,12 @@ async function runActions(a, ctx, depth) {
         break
       case 'sound':
         bus.emit('ui.command', { action: 'sound', tone: act.tone })
+        break
+      case 'camera':
+        bus.emit('ui.command', { action: 'camera', camera_id: Number(act.camera_id), seconds: Number(act.seconds) || 60 })
+        break
+      case 'speak':
+        bus.emit('ui.command', { action: 'speak', text: fill(act.text, ctx) })
         break
       case 'delay':
         await new Promise(r => setTimeout(r, Math.min(Number(act.seconds) || 0, 3600) * 1000))

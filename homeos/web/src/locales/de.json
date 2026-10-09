@@ -22,7 +22,8 @@
     "fullscreen": "Vollbild",
     "logout": "Abmelden",
     "devices": "Geräte",
-    "automations": "Regeln"
+    "automations": "Regeln",
+    "assistant": "Assistent"
   },
   "login": {
     "user": "Benutzer",
@@ -69,7 +70,8 @@
     "iframe": "Webseite einbetten",
     "device": "Gerät",
     "room": "Raum",
-    "plugin": "Plugin"
+    "plugin": "Plugin",
+    "camera": "Kamera"
   },
   "fields": {
     "value": "Wert",
@@ -87,7 +89,8 @@
     "url": "URL",
     "device_id": "Gerät",
     "room_id": "Raum",
-    "plugin_widget": "Plugin-Widget"
+    "plugin_widget": "Plugin-Widget",
+    "camera_id": "Kamera"
   },
   "chartStyles": {
     "line": "Linie (Neon)",
@@ -140,7 +143,9 @@
       "network": "Netzwerk",
       "bluetooth": "Bluetooth",
       "audio": "Audio",
-      "update": "Update"
+      "update": "Update",
+      "assistant": "Assistent",
+      "cameras": "Kameras"
     }
   },
   "profile": {
@@ -194,7 +199,8 @@
       "device": "Gerät",
       "automation": "Automation",
       "settings": "Einstellungen",
-      "plugin": "Plugin"
+      "plugin": "Plugin",
+      "camera": "Kamera"
     },
     "action": {
       "create": "angelegt",
@@ -225,7 +231,9 @@
       "users": "Benutzer",
       "security": "Sicherheit",
       "updates": "Updates",
-      "errors": "Fehler"
+      "errors": "Fehler",
+      "ai": "Assistent",
+      "cameras": "Kameras"
     },
     "levels": {
       "debug": "Debug",
@@ -276,7 +284,11 @@
       "bluetooth_disconnect": "Bluetooth getrennt",
       "bluetooth_remove": "Bluetooth-Gerät entfernt",
       "system_power": "Neustart/Ausschalten",
-      "update_requested": "Update angefordert"
+      "update_requested": "Update angefordert",
+      "ai_answered": "Assistent hat geantwortet",
+      "ai_failed": "Assistent-Fehler",
+      "camera_register_failed": "Kamera nicht bei go2rtc angemeldet",
+      "login_auto": "Automatisch angemeldet"
     }
   },
   "system": {
@@ -360,6 +372,24 @@
     "setup": {
       "done": "Bereits eingerichtet",
       "local_only": "Nur am Gerät möglich"
+    },
+    "ai": {
+      "no_model": "Kein KI-Modell eingestellt (Einstellungen → Assistent)",
+      "unreachable": "KI-Server nicht erreichbar",
+      "no_stt": "Keine Spracherkennung eingerichtet (Einstellungen → Assistent)",
+      "no_tts": "Keine Sprachausgabe eingerichtet",
+      "stt_failed": "Spracherkennung fehlgeschlagen",
+      "tts_failed": "Sprachausgabe fehlgeschlagen",
+      "bad_audio": "Ungültige Aufnahme"
+    },
+    "privacy": {
+      "microphone_off": "Mikrofon ist in den Datenschutz-Einstellungen aus",
+      "cameras_off": "Kameras sind in den Datenschutz-Einstellungen aus"
+    },
+    "cameras": {
+      "no_go2rtc": "Für diese Kamera wird go2rtc benötigt",
+      "unreachable": "Kamera nicht erreichbar",
+      "no_live": "Kein Livebild verfügbar"
     }
   },
   "devices": {
@@ -612,7 +642,9 @@
       "display": "Display",
       "sound": "Ton",
       "delay": "Warten",
-      "run_automation": "Automation starten"
+      "run_automation": "Automation starten",
+      "camera": "Kamera zeigen",
+      "speak": "Sprechen"
     },
     "fields": {
       "at": "Uhrzeit",
@@ -634,7 +666,9 @@
       "state": "Zustand",
       "tone": "Ton",
       "seconds": "Sekunden",
-      "automation_id": "Automation"
+      "automation_id": "Automation",
+      "camera_id": "Kamera",
+      "text": "Text"
     },
     "options": {
       "sunrise": "Sonnenaufgang",
@@ -788,5 +822,60 @@
     "pin": "PIN für schnelles Entsperren (optional, 4–8 Ziffern)",
     "submit": "Einrichten",
     "mismatch": "Passwörter stimmen nicht überein"
+  },
+  "assistant": {
+    "hello": "Frag mich etwas oder sag mir, was ich schalten soll.",
+    "examples": "Mach das Licht im Wohnzimmer aus;Wie wird das Wetter morgen?;Welche Termine habe ich diese Woche?;Wie viel Strom haben wir heute erzeugt?",
+    "placeholder": "Nachricht…",
+    "listening": "Ich höre zu…",
+    "speak": "Sprechen",
+    "mic_denied": "Kein Zugriff auf das Mikrofon",
+    "no_model": "Noch kein KI-Modell gewählt – Einstellungen → Assistent.",
+    "tools": {
+      "get_devices": "Geräte",
+      "get_weather": "Wetter",
+      "get_calendar": "Kalender",
+      "get_energy": "Energie",
+      "list_automations": "Regeln",
+      "create_notification": "Meldung"
+    }
+  },
+  "ai": {
+    "privacy": "Datenschutz",
+    "allow_mic": "Mikrofon erlauben (Sprachsteuerung)",
+    "allow_cameras": "Kameras erlauben",
+    "llm": "KI-Modell",
+    "llm_hint": "Läuft lokal: Ollama (z. B. auf dem Mac oder einem Server im Haus). Alternativ jeder OpenAI-kompatible Server (LM Studio, vLLM, LocalAI).",
+    "provider": "Anbieter",
+    "openai_compat": "OpenAI-kompatibel",
+    "model": "Modell",
+    "reload": "Modelle neu laden",
+    "model_hint": "Empfohlen mit Werkzeug-Unterstützung: qwen2.5:7b, qwen3:8b, llama3.1:8b. Laden: „ollama pull qwen2.5:7b“.",
+    "voice": "Sprache",
+    "voice_hint": "Spracherkennung (Whisper) und Sprachausgabe (Piper) über einen OpenAI-kompatiblen Sprachserver, z. B. „speaches“ als Docker-Container. Ohne Sprachserver liest der Browser die Antworten vor.",
+    "stt_url": "Spracherkennung URL",
+    "stt_model": "Erkennungs-Modell",
+    "tts_url": "Sprachausgabe URL",
+    "tts_model": "Stimmen-Modell",
+    "tts_voice": "Stimme",
+    "speak_replies": "Antworten vorlesen",
+    "test_voice": "Stimme testen",
+    "test_sentence": "Hallo, ich bin dein SmartBoard."
+  },
+  "cameras": {
+    "privacy_off": "Kameras deaktiviert",
+    "privacy_off_hint": "Kameras sind aus Datenschutzgründen aus. Einschalten unter Einstellungen → Assistent → Datenschutz.",
+    "not_found": "Kamera nicht gefunden",
+    "offline": "Kamera nicht erreichbar",
+    "add": "Kamera hinzufügen",
+    "source": "Adresse",
+    "source_hint": "rtsp://… (IP-Kamera, über go2rtc) · http(s)://…/snapshot.jpg (Standbild) · http(s)://…mjpg (MJPEG). Zugangsdaten in der Adresse werden nicht angezeigt.",
+    "go2rtc_hint": "go2rtc wandelt RTSP/ONVIF/HomeKit-Kameras um. Auf dem SmartBoard-Gerät automatisch, im Docker-Betrieb: Container „alexxit/go2rtc“ mit Port 1984 starten und hier eintragen.",
+    "confirm_delete": "Kamera „{name}“ entfernen?",
+    "kinds": {
+      "stream": "Stream",
+      "snapshot": "Standbild",
+      "mjpeg": "MJPEG"
+    }
   }
 }

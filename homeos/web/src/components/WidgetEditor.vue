@@ -5,9 +5,11 @@ import { useI18n } from 'vue-i18n'
 import { errorText } from '../i18n.js'
 import { store, loadDevices } from '../devices.js'
 import { plugins, loadPlugins, pluginWidgets } from '../plugins.js'
+import { cams, loadCameras } from '../cameras.js'
 
 if (!store.loaded) loadDevices().catch(() => {})
 if (!plugins.loaded) loadPlugins().catch(() => {})
+if (!cams.loaded) loadCameras().catch(() => {})
 
 const { t, locale } = useI18n()
 
@@ -91,6 +93,9 @@ async function remove() {
       </select>
       <select v-else-if="f.type === 'room'" v-model.number="form.config[f.key]">
         <option v-for="r in store.rooms" :key="r.id" :value="r.id">{{ r.name }}</option>
+      </select>
+      <select v-else-if="f.type === 'camera'" v-model.number="form.config[f.key]" required>
+        <option v-for="c in cams.list" :key="c.id" :value="c.id">{{ c.name }}</option>
       </select>
       <select v-else-if="f.type === 'plugin_widget'" v-model="form.config[f.key]" required>
         <option v-for="o in pluginWidgets(locale)" :key="o.value" :value="o.value">{{ o.label }}</option>

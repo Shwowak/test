@@ -40,6 +40,7 @@ export const WIDGET_TYPES = {
   device: { sources: [], fields: [{ key: 'device_id', type: 'device' }] },
   room: { sources: [], fields: [{ key: 'room_id', type: 'room' }] },
   plugin: { sources: [], fields: [{ key: 'plugin_widget', type: 'plugin_widget' }] },
+  camera: { sources: [], fields: [{ key: 'camera_id', type: 'camera' }] },
 }
 
 export const DASHBOARD_STYLES = ['seamless', 'tiles', 'glass']

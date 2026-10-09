@@ -4,14 +4,14 @@ import { log } from './logger.js'
 
 export const PERMISSIONS = [
   'dashboards.view', 'dashboards.edit', 'sources.view', 'sources.edit', 'devices.view', 'devices.control', 'devices.manage',
-  'notifications.view', 'notifications.manage', 'automations.view', 'automations.manage', 'plugins.view', 'plugins.manage',
+  'notifications.view', 'notifications.manage', 'automations.view', 'automations.manage', 'plugins.view', 'plugins.manage', 'ai.use', 'cameras.view', 'cameras.manage',
   'users.manage', 'logs.view', 'versions.view', 'versions.restore', 'system.view', 'system.manage', 'profile.edit',
 ]
 
 export const ROLES = {
   admin: ['*'],
-  user: ['dashboards.view', 'dashboards.edit', 'sources.view', 'devices.view', 'devices.control', 'devices.manage', 'notifications.view', 'notifications.manage', 'automations.view', 'automations.manage', 'plugins.view', 'versions.view', 'system.view', 'profile.edit'],
-  restricted: ['dashboards.view', 'devices.view', 'devices.control', 'notifications.view', 'notifications.manage', 'profile.edit'],
+  user: ['dashboards.view', 'dashboards.edit', 'sources.view', 'devices.view', 'devices.control', 'devices.manage', 'notifications.view', 'notifications.manage', 'automations.view', 'automations.manage', 'plugins.view', 'ai.use', 'cameras.view', 'cameras.manage', 'versions.view', 'system.view', 'profile.edit'],
+  restricted: ['dashboards.view', 'devices.view', 'devices.control', 'notifications.view', 'notifications.manage', 'ai.use', 'cameras.view', 'profile.edit'],
   guest: ['dashboards.view', 'devices.view', 'notifications.view'],
 }
 

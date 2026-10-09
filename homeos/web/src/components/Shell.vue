@@ -12,6 +12,8 @@ import AlertLayer from './notify/AlertLayer.vue'
 import NotificationCenter from './notify/NotificationCenter.vue'
 import { notes, unread, loadNotifications } from '../notifications.js'
 import { startIdle, kiosk } from '../display.js'
+import Assistant from './assistant/Assistant.vue'
+import { voice } from '../speech.js'
 import { startLive, stopLive, loadIntegrations } from '../devices.js'
 import { onBeforeUnmount, watch } from 'vue'
 
@@ -21,6 +23,7 @@ const can = p => user.value?.permissions?.includes(p)
 const emit = defineEmits(['logout'])
 const showSettings = ref(false)
 const showNotes = ref(false)
+const assistant = ref(null)
 watch(() => notes.dashboard, x => { if (x && dashboards.value.some(d => d.id === x.id)) select(x.id) })
 const view = ref('dashboard')
 
@@ -137,6 +140,7 @@ const icons = ['⌂', '◈', '⚡', '☀', '♨', '☎', '♫', '⚙', '⛨', '�
       <div class="spacer" />
       <button v-if="can('devices.view')" class="tab" :class="{ on: view === 'devices' }" @click="view = 'devices'; editing = false"><span class="ico">▦</span><span class="nm">{{ t('nav.devices') }}</span></button>
       <button v-if="can('automations.view')" class="tab" :class="{ on: view === 'automations' }" @click="view = 'automations'; editing = false"><span class="ico">⟳</span><span class="nm">{{ t('nav.automations') }}</span></button>
+      <button v-if="can('ai.use')" class="tab" @click="assistant = { listen: false }"><span class="ico">✦</span><span class="nm">{{ t('nav.assistant') }}</span></button>
       <button v-if="can('sources.view')" class="tab" @click="showSources = true"><span class="ico">⌬</span><span class="nm">{{ t('nav.sources') }}</span></button>
       <button class="tab" @click="showSettings = true"><span class="ico">⚙</span><span class="nm">{{ t('nav.settings') }}</span></button>
       <button v-if="!kiosk" class="tab" @click="fullscreen"><span class="ico">⛶</span><span class="nm">{{ t('nav.fullscreen') }}</span></button>
@@ -150,6 +154,8 @@ const icons = ['⌂', '◈', '⚡', '☀', '♨', '☎', '♫', '⚙', '⛨', '�
           <h1>{{ view === 'devices' ? t('devices.title') : view === 'automations' ? t('automations.title') : active?.name ?? '—' }}</h1>
         </div>
         <div class="actions">
+          <span v-if="voice.recording" class="recind" :title="t('assistant.listening')">● 🎙</span>
+          <button v-if="can('ai.use')" class="btn icon" :aria-label="t('assistant.speak')" @click="assistant = { listen: true }">🎙</button>
           <button v-if="can('notifications.view')" class="btn icon bell" :class="{ hot: unread }" :aria-label="t('notifications.title')" @click="showNotes = true">🔔<span v-if="unread" class="badge">{{ unread }}</span></button>
           <button v-if="railHidden" class="btn icon" :aria-label="t('nav.show')" @click="toggleRail">☰</button>
           <button v-if="view === 'dashboard' && active && meta" class="btn" @click="cycleStyle">◐ {{ t('styles.' + active.style) }}</button>
@@ -168,6 +174,9 @@ const icons = ['⌂', '◈', '⚡', '☀', '♨', '☎', '♫', '⚙', '⛨', '�
 
     <Sheet v-if="showNotes" :title="t('notifications.title')" @close="showNotes = false">
       <NotificationCenter />
+    </Sheet>
+    <Sheet v-if="assistant" :title="t('nav.assistant')" @close="assistant = null">
+      <Assistant :auto-listen="assistant.listen" />
     </Sheet>
     <AlertLayer />
 
@@ -231,6 +240,8 @@ const icons = ['⌂', '◈', '⚡', '☀', '♨', '☎', '♫', '⚙', '⛨', '�
 .row { display: flex; gap: 12px; align-items: center; }
 .grow { flex: 1; }
 .bell { position: relative; }
+.recind { color: #ef4444; align-self: center; font-size: 14px; letter-spacing: .1em; animation: recblink 1s infinite; }
+@keyframes recblink { 50% { opacity: .3; } }
 .bell.hot { box-shadow: 0 0 16px rgba(34, 211, 238, 0.35); }
 .badge { position: absolute; top: -6px; right: -6px; min-width: 22px; height: 22px; padding: 0 5px; border-radius: 11px; background: #ef4444; color: #fff; font-size: 13px; line-height: 22px; }
 @media (max-width: 700px) {

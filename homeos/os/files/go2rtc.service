@@ -1,0 +1,15 @@
+[Unit]
+Description=SmartBoard camera gateway (go2rtc)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=smartboard
+ExecStart=/opt/smartboard/go2rtc -config /etc/smartboard/go2rtc.yaml
+Restart=always
+RestartSec=3
+NoNewPrivileges=yes
+ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target

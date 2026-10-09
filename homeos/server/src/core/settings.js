@@ -4,6 +4,9 @@ export const DEFAULT_SETTINGS = {
   location: { lat: 52.52, lon: 13.405, name: 'Berlin' },
   timezone: process.env.TZ || 'Europe/Berlin',
   autologin: null,
+  ai: { provider: 'ollama', url: '', model: '', api_key: '', stt_url: '', stt_model: 'whisper-1', tts_url: '', tts_model: 'tts-1', tts_voice: '', speak: true },
+  privacy: { cameras: false, microphone: false },
+  go2rtc: { url: '' },
 }
 
 export function getSetting(key) {

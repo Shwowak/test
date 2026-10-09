@@ -87,6 +87,23 @@ docker compose -f docker-compose.server.yml up -d
 - **Plugins ohne Internet-Recht** laufen auf dem Gerät komplett ohne Netzwerk
 - Im Docker-Betrieb bleiben die Hardware-Seiten ausgeblendet (Host verwaltet Netzwerk/Audio)
 
+## Phase 6 (Assistent, Sprache, Kameras)
+
+- **KI-Assistent** (Leiste → Assistent, oder 🎙 oben): lokal über **Ollama** (oder OpenAI-kompatible Server). Kann Geräte schalten, Wetter/Termine/Energie abfragen, Regeln starten, Dashboards/Kameras zeigen, Meldungen anlegen – immer mit den Rechten des angemeldeten Benutzers
+- **Sprache**: Sprechen-Taste mit automatischem Ende bei Stille → Spracherkennung (Whisper) → Antwort wird vorgelesen (Piper über Sprachserver, sonst Browser-Stimme). Weckwort folgt später
+- **Kameras** (Einstellungen → Kameras): RTSP/ONVIF/HomeKit über **go2rtc**, HTTP-Standbild und MJPEG direkt · Widget „Kamera“ · Regel-Aktion „Kamera zeigen“ (z. B. Türklingel → Vollbild) und „Sprechen“
+- **Datenschutz**: Kamera und Mikrofon standardmäßig **aus**; Aufnahme-Anzeige oben; Zugangsdaten der Kameras werden nie angezeigt, Bilder laufen über den SmartBoard-Server
+
+### Auf dem Mac (Docker) einrichten
+
+```
+ollama pull qwen2.5:7b                          # einmalig, Ollama-App muss laufen
+docker run -d --name speaches -p 8000:8000 ghcr.io/speaches-ai/speaches:latest-cpu     # optional: Sprache
+docker run -d --name go2rtc -p 1984:1984 alexxit/go2rtc                                  # optional: RTSP-Kameras
+```
+
+Einstellungen → Assistent: Ollama-URL `http://host.docker.internal:11434`, Modell wählen · Sprache: `http://host.docker.internal:8000/v1` · Kameras → go2rtc: `http://host.docker.internal:1984`
+
 ## Widgets
 
 | Typ | Datenquellen |

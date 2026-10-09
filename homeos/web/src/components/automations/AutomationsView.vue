@@ -5,6 +5,7 @@ import { api } from '../../api.js'
 import { errorText } from '../../i18n.js'
 import { store, listeners, loadDevices } from '../../devices.js'
 import Sheet from '../Sheet.vue'
+import { cams, loadCameras } from '../../cameras.js'
 
 const { t, d, te } = useI18n()
 const user = inject('user')
@@ -23,6 +24,7 @@ async function load() {
 onMounted(async () => {
   ;[meta.value, dashboards.value] = await Promise.all([api('GET', '/automations/meta'), api('GET', '/dashboards'), load()])
   if (!store.loaded) loadDevices().catch(() => {})
+  if (!cams.loaded) loadCameras().catch(() => {})
 })
 const onEv = type => { if (type === 'automation.ran' || type === 'config.changed') load().catch(() => {}) }
 listeners.add(onEv)
@@ -48,7 +50,7 @@ const toggleDay = (blk, k, n) => { blk[k] = blk[k].includes(n) ? blk[k].filter(x
 function normalize(blk, group) {
   const out = { ...blk }
   for (const f of meta.value[group][blk.type].fields) {
-    if (['number', 'device', 'dashboard', 'automation'].includes(f.type) && out[f.key] !== '') out[f.key] = Number(out[f.key])
+    if (['number', 'device', 'dashboard', 'automation', 'camera'].includes(f.type) && out[f.key] !== '') out[f.key] = Number(out[f.key])
   }
   return out
 }
@@ -137,6 +139,9 @@ const summary = a => a.triggers.map(x => lbl('triggers', x.type)).join(', ') + '
                 <input v-else-if="f.type === 'value'" v-model="blk[f.key]">
                 <select v-else-if="f.type === 'dashboard'" v-model="blk[f.key]" required>
                   <option v-for="db in dashboards" :key="db.id" :value="db.id">{{ db.icon }} {{ db.name }}</option>
+                </select>
+                <select v-else-if="f.type === 'camera'" v-model="blk[f.key]" required>
+                  <option v-for="c in cams.list" :key="c.id" :value="c.id">{{ c.name }}</option>
                 </select>
                 <select v-else-if="f.type === 'automation'" v-model="blk[f.key]" required>
                   <option v-for="x in list.filter(x => x.id !== form.id)" :key="x.id" :value="x.id">{{ x.name }}</option>
