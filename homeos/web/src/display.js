@@ -17,6 +17,15 @@ if (kiosk) {
   window.addEventListener('pointerdown', e => root.classList.toggle('touch-only', e.pointerType === 'touch'), { passive: true })
 }
 
+export function setLite(on) {
+  document.documentElement.classList.toggle('lite', !!on)
+  try { localStorage.setItem('homeos.lite', on ? '1' : '0') } catch {}
+}
+try {
+  const saved = localStorage.getItem('homeos.lite')
+  if (saved === '1' || (saved === null && kiosk)) document.documentElement.classList.add('lite')
+} catch {}
+
 export async function loadHardware() {
   try { hw.info = await api('GET', '/hardware') } catch { hw.info = { device: false, display: {} } }
   return hw.info

@@ -18,4 +18,5 @@ exec "$BROWSER" \
   --password-store=basic --check-for-update-interval=31536000 \
   --enable-features=OverlayScrollbar,TouchpadOverscrollHistoryNavigation:enabled/false \
   --touch-events=enabled \
+  --enable-gpu-rasterization --ignore-gpu-blocklist --enable-zero-copy \
   --use-fake-ui-for-media-stream

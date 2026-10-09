@@ -291,7 +291,10 @@
       "login_auto": "Automatisch angemeldet",
       "setup_hotspot": "Einrichtungs-WLAN gestartet",
       "setup_hotspot_failed": "Einrichtungs-WLAN konnte nicht starten",
-      "setup_code_rotated": "Einrichtungscode nach Fehlversuchen erneuert"
+      "setup_code_rotated": "Einrichtungscode nach Fehlversuchen erneuert",
+      "health_fixed": "Automatische Reparatur",
+      "health_fix_failed": "Reparatur fehlgeschlagen",
+      "http_slow": "Langsame Anfrage"
     }
   },
   "system": {
@@ -901,5 +904,42 @@
     "done": "„{name}“ ist verbunden. Du kannst jetzt tippen.",
     "auto_search": "Suche Bluetooth-Tastatur … Tastatur jetzt in den Kopplungsmodus versetzen (Bluetooth-Taste ca. 3 s halten).",
     "auto_ok": "Tastatur „{name}“ verbunden – einfach lostippen. Tab = nächstes Feld, Enter = weiter."
+  },
+  "health": {
+    "status": {
+      "ok": "Alles in Ordnung",
+      "warning": "Hinweise",
+      "error": "Probleme gefunden"
+    },
+    "all_ok": "Keine Probleme erkannt.",
+    "export": "Diagnose exportieren",
+    "loop": "Reaktionszeit",
+    "temp": "Temperatur",
+    "browser": "Browser-Speicher",
+    "autofix": "Probleme automatisch beheben",
+    "lite": "Leistungsmodus (weniger Effekte, schneller auf Raspberry Pi)",
+    "history": "Letzte Reparaturen",
+    "slow": "Langsame Anfragen",
+    "auto": "automatisch",
+    "fixes": {
+      "restart_kiosk": "Anzeige neu starten",
+      "restart_plugins": "Plugins neu starten",
+      "cleanup": "Speicher aufräumen"
+    },
+    "f": {
+      "slow_core": "Kern reagiert langsam ({ms} ms Verzögerung)",
+      "high_load": "Hohe CPU-Last ({load} bei {cpus} Kernen)",
+      "low_memory": "Arbeitsspeicher fast voll ({pct} %)",
+      "browser_memory": "Browser belegt viel Speicher ({mb})",
+      "low_disk": "Speicherplatz fast voll (frei: {free_mb} MB)",
+      "hot": "Gerät ist heiß ({temp} °C) – Belüftung prüfen",
+      "undervoltage": "Unterspannung! Netzteil zu schwach (Raspberry Pi: offizielles 5 V / 5 A bzw. 3 A Netzteil verwenden)",
+      "undervoltage_past": "Seit dem Start trat Unterspannung auf – Netzteil prüfen",
+      "throttled": "CPU wird gedrosselt (Hitze oder Spannung)",
+      "kiosk_down": "Anzeige läuft nicht ({state})",
+      "plugin_errors": "Viele Plugin-Fehler ({n} in 10 min)",
+      "slow_requests": "Langsame Anfragen ({n}), z. B. {worst}",
+      "many_errors": "Viele Fehler im Protokoll ({n} in 10 min)"
+    }
   }
 }

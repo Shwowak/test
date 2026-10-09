@@ -170,3 +170,11 @@ input[type='range']::-moz-range-thumb { width: 32px; height: 32px; border: 0; bo
 .kiosk.touch-only, .kiosk.touch-only * { cursor: none !important; }
 .osk-open body { padding-bottom: 360px; }
 .osk-open .sheet .body, .osk-open .main { padding-bottom: 360px !important; }
+
+/* Geräte-Modus: weniger GPU-Last auf Raspberry Pi */
+.lite *, .lite *::before, .lite *::after { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+.lite .glass, .lite .sheet, .lite .rail, .lite .card { box-shadow: none !important; }
+.lite *:not(.osk-toggle):not(.dot) { text-shadow: none !important; filter: none !important; }
+.lite .sheet { background: #0b1022 !important; }
+.lite .backdrop { background: rgba(0, 0, 0, .7) !important; }
+.lite body::before, .lite body::after { animation: none !important; }

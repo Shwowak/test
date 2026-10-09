@@ -3,6 +3,8 @@ import { run, has } from './exec.js'
 const MAC = /^([0-9A-F]{2}:){5}[0-9A-F]{2}$/i
 const check = mac => { if (!MAC.test(mac)) throw new Error('invalid address'); return mac.toUpperCase() }
 const bt = (args, timeout = 10000) => run('bluetoothctl', args, { timeout })
+const infoCache = new Map()
+export const forgetInfo = mac => infoCache.delete(mac)
 
 function parseInfo(out) {
   const get = k => new RegExp(`^\\s*${k}:\\s*(.*)$`, 'm').exec(out)?.[1]?.trim()
@@ -19,10 +21,15 @@ export async function bluetoothStatus() {
   try { show = await bt(['show']) } catch (e) { return { available: false, error: e.message } }
   if (!/Controller/.test(show)) return { available: false }
   const devices = []
+  const now = Date.now()
   for (const m of (await bt(['devices'])).matchAll(/^Device ((?:[0-9A-F]{2}:){5}[0-9A-F]{2}) (.*)$/gim)) {
-    let info = {}
-    try { info = parseInfo(await bt(['info', m[1]])) } catch {}
-    devices.push({ address: m[1], ...info, name: info.name ?? m[2] })
+    let info = infoCache.get(m[1])
+    if (!info || now - info.at > 20000) {
+      try { info = { ...parseInfo(await bt(['info', m[1]])), at: now } } catch { info = { at: now } }
+      infoCache.set(m[1], info)
+    }
+    const { at, ...data } = info
+    devices.push({ address: m[1], ...data, name: data.name ?? m[2] })
   }
   return {
     available: true, powered: /Powered: yes/.test(show), discoverable: /Discoverable: yes/.test(show),
@@ -40,11 +47,12 @@ export async function power(on) { await bt(['power', on ? 'on' : 'off']) }
 
 export async function pair(mac) {
   mac = check(mac)
+  forgetInfo(mac)
   await bt(['--agent', 'NoInputNoOutput', 'pair', mac], 30000).catch(e => { if (!/AlreadyExists/.test(e.message)) throw e })
   await bt(['trust', mac])
   await bt(['connect', mac], 20000).catch(() => {})
 }
 
-export async function connect(mac) { await bt(['connect', check(mac)], 20000) }
-export async function disconnect(mac) { await bt(['disconnect', check(mac)]) }
-export async function remove(mac) { await bt(['remove', check(mac)]) }
+export async function connect(mac) { forgetInfo(check(mac)); await bt(['connect', check(mac)], 20000) }
+export async function disconnect(mac) { forgetInfo(check(mac)); await bt(['disconnect', check(mac)]) }
+export async function remove(mac) { forgetInfo(check(mac)); await bt(['remove', check(mac)]) }

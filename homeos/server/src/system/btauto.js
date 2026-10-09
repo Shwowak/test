@@ -3,7 +3,7 @@ import { db } from '../core/db.js'
 import { log } from '../core/logger.js'
 import * as bt from './bluetooth.js'
 
-export const btAuto = { active: false, searching: false, paired: [], last: null }
+export const btAuto = { active: false, searching: false, paired: [], last: null, status: null, statusAt: 0 }
 
 const tried = new Map()
 const isInput = d => /^input-/.test(d.icon ?? '') || /keyboard|tastatur|mouse|maus|trackpad/i.test(d.name ?? '')
@@ -12,6 +12,7 @@ const uptimeMin = () => { try { return Number(readFileSync('/proc/uptime', 'utf8
 
 async function round() {
   const st = await bt.bluetoothStatus()
+  btAuto.status = st; btAuto.statusAt = Date.now()
   if (!st.available) return uptimeMin() < 15
   const hasInput = st.devices.some(d => d.paired && isInput(d))
   btAuto.active = setupNeeded() || (!hasInput && uptimeMin() < 15)
@@ -19,6 +20,7 @@ async function round() {
   if (!st.powered) await bt.power(true).catch(() => {})
   btAuto.searching = true
   const found = await bt.scan(12).catch(() => st)
+  btAuto.status = found; btAuto.statusAt = Date.now()
   btAuto.searching = false
   for (const d of found.devices ?? []) {
     if (!isInput(d) || d.connected || Date.now() - (tried.get(d.address) ?? 0) < 30000) continue
@@ -38,7 +40,7 @@ export function startBtAuto() {
   const loop = async () => {
     let again = true
     try { again = await round() } catch {}
-    if (again) setTimeout(loop, btAuto.active ? 2000 : 60000).unref()
+    if (again) setTimeout(loop, btAuto.active ? 5000 : 60000).unref()
   }
   setTimeout(loop, 3000).unref()
 }

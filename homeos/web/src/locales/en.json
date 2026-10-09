@@ -291,7 +291,10 @@
       "login_auto": "Signed in automatically",
       "setup_hotspot": "Setup WiFi started",
       "setup_hotspot_failed": "Setup WiFi failed to start",
-      "setup_code_rotated": "Setup code renewed after failed attempts"
+      "setup_code_rotated": "Setup code renewed after failed attempts",
+      "health_fixed": "Automatic repair",
+      "health_fix_failed": "Repair failed",
+      "http_slow": "Slow request"
     }
   },
   "system": {
@@ -901,5 +904,42 @@
     "done": "“{name}” is connected. You can type now.",
     "auto_search": "Searching for Bluetooth keyboard … put your keyboard into pairing mode now (hold the Bluetooth key ~3 s).",
     "auto_ok": "Keyboard “{name}” connected – just start typing. Tab = next field, Enter = continue."
+  },
+  "health": {
+    "status": {
+      "ok": "All good",
+      "warning": "Notices",
+      "error": "Problems found"
+    },
+    "all_ok": "No problems detected.",
+    "export": "Export diagnostics",
+    "loop": "Response time",
+    "temp": "Temperature",
+    "browser": "Browser memory",
+    "autofix": "Fix problems automatically",
+    "lite": "Performance mode (fewer effects, faster on Raspberry Pi)",
+    "history": "Recent repairs",
+    "slow": "Slow requests",
+    "auto": "automatic",
+    "fixes": {
+      "restart_kiosk": "Restart display",
+      "restart_plugins": "Restart plugins",
+      "cleanup": "Clean up storage"
+    },
+    "f": {
+      "slow_core": "Core responds slowly ({ms} ms delay)",
+      "high_load": "High CPU load ({load} on {cpus} cores)",
+      "low_memory": "Memory almost full ({pct} %)",
+      "browser_memory": "Browser uses a lot of memory ({mb})",
+      "low_disk": "Disk almost full (free: {free_mb} MB)",
+      "hot": "Device is hot ({temp} °C) – check ventilation",
+      "undervoltage": "Under-voltage! Power supply too weak (use the official Raspberry Pi PSU)",
+      "undervoltage_past": "Under-voltage occurred since boot – check power supply",
+      "throttled": "CPU is throttled (heat or voltage)",
+      "kiosk_down": "Display is not running ({state})",
+      "plugin_errors": "Many plugin errors ({n} in 10 min)",
+      "slow_requests": "Slow requests ({n}), e.g. {worst}",
+      "many_errors": "Many errors in log ({n} in 10 min)"
+    }
   }
 }

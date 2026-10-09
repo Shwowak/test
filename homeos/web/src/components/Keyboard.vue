@@ -38,6 +38,16 @@ function toggle() {
   const el = isText(document.activeElement) ? document.activeElement : [...document.querySelectorAll('input, textarea')].find(x => isText(x) && x.offsetParent && !x.disabled)
   if (el) { target.value = el; el.focus() }
 }
+function onBlur() {
+  setTimeout(() => {
+    const a = document.activeElement
+    const isText = a && ((a.tagName === 'INPUT' && TEXT_TYPES.includes(a.type)) || a.tagName === 'TEXTAREA')
+    if (!target.value) return
+    if (isText) target.value = a
+    else if (!document.querySelector('.osk:hover')) target.value = null
+  }, 150)
+}
+let domCheck = null
 function onHardKey(e) {
   if (!e.isTrusted || ['Unidentified', 'Process'].includes(e.key)) return
   hardKeys = true
@@ -96,11 +106,15 @@ onMounted(() => {
   document.addEventListener('focusin', onFocus)
   document.addEventListener('pointerdown', onDown, true)
   document.addEventListener('keydown', onHardKey, true)
+  document.addEventListener('focusout', onBlur)
+  domCheck = setInterval(() => { if (target.value && !document.contains(target.value)) target.value = null }, 500)
 })
 onBeforeUnmount(() => {
   document.removeEventListener('focusin', onFocus)
   document.removeEventListener('pointerdown', onDown, true)
   document.removeEventListener('keydown', onHardKey, true)
+  document.removeEventListener('focusout', onBlur)
+  clearInterval(domCheck)
   document.documentElement.classList.remove('osk-open')
 })
 </script>

@@ -2,6 +2,7 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { api } from '../../api.js'
+import HealthPanel from './HealthPanel.vue'
 
 const { t, n } = useI18n()
 const s = ref(null)
@@ -25,6 +26,7 @@ const dur = sec => {
 </script>
 
 <template>
+  <HealthPanel />
   <div v-if="s" class="grid">
     <div class="card">
       <div class="label">{{ t('system.version') }}</div>

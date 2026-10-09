@@ -26,6 +26,9 @@ import camerasModule, { syncCameras } from './src/modules/cameras.js'
 import { keepOutputs } from './src/system/display.js'
 import { startBtAuto } from './src/system/btauto.js'
 import { startSetupNet } from './src/system/setupnet.js'
+import { startHealth, registerFixes, trackRequest } from './src/system/health.js'
+import { startPlugin } from './src/plugins/host.js'
+import { db as database } from './src/core/db.js'
 import { startPlugins, stopPlugins } from './src/plugins/host.js'
 
 process.env.npm_package_version ??= JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')).version
@@ -45,6 +48,8 @@ await app.register(swagger, {
   },
 })
 await app.register(swaggerUi, { routePrefix: '/api/docs' })
+
+app.addHook('onResponse', async (req, reply) => trackRequest(req.url, reply.elapsedTime))
 
 app.setErrorHandler((err, req, reply) => {
   if (err.validation) return reply.code(422).send({ error: 'validation', details: err.message })
@@ -75,6 +80,8 @@ startAll()
 startAutomations()
 startPlugins()
 syncCameras().catch(() => {})
+registerFixes({ async restart_plugins() { const ids = database.prepare('SELECT id FROM plugins WHERE enabled = 1').all().map(r => r.id); ids.forEach(startPlugin); return `${ids.length} plugins restarted` } })
+startHealth()
 if (isDevice()) { keepOutputs(); startBtAuto(); startSetupNet() }
 for (const sig of ['SIGTERM', 'SIGINT']) process.once(sig, () => { stopPlugins(); process.exit(0) })
 log('system', 'info', 'system.started', { version: process.env.npm_package_version })

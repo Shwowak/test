@@ -8,6 +8,7 @@ import { displayStatus, setBrightness, setPower, setOutput } from '../system/dis
 import { networkStatus, wifiScan, wifiConnect, wifiRadio, forget, setHostname } from '../system/network.js'
 import * as bt from '../system/bluetooth.js'
 import { btAuto } from '../system/btauto.js'
+import { health, applyFix, diagnosticBundle, sample, analyse } from '../system/health.js'
 import { setupInfo, setupAllowed, setupNeeded, online, stopHotspot, startHotspot } from '../system/setupnet.js'
 import { audioStatus, setVolume, setMute, setDefault } from '../system/audio.js'
 
@@ -39,7 +40,7 @@ export default async function hardwareModule(app) {
     if (!isLocalIp(req.ip)) throw new HttpError(403, 'setup.local_only')
   }
   const INPUT = d => /^input-/.test(d.icon ?? '') || /keyboard|tastatur|mouse|maus|trackpad|keys|mx /i.test(d.name ?? '')
-  const inputView = st => ({ available: !!st.available, powered: st.powered, auto: { ...btAuto }, devices: (st.devices ?? []).map(d => ({ ...d, input: INPUT(d) })).sort((a, b) => b.input - a.input) })
+  const inputView = st => ({ available: !!st.available, powered: st.powered, auto: { active: btAuto.active, searching: btAuto.searching, paired: btAuto.paired, last: btAuto.last }, devices: (st.devices ?? []).map(d => ({ ...d, input: INPUT(d) })).sort((a, b) => b.input - a.input) })
   const pub = summary => ({ schema: s(summary), config: { public: true }, preHandler: localOnly })
 
   const setupGuard = async req => {
@@ -70,13 +71,30 @@ export default async function hardwareModule(app) {
       return { online: await online(), ...setupInfo(), code: undefined }
     }))
 
-  app.get('/setup/bluetooth', pub('Bluetooth input devices (only on the device display, no login)'), wrap('bluetooth', async () => inputView(await bt.bluetoothStatus())))
+  app.get('/setup/bluetooth', pub('Bluetooth input devices (only on the device display, no login)'), wrap('bluetooth', async () => inputView(btAuto.status && Date.now() - btAuto.statusAt < 15000 ? btAuto.status : await bt.bluetoothStatus())))
   app.post('/setup/bluetooth/scan', pub('Scan for keyboards/mice (only on the device display, no login)'), wrap('bluetooth', async () => {
     await bt.power(true).catch(() => {})
     return inputView(await bt.scan(10))
   }))
   app.post('/setup/bluetooth/pair', { ...pub('Pair keyboard/mouse (only on the device display, no login)'), schema: s('Pair keyboard/mouse', body({ address: { type: 'string' } }, ['address'])) },
     wrap('bluetooth', async req => { await bt.pair(req.body.address); log('bluetooth', 'info', 'bluetooth.pair', { address: req.body.address, setup: true }); return inputView(await bt.bluetoothStatus()) }))
+
+  app.get('/system/health', { schema: s('Health monitor: metrics, findings, automatic fixes'), preHandler: requirePerm('system.view') }, async () => {
+    if (!health.samples.length) analyse(await sample())
+    return { current: health.samples.at(-1), findings: health.findings, fixes: health.fixes, slow: health.slow.slice(-20), history: health.samples.slice(-120).map(x => ({ ts: x.ts, loop: x.loop_p99_ms, load: x.load, mem: 1 - x.mem.free / x.mem.total, temp: x.temp })), autofix: getSetting('health')?.autofix !== false }
+  })
+  app.put('/system/health', { schema: s('Health settings', body({ autofix: { type: 'boolean' } })), preHandler: requirePerm('system.manage') }, async req => {
+    setSetting('health', { ...getSetting('health'), autofix: req.body.autofix })
+    return { ok: true }
+  })
+  app.post('/system/health/fix', { schema: s('Run a fix now', body({ fix: { type: 'string', enum: ['restart_kiosk', 'restart_plugins', 'cleanup'] } }, ['fix'])), preHandler: requirePerm('system.manage') },
+    async req => {
+      try { return { result: await applyFix(req.body.fix, req.user.name) } } catch (e) { throw new HttpError(422, 'hardware.failed', { message: e.message }) }
+    })
+  app.get('/system/diagnostics', { schema: s('Download diagnostic bundle (JSON)'), preHandler: requirePerm('system.manage') }, async (req, reply) => {
+    reply.header('content-disposition', `attachment; filename="smartboard-diagnose-${new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-')}.json"`)
+    return diagnosticBundle()
+  })
 
   app.get('/hardware', { schema: s('Hardware capabilities of this device'), preHandler: requirePerm('system.view') }, async () => {
     let storage = null
