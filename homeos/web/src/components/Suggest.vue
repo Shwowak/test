@@ -81,7 +81,7 @@ defineExpose({ refresh, openPreview: () => { open.value = true } })
 </template>
 
 <style scoped>
-.banner { display: flex; align-items: center; gap: 14px; margin: 0 0 14px; padding: 14px 18px; border-radius: var(--radius); background: rgba(255, 255, 255, 0.05); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
+.banner { display: flex; align-items: center; gap: 14px; margin: 0 0 14px; padding: 14px 18px; border-radius: var(--radius); background: transparent; }
 .banner .ico { font-size: 26px; color: var(--cyan); }
 .banner .txt { flex: 1; display: flex; flex-direction: column; gap: 2px; }
 .banner small { color: var(--dim); }
