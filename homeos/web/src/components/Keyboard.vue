@@ -23,11 +23,20 @@ watch(target, async el => {
 })
 
 const TEXT_TYPES = ['text', 'password', 'search', 'email', 'url', 'tel', 'number', '']
+let lastPointer = 0
+let hardKeys = false
 function onFocus(e) {
   const el = e.target
+  if (hardKeys || Date.now() - lastPointer > 800) return
   if ((el.tagName === 'INPUT' && TEXT_TYPES.includes(el.type)) || el.tagName === 'TEXTAREA') target.value = el
 }
+function onHardKey(e) {
+  if (!e.isTrusted || ['Unidentified', 'Process'].includes(e.key)) return
+  hardKeys = true
+  target.value = null
+}
 function onDown(e) {
+  lastPointer = Date.now()
   if (!target.value) return
   if (e.target.closest('.osk') || e.target === target.value) return
   if (e.target.matches?.('input, textarea')) return
@@ -76,10 +85,12 @@ function enter() {
 onMounted(() => {
   document.addEventListener('focusin', onFocus)
   document.addEventListener('pointerdown', onDown, true)
+  document.addEventListener('keydown', onHardKey, true)
 })
 onBeforeUnmount(() => {
   document.removeEventListener('focusin', onFocus)
   document.removeEventListener('pointerdown', onDown, true)
+  document.removeEventListener('keydown', onHardKey, true)
   document.documentElement.classList.remove('osk-open')
 })
 </script>
