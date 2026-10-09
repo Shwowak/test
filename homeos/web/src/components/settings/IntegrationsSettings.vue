@@ -9,6 +9,18 @@ const { t, te } = useI18n()
 const ph = (a, k) => te(`integrationPlaceholders.${a}.${k}`) ? t(`integrationPlaceholders.${a}.${k}`) : ''
 const form = ref(null)
 const manual = ref(null)
+const pair = ref(null)
+const actionMsg = ref('')
+async function action(i, name, value) {
+  busy.value = true
+  try {
+    await api('POST', `/integrations/${i.id}/action`, { action: name, value })
+    actionMsg.value = t('integrations.action_ok.' + name)
+    pair.value = null
+  } catch (e) {
+    actionMsg.value = t('integrations.action_failed') + ' ' + (e.message ?? '')
+  } finally { busy.value = false }
+}
 const test = ref(null)
 const busy = ref(false)
 const error = ref('')
@@ -112,7 +124,19 @@ async function saveManual() {
     </form>
   </div>
 
+  <form v-else-if="pair" @submit.prevent="action(pair.i, 'commission', pair.code.trim())">
+    <h3>{{ t('integrations.commission') }}</h3>
+    <p class="hint">{{ t('integrations.commission_help') }}</p>
+    <div class="field"><input v-model="pair.code" required placeholder="MT:… / 3497-011-2332"></div>
+    <div class="row">
+      <button type="button" class="btn" @click="pair = null">{{ t('common.back') }}</button>
+      <span class="grow" />
+      <button class="btn primary" :disabled="busy">{{ t('integrations.commission') }}</button>
+    </div>
+  </form>
+
   <div v-else-if="!form">
+    <p v-if="actionMsg" class="hint">{{ actionMsg }}</p>
     <ul class="list">
       <li v-for="i in store.integrations" :key="i.id">
         <button class="item" @click="edit(i)">
@@ -120,6 +144,8 @@ async function saveManual() {
           <span class="txt"><b>{{ i.name }}</b><small>{{ t('adapters.' + i.adapter) }} · {{ t('integrations.status.' + (i.status?.status ?? 'stopped')) }}<template v-if="i.status?.error"> · {{ i.status.error }}</template></small></span>
           <span class="cnt">{{ t('integrations.devices', i.devices) }}</span>
         </button>
+        <button v-if="adapters[i.adapter]?.actions?.includes('permit_join')" class="btn" @click="action(i, 'permit_join')">{{ t('integrations.permit_join') }}</button>
+        <button v-if="adapters[i.adapter]?.actions?.includes('commission')" class="btn" @click="pair = { i, code: '' }">{{ t('integrations.commission') }}</button>
         <button v-if="adapters[i.adapter]?.manualDevices" class="btn" @click="addManual(i)">＋ {{ t('integrations.manual_device') }}</button>
       </li>
       <li v-if="!store.integrations.length" class="hint">{{ t('integrations.empty') }}</li>
@@ -128,7 +154,6 @@ async function saveManual() {
     <div class="new">
       <button v-for="(_, k) in adapters" :key="k" class="btn" @click="create(k)">＋ {{ t('adapters.' + k) }}</button>
     </div>
-    <p class="hint small">{{ t('integrations.coming') }}</p>
   </div>
 
   <form v-else @submit.prevent="save">
@@ -137,7 +162,8 @@ async function saveManual() {
     <div class="field"><label>{{ t('common.name') }}</label><input v-model="form.name" required maxlength="80"></div>
     <div v-for="f in fields" :key="f.key" class="field">
       <label>{{ t('integrationFields.' + f.key) }}</label>
-      <textarea v-if="f.type === 'json'" v-model="form.config[f.key]" placeholder='{"Authorization": "Bearer …"}' />
+      <select v-if="f.type === 'select'" v-model="form.config[f.key]"><option v-for="o in f.options" :key="o" :value="o">{{ t('restOptions.' + o, o) }}</option></select>
+      <textarea v-else-if="f.type === 'json'" v-model="form.config[f.key]" placeholder='{"Authorization": "Bearer …"}' />
       <input v-else v-model="form.config[f.key]" :type="f.type === 'secret' ? 'password' : f.type === 'number' ? 'number' : 'text'" :required="f.required" autocomplete="off" :placeholder="ph(form.adapter, f.key)">
     </div>
     <label class="check"><input v-model="form.config.auto_adopt" type="checkbox"> {{ t('integrations.auto_adopt') }}</label>

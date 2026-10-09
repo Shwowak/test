@@ -524,7 +524,11 @@
     "home_assistant": "Home Assistant",
     "mqtt": "MQTT (Zigbee2MQTT, Tasmota, ESPHome …)",
     "rest": "REST / HTTP",
-    "modbus": "Modbus TCP (Wechselrichter, Zähler, Wallbox)"
+    "modbus": "Modbus TCP (Wechselrichter, Zähler, Wallbox)",
+    "zigbee2mqtt": "Zigbee (Zigbee2MQTT)",
+    "zwavejs": "Z-Wave (Z-Wave JS)",
+    "matter": "Matter / Thread",
+    "knx": "KNX (KNXnet/IP)"
   },
   "integrations": {
     "add": "Integration hinzufügen",
@@ -548,8 +552,21 @@
     "help": {
       "home_assistant": "URL deiner Home-Assistant-Instanz und ein Long-Lived Access Token (Profil → Sicherheit → Token erstellen). Alle Entitäten werden automatisch erkannt.",
       "mqtt": "MQTT-Broker (z. B. Mosquitto). Geräte, die Home-Assistant-Discovery senden (Zigbee2MQTT, Tasmota, ESPHome, Shelly), werden automatisch erkannt.",
-      "rest": "Für Geräte mit HTTP-Schnittstelle. Geräte werden danach manuell angelegt."
-    }
+      "rest": "Für Geräte mit HTTP-Schnittstelle. Geräte werden danach manuell angelegt.",
+      "zigbee2mqtt": "MQTT-Broker von Zigbee2MQTT (z. B. mqtt://192.168.1.10:1883). Geräte erscheinen automatisch.",
+      "zwavejs": "Z-Wave JS Server (z. B. ws://192.168.1.10:3000, Z-Wave JS UI → WS-Server aktivieren).",
+      "matter": "Python Matter Server (z. B. ws://192.168.1.10:5580/ws). Thread benötigt einen Border-Router.",
+      "knx": "IP-Adresse der KNX-IP-Schnittstelle. Leer lassen für Routing per Multicast.",
+      "modbus": "IP-Adresse des Geräts (Wechselrichter, Zähler, Wallbox). Register dann als manuelle Geräte anlegen."
+    },
+    "permit_join": "Anlernen",
+    "commission": "Matter-Gerät koppeln",
+    "commission_help": "Kopplungscode vom Gerät oder QR-Code-Text (MT:…) eingeben. Das Gerät muss im Kopplungsmodus sein.",
+    "action_ok": {
+      "permit_join": "Anlernmodus aktiv – Gerät jetzt in den Kopplungsmodus versetzen.",
+      "commission": "Gerät gekoppelt."
+    },
+    "action_failed": "Fehlgeschlagen:"
   },
   "integrationFields": {
     "url": "URL",
@@ -561,7 +578,9 @@
     "interval": "Abfrageintervall (Sekunden)",
     "host": "Host / IP",
     "port": "Port (502)",
-    "unit_id": "Unit-ID (Standard 1)"
+    "unit_id": "Unit-ID (Standard 1)",
+    "base_topic": "Basis-Topic (zigbee2mqtt)",
+    "mode": "Verbindungsart"
   },
   "integrationPlaceholders": {
     "home_assistant": {
@@ -587,7 +606,11 @@
     "datatype": "Datentyp",
     "word_order": "Wortreihenfolge",
     "scale": "Faktor (z. B. 0.1)",
-    "unit_id": "Unit-ID (Slave)"
+    "unit_id": "Unit-ID (Slave)",
+    "ga_state": "Gruppenadresse Status (z. B. 1/2/3)",
+    "ga_write": "Gruppenadresse Schalten",
+    "ga_brightness": "Gruppenadresse Helligkeit",
+    "dpt": "Datenpunkttyp (DPT)"
   },
   "restOptions": {
     "sensor": "Sensor",
@@ -598,7 +621,16 @@
     "coil": "Coil",
     "discrete": "Discrete Input",
     "big": "Big-Endian",
-    "little": "Little-Endian (Wörter getauscht)"
+    "little": "Little-Endian (Wörter getauscht)",
+    "dimmer": "Dimmer",
+    "cover": "Rollladen",
+    "tunneling": "Tunneling (IP-Schnittstelle)",
+    "routing": "Routing (IP-Router, Multicast)",
+    "9": "DPT 9 – 2-Byte-Gleitkomma",
+    "5.001": "DPT 5.001 – Prozent",
+    "7": "DPT 7 – 2-Byte ohne Vorzeichen",
+    "13": "DPT 13 – 4-Byte mit Vorzeichen",
+    "14": "DPT 14 – 4-Byte-Gleitkomma"
   },
   "general": {
     "place": "Ort",

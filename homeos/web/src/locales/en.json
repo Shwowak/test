@@ -524,7 +524,11 @@
     "home_assistant": "Home Assistant",
     "mqtt": "MQTT (Zigbee2MQTT, Tasmota, ESPHome …)",
     "rest": "REST / HTTP",
-    "modbus": "Modbus TCP (inverters, meters, wallboxes)"
+    "modbus": "Modbus TCP (inverters, meters, wallboxes)",
+    "zigbee2mqtt": "Zigbee (Zigbee2MQTT)",
+    "zwavejs": "Z-Wave (Z-Wave JS)",
+    "matter": "Matter / Thread",
+    "knx": "KNX (KNXnet/IP)"
   },
   "integrations": {
     "add": "Add integration",
@@ -548,8 +552,21 @@
     "help": {
       "home_assistant": "URL of your Home Assistant instance and a long-lived access token (Profile → Security → Create token). All entities are discovered automatically.",
       "mqtt": "MQTT broker (e.g. Mosquitto). Devices sending Home Assistant discovery (Zigbee2MQTT, Tasmota, ESPHome, Shelly) are detected automatically.",
-      "rest": "For devices with an HTTP interface. Devices are then added manually."
-    }
+      "rest": "For devices with an HTTP interface. Devices are then added manually.",
+      "zigbee2mqtt": "Zigbee2MQTT MQTT broker (e.g. mqtt://192.168.1.10:1883). Devices appear automatically.",
+      "zwavejs": "Z-Wave JS server (e.g. ws://192.168.1.10:3000).",
+      "matter": "Python Matter Server (e.g. ws://192.168.1.10:5580/ws). Thread needs a border router.",
+      "knx": "IP address of the KNX IP interface. Leave empty for multicast routing.",
+      "modbus": "IP address of the device (inverter, meter, wallbox). Then add registers as manual devices."
+    },
+    "permit_join": "Pair devices",
+    "commission": "Pair Matter device",
+    "commission_help": "Enter the pairing code or QR text (MT:…). The device must be in pairing mode.",
+    "action_ok": {
+      "permit_join": "Pairing mode active – put the device into pairing mode now.",
+      "commission": "Device paired."
+    },
+    "action_failed": "Failed:"
   },
   "integrationFields": {
     "url": "URL",
@@ -561,7 +578,9 @@
     "interval": "Poll interval (seconds)",
     "host": "Host / IP",
     "port": "Port (502)",
-    "unit_id": "Unit ID (default 1)"
+    "unit_id": "Unit ID (default 1)",
+    "base_topic": "Base topic (zigbee2mqtt)",
+    "mode": "Connection type"
   },
   "integrationPlaceholders": {
     "home_assistant": {
@@ -587,7 +606,11 @@
     "datatype": "Data type",
     "word_order": "Word order",
     "scale": "Scale (e.g. 0.1)",
-    "unit_id": "Unit ID (slave)"
+    "unit_id": "Unit ID (slave)",
+    "ga_state": "Status group address (e.g. 1/2/3)",
+    "ga_write": "Switch group address",
+    "ga_brightness": "Brightness group address",
+    "dpt": "Datapoint type (DPT)"
   },
   "restOptions": {
     "sensor": "Sensor",
@@ -598,7 +621,16 @@
     "coil": "Coil",
     "discrete": "Discrete input",
     "big": "Big-endian",
-    "little": "Little-endian (word swap)"
+    "little": "Little-endian (word swap)",
+    "dimmer": "Dimmer",
+    "cover": "Shutter",
+    "tunneling": "Tunneling (IP interface)",
+    "routing": "Routing (IP router, multicast)",
+    "9": "DPT 9 – 2-byte float",
+    "5.001": "DPT 5.001 – percent",
+    "7": "DPT 7 – 2-byte unsigned",
+    "13": "DPT 13 – 4-byte signed",
+    "14": "DPT 14 – 4-byte float"
   },
   "general": {
     "place": "Place",

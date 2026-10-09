@@ -8,7 +8,7 @@ import { userFromToken, can } from '../core/auth.js'
 import { DEVICE_TYPES, CAPABILITY_KINDS } from '../devices/model.js'
 import {
   ADAPTERS, deviceRow, integrationRow, redactConfig, mergeConfigSecrets, startIntegration, stopIntegration,
-  integrationStatus, getDevice, commandDevice, testIntegration, invalidate,
+  integrationStatus, getDevice, commandDevice, testIntegration, invalidate, integrationAction,
 } from '../devices/engine.js'
 import { REST_DEVICE_FIELDS } from '../devices/adapters/rest.js'
 
@@ -78,6 +78,11 @@ export default async function devicesModule(app) {
       if (prev) config = mergeConfigSecrets(config, prev.config)
     }
     return testIntegration(req.body.adapter, config)
+  })
+
+  app.post('/integrations/:id/action', { schema: tI('Run integration action (pairing)', { body: { type: 'object', required: ['action'], properties: { action: { type: 'string' }, value: {} } } }), preHandler: manage }, async req => {
+    try { await integrationAction(Number(req.params.id), req.body.action, req.body.value) } catch (e) { throw badRequest(e.message) }
+    return { ok: true }
   })
 
   app.post('/integrations', { schema: tI('Create integration', { body: { ...intBody, required: ['adapter'] } }), preHandler: manage }, async req => {
@@ -206,7 +211,7 @@ export default async function devicesModule(app) {
 
   app.get('/devices/meta/registry', { schema: tD('Device types, capability kinds, adapters') , preHandler: view }, async () => ({
     types: DEVICE_TYPES, capabilities: CAPABILITY_KINDS,
-    adapters: Object.fromEntries(Object.entries(ADAPTERS).map(([k, A]) => [k, { fields: A.fields, manualDevices: !!A.manualDevices, deviceFields: A.deviceFields ?? [] }])),
+    adapters: Object.fromEntries(Object.entries(ADAPTERS).map(([k, A]) => [k, { fields: A.fields, manualDevices: !!A.manualDevices, actions: Object.keys(A.actions ?? {}), deviceFields: A.deviceFields ?? [] }])),
     restDeviceFields: REST_DEVICE_FIELDS,
   }))
 

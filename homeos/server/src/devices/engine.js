@@ -6,8 +6,12 @@ import HomeAssistantAdapter from './adapters/homeassistant.js'
 import MqttAdapter from './adapters/mqtt.js'
 import ModbusAdapter from './adapters/modbus.js'
 import RestAdapter from './adapters/rest.js'
+import Zigbee2MqttAdapter from './adapters/zigbee2mqtt.js'
+import ZwaveJsAdapter from './adapters/zwavejs.js'
+import MatterAdapter from './adapters/matter.js'
+import KnxAdapter from './adapters/knx.js'
 
-export const ADAPTERS = { home_assistant: HomeAssistantAdapter, mqtt: MqttAdapter, rest: RestAdapter, modbus: ModbusAdapter }
+export const ADAPTERS = { home_assistant: HomeAssistantAdapter, mqtt: MqttAdapter, rest: RestAdapter, zigbee2mqtt: Zigbee2MqttAdapter, zwavejs: ZwaveJsAdapter, matter: MatterAdapter, knx: KnxAdapter, modbus: ModbusAdapter }
 
 const SECRET_KEYS = new Set(Object.values(ADAPTERS).flatMap(A => A.fields.filter(f => f.type === 'secret').map(f => f.key)))
 export const redactConfig = c => Object.fromEntries(Object.entries(c).map(([k, v]) => [k, SECRET_KEYS.has(k) && v ? '••••••' : v]))
@@ -123,6 +127,13 @@ export async function stopIntegration(id) {
 
 export async function startAll() {
   for (const { id } of db.prepare('SELECT id FROM integrations WHERE enabled = 1').all()) startIntegration(id)
+}
+
+export async function integrationAction(id, action, value) {
+  const inst = running.get(id)
+  const method = inst?.constructor.actions?.[action]
+  if (!method) throw new Error('action_unavailable')
+  return inst[method](value)
 }
 
 export const integrationStatus = id => status.get(id) ?? { status: 'stopped' }
