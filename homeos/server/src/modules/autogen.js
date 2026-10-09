@@ -2,7 +2,7 @@ import { db, json } from '../core/db.js'
 import { getSetting, setSetting } from '../core/settings.js'
 import { invalidate } from '../devices/engine.js'
 
-const QUANTITIES = ['temperature', 'humidity', 'power', 'energy', 'co2', 'illuminance', 'pressure']
+const QUANTITIES = ['temperature', 'humidity', 'power', 'energy', 'co2', 'illuminance', 'pressure', 'cpu', 'memory', 'disk']
 const ENERGY_TYPES = ['pv', 'battery', 'wallbox', 'energy_meter']
 const ORDER = ['light', 'switch', 'outlet', 'cover', 'blind', 'thermostat', 'heating', 'lock', 'media', 'door', 'window', 'motion', 'smoke', 'energy_meter', 'pv', 'battery', 'wallbox', 'sensor', 'vehicle', 'other']
 const ROOM_ICONS = [[/wohn|living/i, '⌂'], [/küche|kitchen/i, '☕'], [/schlaf|bed/i, '☾'], [/bad|bath/i, '♒'], [/kind|kid/i, '✦'], [/büro|office|arbeit/i, '▤'], [/garten|garden|außen|outdoor|terrasse/i, '☀'], [/garage|keller|basement|technik/i, '⚙'], [/flur|diele|hall/i, '◈']]

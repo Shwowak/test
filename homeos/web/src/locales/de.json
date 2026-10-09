@@ -484,7 +484,10 @@
     "mode": "Lademodus",
     "charging": "Lädt",
     "connected": "Fahrzeug verbunden",
-    "vehicle": "Fahrzeug"
+    "vehicle": "Fahrzeug",
+    "online": "Online",
+    "running": "Läuft",
+    "uptime": "Laufzeit"
   },
   "quantities": {
     "temperature": "Temperatur",
@@ -497,7 +500,12 @@
     "co2": "CO₂",
     "pressure": "Luftdruck",
     "battery": "Batterie",
-    "value": "Wert"
+    "value": "Wert",
+    "cpu": "CPU",
+    "memory": "RAM",
+    "disk": "Speicher",
+    "memory_used": "RAM belegt",
+    "disk_free": "Speicher frei"
   },
   "binary": {
     "default": {
@@ -535,7 +543,8 @@
     "zwavejs": "Z-Wave (Z-Wave JS)",
     "matter": "Matter / Thread",
     "knx": "KNX (KNXnet/IP)",
-    "evcc": "evcc (PV-Überschussladen)"
+    "evcc": "evcc (PV-Überschussladen)",
+    "proxmox": "Proxmox VE (Server, VMs, Container)"
   },
   "integrations": {
     "add": "Integration hinzufügen",
@@ -565,7 +574,8 @@
       "matter": "Python Matter Server (z. B. ws://192.168.1.10:5580/ws). Thread benötigt einen Border-Router.",
       "knx": "IP-Adresse der KNX-IP-Schnittstelle. Leer lassen für Routing per Multicast.",
       "modbus": "IP-Adresse des Geräts (Wechselrichter, Zähler, Wallbox). Register dann als manuelle Geräte anlegen.",
-      "evcc": "Adresse von evcc, z. B. http://192.168.1.20:7070. Passwort nur nötig, um den Lademodus zu ändern."
+      "evcc": "Adresse von evcc, z. B. http://192.168.1.20:7070. Passwort nur nötig, um den Lademodus zu ändern.",
+      "proxmox": "Adresse wie https://192.168.1.5:8006. In Proxmox unter Datacenter → Permissions → API Tokens einen Token anlegen (Rolle PVEAuditor reicht, Privilege Separation aus). Zeigt CPU, RAM und Speicher von Servern, VMs und Containern."
     },
     "permit_join": "Anlernen",
     "commission": "Matter-Gerät koppeln",
@@ -588,7 +598,11 @@
     "port": "Port (502)",
     "unit_id": "Unit-ID (Standard 1)",
     "base_topic": "Basis-Topic (zigbee2mqtt)",
-    "mode": "Verbindungsart"
+    "mode": "Verbindungsart",
+    "token_id": "API-Token-ID (z. B. root@pam!smartboard)",
+    "token_secret": "API-Token-Secret",
+    "insecure": "Selbstsigniertes Zertifikat erlauben",
+    "include": "Anzeigen"
   },
   "integrationPlaceholders": {
     "home_assistant": {
@@ -638,7 +652,12 @@
     "5.001": "DPT 5.001 – Prozent",
     "7": "DPT 7 – 2-Byte ohne Vorzeichen",
     "13": "DPT 13 – 4-Byte mit Vorzeichen",
-    "14": "DPT 14 – 4-Byte-Gleitkomma"
+    "14": "DPT 14 – 4-Byte-Gleitkomma",
+    "yes": "Ja",
+    "no": "Nein",
+    "all": "Alles",
+    "nodes": "Nur Server und Speicher",
+    "running": "Nur laufende VMs/Container"
   },
   "general": {
     "place": "Ort",

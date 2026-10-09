@@ -484,7 +484,10 @@
     "mode": "Charge mode",
     "charging": "Charging",
     "connected": "Vehicle connected",
-    "vehicle": "Vehicle"
+    "vehicle": "Vehicle",
+    "online": "Online",
+    "running": "Running",
+    "uptime": "Uptime"
   },
   "quantities": {
     "temperature": "Temperature",
@@ -497,7 +500,12 @@
     "co2": "CO₂",
     "pressure": "Pressure",
     "battery": "Battery",
-    "value": "Value"
+    "value": "Value",
+    "cpu": "CPU",
+    "memory": "RAM",
+    "disk": "Storage",
+    "memory_used": "RAM used",
+    "disk_free": "Storage free"
   },
   "binary": {
     "default": {
@@ -535,7 +543,8 @@
     "zwavejs": "Z-Wave (Z-Wave JS)",
     "matter": "Matter / Thread",
     "knx": "KNX (KNXnet/IP)",
-    "evcc": "evcc (solar charging)"
+    "evcc": "evcc (solar charging)",
+    "proxmox": "Proxmox VE (servers, VMs, containers)"
   },
   "integrations": {
     "add": "Add integration",
@@ -565,7 +574,8 @@
       "matter": "Python Matter Server (e.g. ws://192.168.1.10:5580/ws). Thread needs a border router.",
       "knx": "IP address of the KNX IP interface. Leave empty for multicast routing.",
       "modbus": "IP address of the device (inverter, meter, wallbox). Then add registers as manual devices.",
-      "evcc": "evcc address, e.g. http://192.168.1.20:7070. Password only needed to change the charge mode."
+      "evcc": "evcc address, e.g. http://192.168.1.20:7070. Password only needed to change the charge mode.",
+      "proxmox": "Address like https://192.168.1.5:8006. Create a token under Datacenter → Permissions → API Tokens (role PVEAuditor, privilege separation off). Shows CPU, RAM and storage of servers, VMs and containers."
     },
     "permit_join": "Pair devices",
     "commission": "Pair Matter device",
@@ -588,7 +598,11 @@
     "port": "Port (502)",
     "unit_id": "Unit ID (default 1)",
     "base_topic": "Base topic (zigbee2mqtt)",
-    "mode": "Connection type"
+    "mode": "Connection type",
+    "token_id": "API token ID (e.g. root@pam!smartboard)",
+    "token_secret": "API token secret",
+    "insecure": "Allow self-signed certificate",
+    "include": "Show"
   },
   "integrationPlaceholders": {
     "home_assistant": {
@@ -638,7 +652,12 @@
     "5.001": "DPT 5.001 – percent",
     "7": "DPT 7 – 2-byte unsigned",
     "13": "DPT 13 – 4-byte signed",
-    "14": "DPT 14 – 4-byte float"
+    "14": "DPT 14 – 4-byte float",
+    "yes": "Yes",
+    "no": "No",
+    "all": "Everything",
+    "nodes": "Servers and storage only",
+    "running": "Running VMs/containers only"
   },
   "general": {
     "place": "Place",

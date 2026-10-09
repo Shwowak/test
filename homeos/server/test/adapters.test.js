@@ -65,3 +65,12 @@ test('nice device names', async () => {
   assert.equal(niceName('Deckenlicht Küche'), 'Deckenlicht Küche')
   assert.equal(niceName('grid_import_total'), 'Netz Bezug gesamt')
 })
+
+test('proxmox resources', async () => {
+  const { mapResource } = await import('../src/devices/adapters/proxmox.js')
+  const n = mapResource({ type: 'node', node: 'pve1', status: 'online', cpu: 0.237, mem: 8589934592, maxmem: 34359738368, disk: 50, maxdisk: 100, uptime: 90000 })
+  assert.deepEqual([n.state.cpu, n.state.memory, n.state.disk, n.state.memory_used, n.state.uptime], [23.7, 25, 50, 8, '1 d 1 h'])
+  const v = mapResource({ type: 'lxc', vmid: 101, name: 'homeassistant', node: 'pve1', status: 'stopped', cpu: 0.5, mem: 1, maxmem: 2 })
+  assert.equal(v.state.running, false)
+  assert.equal(v.state.cpu, 0)
+})
