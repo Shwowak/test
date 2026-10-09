@@ -28,7 +28,15 @@ let hardKeys = false
 function onFocus(e) {
   const el = e.target
   if (hardKeys || Date.now() - lastPointer > 800) return
+  hardKeys = false
   if ((el.tagName === 'INPUT' && TEXT_TYPES.includes(el.type)) || el.tagName === 'TEXTAREA') target.value = el
+}
+function toggle() {
+  if (target.value) { target.value = null; return }
+  hardKeys = false
+  const isText = el => el && ((el.tagName === 'INPUT' && TEXT_TYPES.includes(el.type)) || el.tagName === 'TEXTAREA')
+  const el = isText(document.activeElement) ? document.activeElement : [...document.querySelectorAll('input, textarea')].find(x => isText(x) && x.offsetParent && !x.disabled)
+  if (el) { target.value = el; el.focus() }
 }
 function onHardKey(e) {
   if (!e.isTrusted || ['Unidentified', 'Process'].includes(e.key)) return
@@ -37,8 +45,10 @@ function onHardKey(e) {
 }
 function onDown(e) {
   lastPointer = Date.now()
+  const el = e.target
+  if (e.pointerType === 'touch' && ((el.tagName === 'INPUT' && TEXT_TYPES.includes(el.type)) || el.tagName === 'TEXTAREA')) { hardKeys = false; target.value = el; return }
   if (!target.value) return
-  if (e.target.closest('.osk') || e.target === target.value) return
+  if (e.target.closest('.osk, .osk-toggle') || e.target === target.value) return
   if (e.target.matches?.('input, textarea')) return
   target.value = null
 }
@@ -96,6 +106,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
+  <button class="osk-toggle" :class="{ on: target }" :aria-label="target ? 'Tastatur ausblenden' : 'Tastatur einblenden'" @pointerdown.prevent @click="toggle">⌨</button>
   <div v-if="target" class="osk" @pointerdown.prevent>
     <div v-for="(row, i) in rows()" :key="i" class="r">
       <button v-if="i === 3" class="k wide" :class="{ on: shift }" @click="shift = !shift">⇧</button>
@@ -112,6 +123,8 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+.osk-toggle { position: fixed; right: 14px; bottom: 14px; z-index: 4100; width: 60px; height: 60px; border-radius: 50%; font-size: 28px; color: var(--cyan); background: rgba(2, 6, 23, .85); border: 1px solid var(--line-strong); box-shadow: 0 0 16px rgba(34, 211, 238, .25); touch-action: manipulation; }
+.osk-toggle.on { bottom: 352px; background: rgba(34, 211, 238, .25); }
 .osk { position: fixed; left: 0; right: 0; bottom: 0; z-index: 4000; padding: 10px 8px 14px; background: rgba(2, 6, 23, .97); border-top: 1px solid var(--line-strong); box-shadow: 0 -20px 60px rgba(0, 0, 0, .6); display: flex; flex-direction: column; gap: 8px; user-select: none; }
 .r { display: flex; gap: 6px; justify-content: center; }
 .k { flex: 1; max-width: 86px; min-height: 58px; font-size: 22px; color: var(--text); background: rgba(148, 163, 184, .1); border: 1px solid var(--line); border-radius: 8px; touch-action: manipulation; }
