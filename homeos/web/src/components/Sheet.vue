@@ -3,6 +3,17 @@ defineProps({ title: String, wide: Boolean })
 import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 const emit = defineEmits(['close'])
+import { onMounted, onBeforeUnmount } from 'vue'
+const stack = window.__sheets ??= []
+const me = Symbol()
+function onKey(e) {
+  if (e.key !== 'Escape' || stack.at(-1) !== me) return
+  e.preventDefault()
+  e.stopPropagation()
+  emit('close')
+}
+onMounted(() => { stack.push(me); window.addEventListener('keydown', onKey, true) })
+onBeforeUnmount(() => { stack.splice(stack.indexOf(me), 1); window.removeEventListener('keydown', onKey, true) })
 </script>
 
 <template>

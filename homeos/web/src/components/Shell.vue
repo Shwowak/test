@@ -47,6 +47,12 @@ setInterval(() => {
   if (Date.now() - adminIdle > features.admin_timeout * 60000) { showSettings.value = false; editing.value = false; emit('logout') }
 }, 15000)
 for (const ev of ['pointerdown', 'keydown']) window.addEventListener(ev, bump, { passive: true })
+window.addEventListener('keydown', e => {
+  if (e.key !== 'Escape' || (window.__sheets ?? []).length || document.querySelector('.osk')) return
+  if (notes.camera) { notes.camera = null; return }
+  if (editing.value) { editing.value = false; return }
+  if (view.value !== 'dashboard') view.value = 'dashboard'
+})
 const emit = defineEmits(['logout'])
 const showSettings = ref(false)
 const showNotes = ref(false)

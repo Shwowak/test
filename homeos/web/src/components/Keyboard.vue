@@ -49,6 +49,7 @@ function onBlur() {
 }
 let domCheck = null
 function onHardKey(e) {
+  if (e.key === 'Escape' && target.value) { target.value = null; e.preventDefault(); e.stopPropagation(); return }
   if (!e.isTrusted || ['Unidentified', 'Process'].includes(e.key)) return
   hardKeys = true
   target.value = null

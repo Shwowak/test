@@ -5,7 +5,7 @@ export const DEFAULT_SETTINGS = {
   timezone: process.env.TZ || 'Europe/Berlin',
   autologin: null,
   viewer_init: false,
-  features: { automations: false, control: false, assistant: false, cameras: false },
+  features: { automations: false, control: true, assistant: true, cameras: true },
   admin_timeout: 10,
   ai: { provider: 'ollama', url: '', model: '', api_key: '', stt_url: '', stt_model: 'whisper-1', tts_url: '', tts_model: 'tts-1', tts_voice: '', speak: true },
   privacy: { cameras: false, microphone: false },

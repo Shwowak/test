@@ -1,7 +1,7 @@
 import { reactive } from 'vue'
 import { api } from './api.js'
 
-export const features = reactive({ automations: false, control: false, assistant: false, cameras: false, admin_timeout: 10, viewer: null, loaded: false })
+export const features = reactive({ automations: false, control: true, assistant: true, cameras: true, admin_timeout: 10, viewer: null, loaded: false })
 
 export async function loadFeatures() {
   try {

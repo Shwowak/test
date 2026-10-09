@@ -13,7 +13,7 @@ const msg = ref('')
 const zones = Intl.supportedValuesOf?.('timeZone') ?? []
 const users = ref([])
 const auto = ref({ user_id: null, scope: 'device' })
-const feats = ref({ automations: false, control: false, assistant: false, cameras: false })
+const feats = ref({ automations: false, control: true, assistant: true, cameras: true })
 const adminTimeout = ref(10)
 
 async function load() {
