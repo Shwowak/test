@@ -178,3 +178,6 @@ input[type='range']::-moz-range-thumb { width: 32px; height: 32px; border: 0; bo
 .lite .sheet { background: #0b1022 !important; }
 .lite .backdrop { background: rgba(0, 0, 0, .7) !important; }
 .lite body::before, .lite body::after { animation: none !important; }
+
+.keynav :focus { outline: 3px solid var(--cyan) !important; outline-offset: 2px; box-shadow: 0 0 18px rgba(34, 211, 238, .55) !important; }
+:focus-visible { outline: 3px solid var(--cyan); outline-offset: 2px; }

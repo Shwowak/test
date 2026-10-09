@@ -123,7 +123,7 @@ const stepNo = computed(() => ({ code: 0, network: 1, account: 2 })[step.value] 
         </div>
       </form>
       <template v-else>
-        <div class="nets" @keydown="arrows">
+        <div class="nets">
           <button v-for="n in nets ?? []" :key="n.ssid" type="button" class="net" @click="pick(n)">
             <span class="sig">{{ bars(n.signal) }}</span><span class="grow">{{ n.ssid }}</span><span>{{ n.secure ? '🔒' : '' }}</span>
           </button>
