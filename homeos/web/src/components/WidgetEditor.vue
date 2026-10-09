@@ -71,7 +71,7 @@ async function remove() {
 
     <div class="field"><label>{{ t('widget.title') }}</label><input v-model="form.title" :placeholder="t('widget.title_placeholder')"></div>
 
-    <div v-if="typeDef.sources.length" class="field">
+    <div v-if="allowedSources.length" class="field">
       <label>{{ t('widget.source') }}</label>
       <select v-model="form.source_id">
         <option v-if="typeDef.sources.includes('static')" :value="null">{{ t('sourceTypes.static') }}</option>
