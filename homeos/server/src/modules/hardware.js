@@ -7,6 +7,7 @@ import { run, has, canIsolateNetwork } from '../system/exec.js'
 import { displayStatus, setBrightness, setPower, setOutput } from '../system/display.js'
 import { networkStatus, wifiScan, wifiConnect, wifiRadio, forget, setHostname } from '../system/network.js'
 import * as bt from '../system/bluetooth.js'
+import { btAuto } from '../system/btauto.js'
 import { audioStatus, setVolume, setMute, setDefault } from '../system/audio.js'
 
 const DATA = dirname(resolve(process.env.HOMEOS_DB ?? './data/homeos.db'))
@@ -37,7 +38,7 @@ export default async function hardwareModule(app) {
     if (!isLocalIp(req.ip)) throw new HttpError(403, 'setup.local_only')
   }
   const INPUT = d => /^input-/.test(d.icon ?? '') || /keyboard|tastatur|mouse|maus|trackpad|keys|mx /i.test(d.name ?? '')
-  const inputView = st => ({ available: !!st.available, powered: st.powered, devices: (st.devices ?? []).map(d => ({ ...d, input: INPUT(d) })).sort((a, b) => b.input - a.input) })
+  const inputView = st => ({ available: !!st.available, powered: st.powered, auto: { ...btAuto }, devices: (st.devices ?? []).map(d => ({ ...d, input: INPUT(d) })).sort((a, b) => b.input - a.input) })
   const pub = summary => ({ schema: s(summary), config: { public: true }, preHandler: localOnly })
 
   app.get('/setup/bluetooth', pub('Bluetooth input devices (only on the device display, no login)'), wrap('bluetooth', async () => inputView(await bt.bluetoothStatus())))

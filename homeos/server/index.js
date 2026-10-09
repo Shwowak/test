@@ -24,6 +24,7 @@ import hardwareModule, { isDevice } from './src/modules/hardware.js'
 import aiModule from './src/modules/ai.js'
 import camerasModule, { syncCameras } from './src/modules/cameras.js'
 import { keepOutputs } from './src/system/display.js'
+import { startBtAuto } from './src/system/btauto.js'
 import { startPlugins, stopPlugins } from './src/plugins/host.js'
 
 process.env.npm_package_version ??= JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')).version
@@ -73,6 +74,6 @@ startAll()
 startAutomations()
 startPlugins()
 syncCameras().catch(() => {})
-if (isDevice()) keepOutputs()
+if (isDevice()) { keepOutputs(); startBtAuto() }
 for (const sig of ['SIGTERM', 'SIGINT']) process.once(sig, () => { stopPlugins(); process.exit(0) })
 log('system', 'info', 'system.started', { version: process.env.npm_package_version })

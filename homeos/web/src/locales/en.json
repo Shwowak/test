@@ -882,6 +882,8 @@
     "button": "Connect Bluetooth keyboard",
     "title": "Pair keyboard / mouse",
     "hint": "Put the keyboard into pairing mode (usually hold the Bluetooth key for 3 s), then tap “Pair”.",
-    "done": "“{name}” is connected. You can type now."
+    "done": "“{name}” is connected. You can type now.",
+    "auto_search": "Searching for Bluetooth keyboard … put your keyboard into pairing mode now (hold the Bluetooth key ~3 s).",
+    "auto_ok": "Keyboard “{name}” connected – just start typing. Tab = next field, Enter = continue."
   }
 }

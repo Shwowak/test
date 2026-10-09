@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { api } from '../api.js'
 import { errorText, setLocale, LOCALE_NAMES } from '../i18n.js'
@@ -34,7 +34,7 @@ async function doSetup() {
 
 onMounted(async () => {
   try { const s = await api('GET', '/auth/setup'); if (s.needed) setup.value = s } catch {}
-  api('GET', '/setup/bluetooth').then(r => { btAvailable.value = r.available }).catch(() => {})
+  pollBt()
   try {
     pinUsers.value = await api('GET', '/auth/pin-users')
     if (pinUsers.value.length) {
@@ -42,7 +42,35 @@ onMounted(async () => {
       name.value = pinUsers.value[0].name
     }
   } catch {}
+  await nextTick()
+  focusFirst()
+  window.addEventListener('keydown', onKey)
 })
+
+const btAuto = ref(null)
+let btTimer = null
+async function pollBt() {
+  try {
+    const r = await api('GET', '/setup/bluetooth')
+    btAvailable.value = r.available
+    btAuto.value = r.auto
+    const kb = r.devices?.find(d => d.input && d.connected)
+    if (kb && btAuto.value) btAuto.value.connected = kb.name
+  } catch { btAvailable.value = false; return }
+  btTimer = setTimeout(pollBt, 3000)
+}
+onBeforeUnmount(() => { clearTimeout(btTimer); window.removeEventListener('keydown', onKey) })
+
+function focusFirst() {
+  const el = document.querySelector(setup.value ? '#sp' : mode.value === 'password' ? '#p' : null)
+  el?.focus()
+}
+function onKey(e) {
+  if (setup.value || mode.value !== 'pin' || e.target.tagName === 'INPUT') return
+  if (/^[0-9]$/.test(e.key)) press(e.key)
+  else if (e.key === 'Backspace') press('⌫')
+  else if (e.key === 'Enter') submit()
+}
 
 async function submit() {
   busy.value = true
@@ -75,13 +103,16 @@ function press(d) {
         <h1>{{ t('app.name') }}</h1>
       </div>
 
+      <p v-if="btAuto?.active || btAuto?.connected" class="btstat" :class="{ ok: btAuto.connected }">
+        {{ btAuto.connected ? '✓ ' + t('btsetup.auto_ok', { name: btAuto.connected }) : '⌨ ' + t('btsetup.auto_search') }}
+      </p>
       <template v-if="setup">
         <h2 class="st">{{ t('setup.title') }}</h2>
         <p v-if="!setup.local" class="hint">{{ t('setup.local_only') }}</p>
         <template v-else>
           <p class="hint">{{ t('setup.hint') }}</p>
           <div class="field"><label>{{ t('login.user') }}</label><input v-model="setupForm.name" required maxlength="40"></div>
-          <div class="field"><label>{{ t('login.password') }}</label><input v-model="setupForm.password" type="password" required autocomplete="new-password"></div>
+          <div class="field"><label>{{ t('login.password') }}</label><input id="sp" v-model="setupForm.password" type="password" required autocomplete="new-password"></div>
           <div class="field"><label>{{ t('setup.repeat') }}</label><input v-model="setupForm.password2" type="password" required autocomplete="new-password"></div>
           <div class="field"><label>{{ t('setup.pin') }}</label><input v-model="setupForm.pin" inputmode="numeric" pattern="[0-9]{4,8}" autocomplete="off"></div>
           <button class="btn primary full" :disabled="busy">{{ t('setup.submit') }}</button>
@@ -141,6 +172,9 @@ h1 { margin: 0; font-size: 26px; letter-spacing: 0.25em; font-weight: 300; }
 .key { min-height: 64px; font-size: 26px; font-family: var(--mono); }
 .full { width: 100%; }
 .bt { margin-top: 14px; }
+.btstat { text-align: center; padding: 10px; border: 1px dashed var(--line-strong); color: var(--cyan); font-size: 15px; animation: btp 2s infinite; }
+.btstat.ok { color: var(--ok); border-color: var(--ok); animation: none; }
+@keyframes btp { 50% { opacity: .55; } }
 .btpanel { margin-top: 12px; padding: 12px; border: 1px solid var(--line); }
 .st { font-weight: 300; text-align: center; margin: 0 0 8px; }
 .hint { color: var(--dim); text-align: center; }
