@@ -12,6 +12,7 @@ import PluginsSettings from './PluginsSettings.vue'
 import HardwareSettings from './HardwareSettings.vue'
 import AiSettings from './AiSettings.vue'
 import CamerasSettings from './CamerasSettings.vue'
+import { features } from '../../features.js'
 
 defineProps({ meta: Object })
 const emit = defineEmits(['changed'])
@@ -27,8 +28,8 @@ const tabs = computed(() => [
   { id: 'bluetooth', icon: 'ᛒ', show: can('system.view') },
   { id: 'audio', icon: '♪', show: can('system.view') },
   { id: 'integrations', icon: '⌁', show: can('devices.manage') },
-  { id: 'assistant', icon: '✦', show: can('ai.use') },
-  { id: 'cameras', icon: '📷', show: can('cameras.view') },
+  { id: 'assistant', icon: '✦', show: can('ai.use') && features.assistant },
+  { id: 'cameras', icon: '📷', show: can('cameras.view') && features.cameras },
   { id: 'plugins', icon: '⧉', show: can('plugins.view') },
   { id: 'users', icon: '⚇', show: can('users.manage') },
   { id: 'versions', icon: '⟲', show: can('versions.view') },

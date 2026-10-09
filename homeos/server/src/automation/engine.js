@@ -136,6 +136,7 @@ async function runActions(a, ctx, depth) {
 }
 
 export async function runAutomation(id, { trigger = 'manual', force = false, depth = 0, ctx = {} } = {}) {
+  if (!getSetting('features')?.automations) return { skipped: 'feature_disabled' }
   const a = automationRow(db.prepare('SELECT * FROM automations WHERE id = ?').get(id))
   if (!a) return { error: 'not_found' }
   if (!force) {

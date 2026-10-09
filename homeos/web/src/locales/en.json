@@ -23,7 +23,8 @@
     "logout": "Log out",
     "devices": "Devices",
     "automations": "Rules",
-    "assistant": "Assistant"
+    "assistant": "Assistant",
+    "lock": "Lock"
   },
   "login": {
     "user": "User",
@@ -397,6 +398,9 @@
       "no_go2rtc": "This camera needs go2rtc",
       "unreachable": "Camera not reachable",
       "no_live": "No live view available"
+    },
+    "feature": {
+      "disabled": "This feature is turned off (Settings → General → Features)"
     }
   },
   "devices": {
@@ -594,7 +598,16 @@
     "autologin_scope": "Applies to",
     "scope_device": "SmartBoard display only",
     "scope_lan": "all devices on the home network",
-    "autologin_warn": "Everyone on the home network gets admin rights. Better pick a user with role “User” or “Restricted”."
+    "autologin_warn": "Everyone on the home network gets admin rights. Better pick a user with role “User” or “Restricted”.",
+    "features": "Features",
+    "features_hint": "SmartBoard is a pure dashboard by default. Enable extra features here.",
+    "feature": {
+      "control": "Control devices from the dashboard",
+      "automations": "Rules / automations",
+      "assistant": "AI assistant",
+      "cameras": "Cameras"
+    },
+    "admin_timeout": "Lock automatically after changes (min, 0 = never)"
   },
   "notifications": {
     "title": "Notifications",
@@ -941,5 +954,10 @@
       "slow_requests": "Slow requests ({n}), e.g. {worst}",
       "many_errors": "Many errors in log ({n} in 10 min)"
     }
+  },
+  "unlock": {
+    "title": "Unlock",
+    "hint": "Sign in to make changes. Viewing works without signing in.",
+    "submit": "Unlock"
   }
 }

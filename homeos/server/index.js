@@ -7,7 +7,8 @@ import websocket from '@fastify/websocket'
 import { existsSync, readFileSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { seedAdmin, userFromToken } from './src/core/auth.js'
+import { seedAdmin, userFromToken, ensureViewer } from './src/core/auth.js'
+import { getSetting as gs, setSetting as ss } from './src/core/settings.js'
 import { seedDemo } from './src/core/seed.js'
 import { log } from './src/core/logger.js'
 import authModule from './src/modules/auth.js'
@@ -34,6 +35,7 @@ import { startPlugins, stopPlugins } from './src/plugins/host.js'
 process.env.npm_package_version ??= JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')).version
 
 seedAdmin()
+ensureViewer(gs, ss)
 seedDemo()
 
 const app = Fastify({ logger: { level: process.env.LOG_LEVEL ?? 'info' }, trustProxy: process.env.HOMEOS_TRUST_PROXY === 'true' })

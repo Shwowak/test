@@ -1,4 +1,5 @@
 <script setup>
+import { features } from '../features.js'
 import { computed, inject } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { store, loadDevices, command, TYPE_ICONS } from '../devices.js'
@@ -22,7 +23,7 @@ function primary(d) {
   return { kind: 'none' }
 }
 async function tap(d) {
-  if (props.editing || !user.value.permissions.includes('devices.control') || d.connection === 'offline') return
+  if (props.editing || !features.control || !user.value.permissions.includes('devices.control') || d.connection === 'offline') return
   if (d.capabilities.some(x => x.id === 'onoff')) await command(d.id, 'onoff', !d.state.onoff).catch(() => {})
 }
 </script>

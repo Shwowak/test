@@ -23,7 +23,8 @@
     "logout": "Abmelden",
     "devices": "Geräte",
     "automations": "Regeln",
-    "assistant": "Assistent"
+    "assistant": "Assistent",
+    "lock": "Sperren"
   },
   "login": {
     "user": "Benutzer",
@@ -397,6 +398,9 @@
       "no_go2rtc": "Für diese Kamera wird go2rtc benötigt",
       "unreachable": "Kamera nicht erreichbar",
       "no_live": "Kein Livebild verfügbar"
+    },
+    "feature": {
+      "disabled": "Diese Funktion ist ausgeschaltet (Einstellungen → Allgemein → Funktionen)"
     }
   },
   "devices": {
@@ -594,7 +598,16 @@
     "autologin_scope": "Gilt für",
     "scope_device": "nur am SmartBoard-Display",
     "scope_lan": "alle Geräte im Heimnetz",
-    "autologin_warn": "Jeder im Heimnetz hat dann Admin-Rechte. Besser einen Benutzer mit Rolle „Benutzer“ oder „Eingeschränkt“ wählen."
+    "autologin_warn": "Jeder im Heimnetz hat dann Admin-Rechte. Besser einen Benutzer mit Rolle „Benutzer“ oder „Eingeschränkt“ wählen.",
+    "features": "Funktionen",
+    "features_hint": "SmartBoard ist standardmäßig ein reines Dashboard. Zusätzliche Funktionen hier einschalten.",
+    "feature": {
+      "control": "Geräte vom Dashboard aus steuern",
+      "automations": "Regeln / Automationen",
+      "assistant": "KI-Assistent",
+      "cameras": "Kameras"
+    },
+    "admin_timeout": "Nach Änderungen automatisch sperren nach (min, 0 = nie)"
   },
   "notifications": {
     "title": "Meldungen",
@@ -941,5 +954,10 @@
       "slow_requests": "Langsame Anfragen ({n}), z. B. {worst}",
       "many_errors": "Viele Fehler im Protokoll ({n} in 10 min)"
     }
+  },
+  "unlock": {
+    "title": "Entsperren",
+    "hint": "Zum Ändern bitte anmelden. Anschauen geht ohne Anmeldung.",
+    "submit": "Entsperren"
   }
 }

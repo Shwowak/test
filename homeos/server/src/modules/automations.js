@@ -2,7 +2,7 @@ import { db } from '../core/db.js'
 import { notFound, badRequest, requirePerm, HttpError } from '../core/http.js'
 import { recordChange } from '../core/versions.js'
 import { notify, acknowledge, listNotifications, NOTIFICATION_LEVELS } from '../core/notify.js'
-import { allSettings, setSetting } from '../core/settings.js'
+import { allSettings, setSetting, getSetting } from '../core/settings.js'
 import { sunTimes } from '../automation/sun.js'
 import { TRIGGER_TYPES, CONDITION_TYPES, ACTION_TYPES, automationRow, runAutomation } from '../automation/engine.js'
 
@@ -95,6 +95,8 @@ export default async function automationsModule(app) {
     schema: tS('Update general settings', { body: { type: 'object', properties: {
       location: { type: 'object', required: ['lat', 'lon'], properties: { lat: { type: 'number', minimum: -90, maximum: 90 }, lon: { type: 'number', minimum: -180, maximum: 180 }, name: { type: 'string', maxLength: 80 } } },
       timezone: { type: 'string', maxLength: 64 },
+      features: { type: 'object', properties: { automations: { type: 'boolean' }, control: { type: 'boolean' }, assistant: { type: 'boolean' }, cameras: { type: 'boolean' } } },
+      admin_timeout: { type: 'integer', minimum: 0, maximum: 1440 },
       autologin: { type: ['object', 'null'], properties: { user_id: { type: 'integer' }, scope: { type: 'string', enum: ['device', 'lan'] } } },
     } } }),
     preHandler: requirePerm('users.manage'),
@@ -104,6 +106,8 @@ export default async function automationsModule(app) {
       setSetting('timezone', req.body.timezone)
     }
     if (req.body.location) setSetting('location', req.body.location)
+    if (req.body.features) setSetting('features', { ...getSetting('features'), ...req.body.features })
+    if (req.body.admin_timeout !== undefined) setSetting('admin_timeout', req.body.admin_timeout)
     if (req.body.autologin !== undefined) {
       const a = req.body.autologin
       if (a?.user_id && !db.prepare('SELECT id FROM users WHERE id = ?').get(a.user_id)) throw badRequest('user.not_found')

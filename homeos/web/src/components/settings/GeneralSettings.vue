@@ -3,6 +3,7 @@ import { ref, onMounted, inject } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { api } from '../../api.js'
 import { errorText } from '../../i18n.js'
+import { loadFeatures } from '../../features.js'
 
 const { t, d } = useI18n()
 const user = inject('user')
@@ -12,10 +13,14 @@ const msg = ref('')
 const zones = Intl.supportedValuesOf?.('timeZone') ?? []
 const users = ref([])
 const auto = ref({ user_id: null, scope: 'device' })
+const feats = ref({ automations: false, control: false, assistant: false, cameras: false })
+const adminTimeout = ref(10)
 
 async function load() {
   s.value = await api('GET', '/settings')
   auto.value = { user_id: s.value.autologin?.user_id ?? null, scope: s.value.autologin?.scope ?? 'device' }
+  feats.value = { ...feats.value, ...s.value.features }
+  adminTimeout.value = s.value.admin_timeout ?? 10
   if (canEdit()) users.value = await api('GET', '/users').catch(() => [])
 }
 onMounted(load)
@@ -23,8 +28,9 @@ onMounted(load)
 async function save() {
   msg.value = ''
   try {
-    await api('PUT', '/settings', { autologin: auto.value.user_id ? auto.value : null, timezone: s.value.timezone, location: { name: s.value.location.name ?? '', lat: Number(s.value.location.lat), lon: Number(s.value.location.lon) } })
+    await api('PUT', '/settings', { features: feats.value, admin_timeout: Number(adminTimeout.value) || 0, autologin: auto.value.user_id ? auto.value : null, timezone: s.value.timezone, location: { name: s.value.location.name ?? '', lat: Number(s.value.location.lat), lon: Number(s.value.location.lon) } })
     await load()
+    await loadFeatures()
     msg.value = t('general.saved')
   } catch (e) { msg.value = errorText(e) }
 }
@@ -49,7 +55,11 @@ function locate() {
     </div>
     <p class="sun">☀ {{ t('general.sunrise') }} {{ s.sun.sunrise ? d(new Date(s.sun.sunrise), 'long') : '—' }}<br>☾ {{ t('general.sunset') }} {{ s.sun.sunset ? d(new Date(s.sun.sunset), 'long') : '—' }}</p>
     <template v-if="canEdit()">
+      <h3>{{ t('general.features') }}</h3>
+      <p class="sun">{{ t('general.features_hint') }}</p>
+      <label v-for="k in ['control', 'automations', 'assistant', 'cameras']" :key="k" class="chk"><input v-model="feats[k]" type="checkbox"> {{ t('general.feature.' + k) }}</label>
       <h3>{{ t('general.autologin') }}</h3>
+      <div class="field"><label>{{ t('general.admin_timeout') }}</label><input v-model="adminTimeout" type="number" min="0" max="1440"></div>
       <div class="two">
         <div class="field">
           <label>{{ t('general.autologin_user') }}</label>
@@ -79,4 +89,5 @@ function locate() {
 .msg { color: var(--cyan); }
 .warn { color: var(--warn); }
 h3 { font-weight: 400; margin: 22px 0 8px; }
+.chk { display: flex; gap: 10px; align-items: center; padding: 5px 0; }
 </style>

@@ -1,9 +1,9 @@
 import { db } from '../core/db.js'
 import {
   verifySecret, hashSecret, createSession, publicUser, loginBlocked, loginFailed, loginSucceeded,
-  passwordProblem, pinProblem, SESSION_DAYS, can, userFromToken,
+  passwordProblem, pinProblem, SESSION_DAYS, can, userFromToken, ensureViewer,
 } from '../core/auth.js'
-import { getSetting, isLanIp, isLocalIp } from '../core/settings.js'
+import { getSetting, setSetting, isLanIp, isLocalIp } from '../core/settings.js'
 import { setupAllowed } from '../system/setupnet.js'
 import { HttpError, badRequest, requirePerm } from '../core/http.js'
 import { log } from '../core/logger.js'
@@ -55,6 +55,7 @@ export default async function authModule(app) {
     const id = db.prepare("INSERT INTO users (name, password, pin, role) VALUES (?, ?, ?, 'admin')")
       .run(req.body.name.trim(), hashSecret(req.body.password), req.body.pin ? hashSecret(req.body.pin) : null).lastInsertRowid
     log('users', 'info', 'user.created', { name: req.body.name, role: 'admin', setup: true })
+    ensureViewer(getSetting, setSetting)
     const user = db.prepare('SELECT * FROM users WHERE id = ?').get(id)
     reply.setCookie('homeos_session', createSession(user.id), { path: '/', httpOnly: true, sameSite: 'strict', secure, maxAge: SESSION_DAYS * 86400 })
     return publicUser(user)

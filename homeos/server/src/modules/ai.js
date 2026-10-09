@@ -47,6 +47,7 @@ export default async function aiModule(app) {
     } } }),
     preHandler: requirePerm('ai.use'),
   }, async req => {
+    if (!getSetting('features')?.assistant) throw new HttpError(403, 'feature.disabled', { feature: 'assistant' })
     try {
       return await chat(req.user, req.body.messages, req.body.lang ?? req.user.locale ?? 'de')
     } catch (e) {

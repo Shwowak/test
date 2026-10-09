@@ -1,3 +1,4 @@
+import { getSetting } from '../core/settings.js'
 import { db, json } from '../core/db.js'
 import { bus } from '../core/events.js'
 import { notFound, badRequest, requirePerm, HttpError } from '../core/http.js'
@@ -195,6 +196,7 @@ export default async function devicesModule(app) {
     schema: tD('Send command to a capability', { body: { type: 'object', required: ['capability', 'value'], properties: { capability: { type: 'string' }, value: {} } } }),
     preHandler: requirePerm('devices.control'),
   }, async req => {
+    if (!getSetting('features')?.control) throw new HttpError(403, 'feature.disabled', { feature: 'control' })
     const r = await commandDevice(req.params.id, req.body.capability, req.body.value, req.user)
     if (r.error === 'not_found') throw notFound()
     if (r.error) throw new HttpError(r.error === 'device.command_failed' ? 502 : 422, r.error, { message: r.message })

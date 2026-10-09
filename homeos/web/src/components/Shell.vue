@@ -14,12 +14,39 @@ import { notes, unread, loadNotifications } from '../notifications.js'
 import { startIdle, kiosk } from '../display.js'
 import Assistant from './assistant/Assistant.vue'
 import { voice } from '../speech.js'
+import Unlock from './Unlock.vue'
+import { features, loadFeatures } from '../features.js'
+import { computed as comp2 } from 'vue'
 import { startLive, stopLive, loadIntegrations } from '../devices.js'
 import { onBeforeUnmount, watch } from 'vue'
 
 const { t } = useI18n()
 const user = inject('user')
 const can = p => user.value?.permissions?.includes(p)
+const setUser = inject('setUser')
+const isViewer = comp2(() => user.value?.role === 'guest')
+const unlock = ref(null)
+function requireAdmin(action, perm) {
+  if (can(perm)) return runAction(action)
+  unlock.value = { action, perm }
+}
+function runAction(action) {
+  if (action === 'settings') showSettings.value = true
+  else if (action === 'edit') editing.value = !editing.value
+}
+function onUnlocked(u) {
+  const pending = unlock.value
+  unlock.value = null
+  setUser(u)
+  setTimeout(() => runAction(pending.action), 50)
+}
+let adminIdle = Date.now()
+const bump = () => { adminIdle = Date.now() }
+setInterval(() => {
+  if (isViewer.value || !features.viewer || !features.admin_timeout) return
+  if (Date.now() - adminIdle > features.admin_timeout * 60000) { showSettings.value = false; editing.value = false; emit('logout') }
+}, 15000)
+for (const ev of ['pointerdown', 'keydown']) window.addEventListener(ev, bump, { passive: true })
 const emit = defineEmits(['logout'])
 const showSettings = ref(false)
 const showNotes = ref(false)
@@ -58,6 +85,7 @@ onBeforeUnmount(stopLive)
 onMounted(async () => {
   if (can('devices.view')) { startLive(); loadIntegrations().catch(() => {}) }
   if (can('notifications.view')) loadNotifications().catch(() => {})
+  loadFeatures()
   startIdle()
   meta.value = await api('GET', '/meta')
   const saved = Number(localStorage.getItem('homeos.dashboard'))
@@ -138,13 +166,13 @@ const icons = ['⌂', '◈', '⚡', '☀', '♨', '☎', '♫', '⚙', '⛨', '�
       </button>
       <button v-if="editing" class="tab add" @click="newDashboard"><span class="ico">＋</span><span class="nm">{{ t('common.new') }}</span></button>
       <div class="spacer" />
-      <button v-if="can('devices.view')" class="tab" :class="{ on: view === 'devices' }" @click="view = 'devices'; editing = false"><span class="ico">▦</span><span class="nm">{{ t('nav.devices') }}</span></button>
-      <button v-if="can('automations.view')" class="tab" :class="{ on: view === 'automations' }" @click="view = 'automations'; editing = false"><span class="ico">⟳</span><span class="nm">{{ t('nav.automations') }}</span></button>
-      <button v-if="can('ai.use')" class="tab" @click="assistant = { listen: false }"><span class="ico">✦</span><span class="nm">{{ t('nav.assistant') }}</span></button>
+      <button v-if="can('devices.view') && !isViewer" class="tab" :class="{ on: view === 'devices' }" @click="view = 'devices'; editing = false"><span class="ico">▦</span><span class="nm">{{ t('nav.devices') }}</span></button>
+      <button v-if="can('automations.view') && features.automations && !isViewer" class="tab" :class="{ on: view === 'automations' }" @click="view = 'automations'; editing = false"><span class="ico">⟳</span><span class="nm">{{ t('nav.automations') }}</span></button>
+      <button v-if="can('ai.use') && features.assistant" class="tab" @click="assistant = { listen: false }"><span class="ico">✦</span><span class="nm">{{ t('nav.assistant') }}</span></button>
       <button v-if="can('sources.view')" class="tab" @click="showSources = true"><span class="ico">⌬</span><span class="nm">{{ t('nav.sources') }}</span></button>
-      <button class="tab" @click="showSettings = true"><span class="ico">⚙</span><span class="nm">{{ t('nav.settings') }}</span></button>
+      <button class="tab" @click="requireAdmin('settings', 'system.view')"><span class="ico">{{ isViewer ? '🔒' : '⚙' }}</span><span class="nm">{{ t('nav.settings') }}</span></button>
       <button v-if="!kiosk" class="tab" @click="fullscreen"><span class="ico">⛶</span><span class="nm">{{ t('nav.fullscreen') }}</span></button>
-      <button class="tab" @click="emit('logout')"><span class="ico">⏻</span><span class="nm">{{ t('nav.logout') }}</span></button>
+      <button v-if="!isViewer" class="tab" @click="emit('logout')"><span class="ico">{{ features.viewer ? '🔒' : '⏻' }}</span><span class="nm">{{ features.viewer ? t('nav.lock') : t('nav.logout') }}</span></button>
     </nav>
 
     <section class="main">
@@ -155,12 +183,12 @@ const icons = ['⌂', '◈', '⚡', '☀', '♨', '☎', '♫', '⚙', '⛨', '�
         </div>
         <div class="actions">
           <span v-if="voice.recording" class="recind" :title="t('assistant.listening')">● 🎙</span>
-          <button v-if="can('ai.use')" class="btn icon" :aria-label="t('assistant.speak')" @click="assistant = { listen: true }">🎙</button>
+          <button v-if="can('ai.use') && features.assistant" class="btn icon" :aria-label="t('assistant.speak')" @click="assistant = { listen: true }">🎙</button>
           <button v-if="can('notifications.view')" class="btn icon bell" :class="{ hot: unread }" :aria-label="t('notifications.title')" @click="showNotes = true">🔔<span v-if="unread" class="badge">{{ unread }}</span></button>
           <button v-if="railHidden" class="btn icon" :aria-label="t('nav.show')" @click="toggleRail">☰</button>
-          <button v-if="view === 'dashboard' && active && meta" class="btn" @click="cycleStyle">◐ {{ t('styles.' + active.style) }}</button>
+          <button v-if="view === 'dashboard' && active && meta && !isViewer" class="btn" @click="cycleStyle">◐ {{ t('styles.' + active.style) }}</button>
           <button v-if="editing && active" class="btn" @click="editDashboard">{{ t('dashboard.label') }} ✎</button>
-          <button v-if="view === 'dashboard' && can('dashboards.edit')" class="btn" :class="{ active: editing, primary: editing }" @click="editing = !editing">
+          <button v-if="view === 'dashboard' && (can('dashboards.edit') || isViewer)" class="btn" :class="{ active: editing, primary: editing }" @click="requireAdmin('edit', 'dashboards.edit')">
             {{ editing ? t('common.done') : '✎ ' + t('common.edit') }}
           </button>
         </div>
@@ -172,6 +200,9 @@ const icons = ['⌂', '◈', '⚡', '☀', '♨', '☎', '♫', '⚙', '⛨', '�
       <p v-else-if="meta" class="empty">{{ t('dashboard.empty') }}</p>
     </section>
 
+    <Sheet v-if="unlock" :title="t('unlock.title')" @close="unlock = null">
+      <Unlock @unlocked="onUnlocked" />
+    </Sheet>
     <Sheet v-if="showNotes" :title="t('notifications.title')" @close="showNotes = false">
       <NotificationCenter />
     </Sheet>

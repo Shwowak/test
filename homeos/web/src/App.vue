@@ -26,6 +26,7 @@ onMounted(async () => {
 async function logout() {
   await api('POST', '/auth/logout').catch(() => {})
   user.value = null
+  try { setUser(await api('GET', '/auth/me')) } catch {}
 }
 </script>
 

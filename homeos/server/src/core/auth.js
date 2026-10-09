@@ -12,7 +12,7 @@ export const ROLES = {
   admin: ['*'],
   user: ['dashboards.view', 'dashboards.edit', 'sources.view', 'devices.view', 'devices.control', 'devices.manage', 'notifications.view', 'notifications.manage', 'automations.view', 'automations.manage', 'plugins.view', 'ai.use', 'cameras.view', 'cameras.manage', 'versions.view', 'system.view', 'profile.edit'],
   restricted: ['dashboards.view', 'devices.view', 'devices.control', 'notifications.view', 'notifications.manage', 'ai.use', 'cameras.view', 'profile.edit'],
-  guest: ['dashboards.view', 'devices.view', 'notifications.view'],
+  guest: ['dashboards.view', 'devices.view', 'notifications.view', 'notifications.manage'],
 }
 
 export const can = (user, perm) => !!user && (ROLES[user.role] ?? []).some(p => p === '*' || p === perm)
@@ -91,4 +91,17 @@ export function seedAdmin() {
   if (!pw) throw new Error('HOMEOS_ADMIN_PASSWORD fehlt (erster Start)')
   db.prepare("INSERT INTO users (name, password, role) VALUES (?, ?, 'admin')").run(process.env.HOMEOS_ADMIN_USER ?? 'admin', hashSecret(pw))
   log('users', 'info', 'user.created', { name: process.env.HOMEOS_ADMIN_USER ?? 'admin', role: 'admin' })
+}
+
+export function ensureViewer(getSetting, setSetting) {
+  if (db.prepare("SELECT COUNT(*) c FROM users WHERE role != 'guest'").get().c === 0) return
+  if (getSetting('viewer_init')) return
+  let v = db.prepare("SELECT id FROM users WHERE name = 'anzeige'").get()
+  if (!v) {
+    const id = db.prepare("INSERT INTO users (name, display_name, password, role) VALUES ('anzeige', 'Anzeige', ?, 'guest')").run(hashSecret(randomBytes(24).toString('hex'))).lastInsertRowid
+    v = { id }
+  }
+  if (!getSetting('autologin')) setSetting('autologin', { user_id: Number(v.id), scope: 'lan' })
+  setSetting('viewer_init', true)
+  log('users', 'info', 'user.created', { name: 'anzeige', role: 'guest', viewer: true })
 }
