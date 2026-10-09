@@ -7,6 +7,7 @@ import { log } from '../core/logger.js'
 import { notify } from '../core/notify.js'
 import { getSetting } from '../core/settings.js'
 import { run, has } from './exec.js'
+import { displayConnected } from './setupnet.js'
 
 const DATA = dirname(resolve(process.env.HOMEOS_DB ?? './data/homeos.db'))
 const device = () => process.env.SMARTBOARD_HAL === '1'
@@ -15,6 +16,14 @@ loop.enable()
 
 export const health = { samples: [], findings: [], fixes: [], slow: [] }
 const notified = new Map()
+const TEXT = {
+  slow_core: d => `SmartBoard reagiert langsam (${d.ms} ms Verzögerung).`,
+  low_memory: d => `Arbeitsspeicher fast voll (${d.pct} %).`,
+  low_disk: d => `Speicherplatz fast voll (frei: ${d.free_mb} MB).`,
+  hot: d => `Gerät ist heiß (${d.temp} °C) – Belüftung prüfen.`,
+  undervoltage: () => 'Unterspannung – das Netzteil ist zu schwach. Offizielles Raspberry-Pi-Netzteil verwenden.',
+  kiosk_down: () => 'Die Bildschirmanzeige läuft nicht – wird automatisch neu gestartet.',
+}
 
 const readNum = p => { try { return Number(readFileSync(p, 'utf8').trim()) } catch { return null } }
 
@@ -76,7 +85,7 @@ export function analyse(s) {
     else if (s.throttled & 0x10000) out.push(finding('undervoltage_past', 'warning', {}))
     if (s.throttled & 0x4) out.push(finding('throttled', 'warning', {}))
   }
-  if (device() && s.kiosk && s.kiosk !== 'active' && s.kiosk !== 'activating') out.push(finding('kiosk_down', 'error', { state: s.kiosk }, 'restart_kiosk'))
+  if (device() && displayConnected() && s.kiosk && s.kiosk !== 'active' && s.kiosk !== 'activating') out.push(finding('kiosk_down', 'error', { state: s.kiosk }, 'restart_kiosk'))
   const pluginErrors = db.prepare("SELECT COUNT(*) n FROM logs WHERE category = 'plugins' AND level = 'error' AND ts > ?").get(new Date(Date.now() - 600000).toISOString()).n
   if (pluginErrors > 20) out.push(finding('plugin_errors', 'warning', { n: pluginErrors }, 'restart_plugins'))
   const httpSlow = health.slow.filter(x => Date.now() - x.ts < 600000)
@@ -123,7 +132,7 @@ export function startHealth() {
         if (auto && f.fix && Date.now() - (lastFix.get(f.fix) ?? 0) > 15 * 60000) await applyFix(f.fix).catch(e => log('system', 'error', 'health.fix_failed', { fix: f.fix, error: e.message }))
         if (f.level === 'error' && Date.now() - (notified.get(f.id) ?? 0) > 6 * 3600000) {
           notified.set(f.id, Date.now())
-          notify({ level: 'warning', title: `Diagnose: ${f.id}`, message: JSON.stringify(f.data), source: 'health' })
+          notify({ level: 'warning', title: 'Diagnose', message: TEXT[f.id]?.(f.data) ?? f.id, source: 'health' })
         }
       }
     } catch (e) {
