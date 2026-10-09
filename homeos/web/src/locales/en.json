@@ -67,7 +67,8 @@
     "switch": "Switch",
     "iframe": "Embed website",
     "device": "Device",
-    "room": "Room"
+    "room": "Room",
+    "plugin": "Plugin"
   },
   "fields": {
     "value": "Value",
@@ -84,7 +85,8 @@
     "limit": "Count",
     "url": "URL",
     "device_id": "Device",
-    "room_id": "Room"
+    "room_id": "Room",
+    "plugin_widget": "Plugin widget"
   },
   "chartStyles": {
     "line": "Line (neon)",
@@ -131,7 +133,8 @@
       "logs": "Logs",
       "system": "System",
       "integrations": "Integrations",
-      "general": "General"
+      "general": "General",
+      "plugins": "Plugins"
     }
   },
   "profile": {
@@ -184,7 +187,8 @@
       "integration": "Integration",
       "device": "Device",
       "automation": "Automation",
-      "settings": "Settings"
+      "settings": "Settings",
+      "plugin": "Plugin"
     },
     "action": {
       "create": "created",
@@ -252,7 +256,13 @@
       "automation_failed": "Automation failed",
       "automation_loop_blocked": "Automation blocked (loop)",
       "notification_critical": "Critical notification",
-      "notification_emergency": "Emergency notification"
+      "notification_emergency": "Emergency notification",
+      "plugin_installed": "Plugin installed",
+      "plugin_updated": "Plugin updated",
+      "plugin_removed": "Plugin removed",
+      "plugin_crashed": "Plugin crashed",
+      "plugin_log": "Plugin message",
+      "plugin_load_failed": "Plugin failed to load"
     }
   },
   "system": {
@@ -318,6 +328,16 @@
       "not_running": "Integration not connected",
       "adapter_invalid": "Unknown integration",
       "no_manual_devices": "This integration discovers devices automatically"
+    },
+    "plugin": {
+      "unverified": "Plugin is unsigned or its key is not trusted",
+      "bad_signature": "Invalid signature – package was modified",
+      "bad_archive": "Invalid plugin package",
+      "invalid_manifest": "Invalid manifest.json",
+      "too_large": "Plugin package too large",
+      "builtin_conflict": "ID belongs to a built-in plugin",
+      "builtin": "Built-in plugins can only be disabled",
+      "action_failed": "Plugin action failed"
     }
   },
   "devices": {
@@ -624,6 +644,46 @@
       "4": "Thu",
       "5": "Fri",
       "6": "Sat"
+    }
+  },
+  "plugins": {
+    "hint": "Plugins run isolated (own process, no file access) and may only do what you allow.",
+    "builtin": "Built-in",
+    "verified": "Signed",
+    "unverified": "Not verified",
+    "enabled": "Enabled",
+    "permissions": "Permissions",
+    "no_permissions": "Needs no permissions.",
+    "config": "Settings",
+    "on": "On",
+    "saved": "Saved.",
+    "restart": "Restart",
+    "remove": "Remove",
+    "updated": "Updated",
+    "install": "Install plugin",
+    "installed": "“{name}” installed.",
+    "security": "Security",
+    "allow_unsigned": "Allow unsigned plugins without asking (development only)",
+    "trusted_keys": "Trusted keys (one per line)",
+    "confirm_remove": "Remove plugin “{name}” and its data?",
+    "confirm_unsigned": "“{name}” is NOT signed. Unknown origin.\nPermissions: {perms}\n\nInstall anyway?",
+    "confirm_untrusted": "“{name}” is signed with an unknown key.\nPermissions: {perms}\n\nInstall anyway?",
+    "disabled": "Plugin disabled",
+    "widget_missing": "Plugin widget not found",
+    "state": {
+      "running": "running",
+      "starting": "starting",
+      "stopped": "stopped",
+      "error": "error"
+    },
+    "perms": {
+      "internet": "Internet",
+      "location": "Location",
+      "storage": "Storage",
+      "notifications": "Notifications",
+      "devices_read": "Read devices",
+      "devices_control": "Control devices",
+      "calendar": "Calendar"
     }
   }
 }

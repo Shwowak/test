@@ -64,6 +64,20 @@ docker compose -f docker-compose.server.yml up -d
 - Sperrzeit, Schleifenschutz, „Jetzt ausführen“, Verlauf · läuft serverseitig ohne offenes Display
 - **Einstellungen → Allgemein**: Standort (für Sonnenauf-/untergang) und Zeitzone
 
+## Phase 4 (Plugins)
+
+- **Plugin-Engine**: jedes Plugin-Backend läuft als eigener Prozess (Node-Permission-Modell: kein Datei-Schreiben, nur Lesen des eigenen Ordners, keine Prozesse) in einem `vm`-Kontext ohne `require`/`eval`. Plugin-UIs laufen in `<iframe sandbox>` mit CSP und sprechen nur über die postMessage-Bridge.
+- **Berechtigungen** (im Manifest, einzeln entziehbar): Internet, Standort, Speicher, Meldungen, Geräte lesen, Geräte steuern, Kalender
+- **Signaturen**: `.sbp`-Pakete mit Ed25519 signiert; nicht signierte oder unbekannte Schlüssel nur nach Bestätigung; veränderte Pakete werden abgelehnt
+- **Verwaltung** (Einstellungen → Plugins): installieren (Datei-Upload), aktivieren/deaktivieren, Berechtigungen, Einstellungen, neu starten, entfernen, Status; Absturz → automatischer Neustart (max. 5×)
+- **Widget-Typ „Plugin“**: jedes Plugin-Widget auf jedes Dashboard
+- **Mitgeliefert**:
+  - Wetter (Open-Meteo, ohne Schlüssel): „Wetter jetzt“, „Vorhersage“, Unwetter-Meldung
+  - Kalender (ICS-Links, Wiederholungen, Erinnerungen): „Termine“
+  - Energie (PV · Netz · Batterie · Haus aus beliebigen Geräten): „Energiefluss“, „Energie heute“ (kWh, Autarkie, Kosten)
+- **SDK**: `sdk/` – Anleitung, Beispiel-Plugin, Werkzeug `sbp.mjs` (Schlüssel erzeugen, packen, signieren)
+- Bekannte Grenze: Netzwerkzugriff ist im Docker-Betrieb nur über die API gesperrt; harte Sperre per Firewall pro Plugin folgt mit Phase 5 (Linux-Image).
+
 ## Widgets
 
 | Typ | Datenquellen |

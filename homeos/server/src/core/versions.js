@@ -3,7 +3,7 @@ import { bus } from './events.js'
 import { log } from './logger.js'
 import { invalidate, startAll } from '../devices/engine.js'
 
-const TABLES = ['rooms', 'integrations', 'devices', 'dashboards', 'widgets', 'data_sources', 'automations']
+const TABLES = ['rooms', 'integrations', 'devices', 'dashboards', 'widgets', 'data_sources', 'automations', 'plugins']
 const KEEP = Number(process.env.HOMEOS_VERSIONS_KEEP ?? 1000)
 
 function snapshot() {
@@ -31,9 +31,10 @@ export function restoreVersion(id, user) {
   const snap = JSON.parse(row.snapshot)
   tx(() => {
     db.exec('PRAGMA defer_foreign_keys = ON')
-    for (const t of [...TABLES].reverse()) db.exec(`DELETE FROM ${t}`)
+    for (const t of [...TABLES].reverse()) if (snap[t]) db.exec(`DELETE FROM ${t}`)
     for (const t of TABLES) {
-      for (const r of snap[t] ?? []) {
+      if (!snap[t]) continue
+      for (const r of snap[t]) {
         const cols = Object.keys(r)
         db.prepare(`INSERT INTO ${t} (${cols.join(',')}) VALUES (${cols.map(() => '?').join(',')})`).run(...cols.map(c => r[c]))
       }
@@ -41,6 +42,7 @@ export function restoreVersion(id, user) {
   })
   invalidate()
   startAll()
+  bus.emit('config.restored')
   log('system', 'warning', 'version.restored', { version: id, from: row.ts }, user?.id)
   recordChange(user, 'system', null, 'restore', `#${id} (${row.ts})`)
   return true

@@ -1,0 +1,19 @@
+{
+  "id": "smartboard.calendar",
+  "name": { "de": "Kalender", "en": "Calendar" },
+  "description": { "de": "Termine aus iCal-/ICS-Links (Google, Apple, Nextcloud, Outlook, Abfallkalender …) mit Erinnerungen", "en": "Events from iCal/ICS links (Google, Apple, Nextcloud, Outlook …) with reminders" },
+  "version": "1.0.0",
+  "author": "SmartBoard",
+  "icon": "▦",
+  "permissions": ["internet", "calendar", "notifications", "location"],
+  "backend": "backend.js",
+  "config": [
+    { "key": "urls", "type": "list", "default": [], "label": { "de": "ICS-Links (einer pro Zeile, optional „Name | Link“)", "en": "ICS links (one per line, optional “Name | link”)" } },
+    { "key": "days", "type": "number", "default": 14, "label": { "de": "Tage im Voraus", "en": "Days ahead" } },
+    { "key": "remind", "type": "number", "default": 15, "label": { "de": "Erinnerung vorher (min, 0 = aus)", "en": "Reminder before (min, 0 = off)" } },
+    { "key": "interval", "type": "number", "default": 15, "label": { "de": "Aktualisierung (min)", "en": "Refresh (min)" } }
+  ],
+  "widgets": [
+    { "id": "agenda", "name": { "de": "Termine", "en": "Agenda" }, "ui": "ui/agenda.html", "minSize": [3, 3] }
+  ]
+}

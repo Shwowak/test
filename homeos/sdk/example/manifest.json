@@ -1,0 +1,17 @@
+{
+  "id": "com.example.counter",
+  "name": { "de": "Zähler (Beispiel)", "en": "Counter (example)" },
+  "description": { "de": "Beispiel-Plugin: Zähler mit Speicher, Aktion und Daten-Abruf", "en": "Example plugin: counter with storage, action and data fetch" },
+  "version": "1.0.0",
+  "author": "Example",
+  "icon": "＋",
+  "permissions": ["storage", "internet", "notifications"],
+  "backend": "backend.js",
+  "config": [
+    { "key": "url", "type": "text", "default": "", "label": { "de": "JSON-URL (optional)", "en": "JSON URL (optional)" } },
+    { "key": "step", "type": "number", "default": 1, "label": { "de": "Schrittweite", "en": "Step" } }
+  ],
+  "widgets": [
+    { "id": "counter", "name": { "de": "Zähler", "en": "Counter" }, "ui": "ui/counter.html", "minSize": [2, 2] }
+  ]
+}

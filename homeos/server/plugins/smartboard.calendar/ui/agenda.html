@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="dark">
+<style>
+  html, body { margin: 0; height: 100%; background: transparent; color: var(--text, #e2e8f0); font-family: var(--font, system-ui, sans-serif); overflow: hidden; user-select: none; }
+  #app { height: 100%; overflow-y: auto; padding: 2px 6px; box-sizing: border-box; scrollbar-width: none; }
+  .day { margin: 12px 0 4px; font-size: 13px; letter-spacing: .2em; text-transform: uppercase; color: var(--dim, #94a3b8); }
+  .day.today { color: var(--cyan, #22d3ee); }
+  .ev { display: flex; gap: 12px; align-items: stretch; padding: 8px 0; }
+  .bar { width: 4px; border-radius: 2px; flex: none; box-shadow: 0 0 10px currentColor; }
+  .time { width: 64px; flex: none; font-variant-numeric: tabular-nums; font-size: 18px; }
+  .title { font-size: 19px; }
+  .sub { font-size: 14px; color: var(--dim, #94a3b8); }
+  .now .title { color: var(--cyan, #22d3ee); }
+  .empty, .err { color: var(--dim, #94a3b8); padding: 16px 0; }
+  .err { color: #f87171; font-size: 14px; }
+</style>
+</head>
+<body>
+<div id="app" class="empty">…</div>
+<script src="/api/v1/plugins/sdk.js"></script>
+<script>
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c])
+  function render(data) {
+    const app = document.getElementById('app')
+    const lang = SmartBoard.state.lang
+    const d = data.events
+    if (!d) { app.className = 'empty'; app.textContent = lang === 'en' ? 'Loading…' : 'Lädt…'; return }
+    app.className = ''
+    const now = Date.now()
+    const tz = d.timezone
+    const dayKey = ms => new Intl.DateTimeFormat('en-CA', { timeZone: tz }).format(new Date(ms))
+    const todayKey = dayKey(now)
+    const tomorrowKey = dayKey(now + 86400000)
+    const fmtDay = new Intl.DateTimeFormat(lang, { timeZone: tz, weekday: 'long', day: 'numeric', month: 'long' })
+    const fmtTime = new Intl.DateTimeFormat(lang, { timeZone: tz, hour: '2-digit', minute: '2-digit' })
+    const list = d.events.filter(e => e.end > now)
+    let html = d.errors.map(e => `<div class="err">⚠ ${esc(e.calendar)}: ${esc(e.error)}</div>`).join('')
+    if (!list.length) html += `<div class="empty">${!d.calendars.length ? (lang === 'en' ? 'Add ICS links in Settings → Plugins → Calendar.' : 'ICS-Links unter Einstellungen → Plugins → Kalender eintragen.') : (lang === 'en' ? 'No upcoming events' : 'Keine Termine')}</div>`
+    let last = null
+    for (const e of list) {
+      const k = e.allDay ? new Date(e.start).toISOString().slice(0, 10) : dayKey(e.start)
+      const shown = e.start < now ? todayKey : k
+      if (shown !== last) {
+        last = shown
+        const label = shown === todayKey ? (lang === 'en' ? 'Today' : 'Heute') : shown === tomorrowKey ? (lang === 'en' ? 'Tomorrow' : 'Morgen') : fmtDay.format(new Date(shown + 'T12:00'))
+        html += `<div class="day ${shown === todayKey ? 'today' : ''}">${esc(label)}</div>`
+      }
+      const running = e.start <= now && e.end > now
+      html += `<div class="ev ${running ? 'now' : ''}"><span class="bar" style="background:${esc(e.color)};color:${esc(e.color)}"></span>
+        <span class="time">${e.allDay ? (lang === 'en' ? 'all day' : 'ganzt.') : fmtTime.format(new Date(e.start))}</span>
+        <div><div class="title">${esc(e.title)}</div><div class="sub">${esc([e.location, e.calendar].filter(Boolean).join(' · '))}</div></div></div>`
+    }
+    app.innerHTML = html
+  }
+  SmartBoard.onData(render)
+  setInterval(() => SmartBoard.state && render(SmartBoard.state.data), 60000)
+</script>
+</body>
+</html>

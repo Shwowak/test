@@ -1,0 +1,19 @@
+{
+  "id": "smartboard.weather",
+  "name": { "de": "Wetter", "en": "Weather" },
+  "description": { "de": "Aktuelles Wetter und Vorhersage (Open-Meteo, ohne API-Schlüssel)", "en": "Current weather and forecast (Open-Meteo, no API key)" },
+  "version": "1.0.0",
+  "author": "SmartBoard",
+  "icon": "☀",
+  "permissions": ["internet", "location", "notifications"],
+  "backend": "backend.js",
+  "config": [
+    { "key": "interval", "type": "number", "default": 15, "label": { "de": "Aktualisierung (min)", "en": "Refresh (min)" } },
+    { "key": "units", "type": "select", "options": ["metric", "imperial"], "default": "metric", "label": { "de": "Einheiten", "en": "Units" } },
+    { "key": "warn", "type": "bool", "default": true, "label": { "de": "Unwetter-Warnungen", "en": "Severe weather alerts" } }
+  ],
+  "widgets": [
+    { "id": "now", "name": { "de": "Wetter jetzt", "en": "Weather now" }, "ui": "ui/now.html", "minSize": [2, 2] },
+    { "id": "forecast", "name": { "de": "Wettervorhersage", "en": "Forecast" }, "ui": "ui/forecast.html", "minSize": [4, 2] }
+  ]
+}

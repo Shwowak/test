@@ -1,0 +1,10 @@
+{
+  "name": "smartboard-plugin-sdk",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "bin": { "sbp": "sbp.mjs" },
+  "dependencies": {
+    "fflate": "0.8.2"
+  }
+}

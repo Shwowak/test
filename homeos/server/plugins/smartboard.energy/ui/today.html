@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="dark">
+<style>
+  html, body { margin: 0; height: 100%; background: transparent; color: var(--text, #e2e8f0); font-family: var(--font, system-ui, sans-serif); overflow: hidden; user-select: none; }
+  #app { height: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); align-content: center; gap: 14px 18px; padding: 4px 8px; box-sizing: border-box; }
+  .k { font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: var(--dim, #94a3b8); }
+  .v { font-size: 30px; font-weight: 300; margin-top: 4px; }
+  .v small { font-size: 15px; color: var(--dim, #94a3b8); margin-left: 4px; }
+  .empty { display: flex !important; align-items: center; justify-content: center; color: var(--dim, #94a3b8); text-align: center; }
+</style>
+</head>
+<body>
+<div id="app" class="empty">…</div>
+<script src="/api/v1/plugins/sdk.js"></script>
+<script>
+  SmartBoard.onData(data => {
+    const app = document.getElementById('app')
+    const lang = SmartBoard.state.lang
+    const e = data.energy
+    if (!e || !e.configured) { app.className = 'empty'; app.textContent = lang === 'en' ? 'Not configured' : 'Nicht eingerichtet'; return }
+    const t = e.today
+    const kwh = v => v.toFixed(v < 10 ? 2 : 1)
+    const items = [
+      ['#fbbf24', lang === 'en' ? 'Solar' : 'Erzeugt', kwh(t.pv), 'kWh'],
+      ['#22d3ee', lang === 'en' ? 'Home' : 'Verbrauch', kwh(t.house), 'kWh'],
+      ['#a78bfa', lang === 'en' ? 'Import' : 'Bezug', kwh(t.import), 'kWh'],
+      ['#a78bfa', lang === 'en' ? 'Export' : 'Einspeisung', kwh(t.export), 'kWh'],
+      ['#34d399', lang === 'en' ? 'Self-sufficiency' : 'Autarkie', t.selfSufficiency === null ? '—' : Math.round(t.selfSufficiency), '%'],
+      ['#f472b6', lang === 'en' ? 'Cost' : 'Kosten', new Intl.NumberFormat(lang, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(t.cost), '€'],
+    ]
+    app.className = ''
+    app.innerHTML = items.map(([c, k, v, u]) => `<div><div class="k">${k}</div><div class="v" style="color:${c};text-shadow:0 0 14px ${c}55">${v}<small>${u}</small></div></div>`).join('')
+  })
+</script>
+</body>
+</html>

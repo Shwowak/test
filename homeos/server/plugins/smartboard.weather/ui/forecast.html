@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="dark">
+<link rel="stylesheet" href="style.css">
+<style>
+  .grid { height: 100%; display: grid; grid-template-columns: repeat(var(--n), 1fr); align-items: center; text-align: center; padding: 0 4px; box-sizing: border-box; }
+  .d { display: flex; flex-direction: column; gap: 6px; align-items: center; }
+  .day { font-size: min(8vh, 4vw); letter-spacing: .1em; text-transform: uppercase; }
+  .ic { font-size: min(18vh, 7vw); line-height: 1.1; }
+  .max { font-size: min(11vh, 5vw); }
+  .min, .rain { font-size: min(8vh, 3.4vw); }
+  .bar { width: 6px; border-radius: 3px; background: linear-gradient(var(--cyan, #22d3ee), transparent); }
+  .d.today .day { color: var(--cyan, #22d3ee); }
+</style>
+</head>
+<body>
+<div id="app" class="empty">…</div>
+<script src="/api/v1/plugins/sdk.js"></script>
+<script src="common.js"></script>
+<script>
+  function render(data) {
+    const w = data.weather, app = document.getElementById('app')
+    const lang = SmartBoard.state.lang
+    if (!w) { app.className = 'empty'; app.textContent = '…'; return }
+    const n = Math.max(3, Math.min(7, Math.floor(innerWidth / 90)))
+    const deg = WX.deg(w.units)
+    const fmt = new Intl.DateTimeFormat(lang, { weekday: 'short' })
+    app.className = 'grid'
+    app.style.setProperty('--n', n)
+    app.innerHTML = w.days.slice(0, n).map((d, i) => `
+      <div class="d ${i === 0 ? 'today' : ''}">
+        <div class="day">${i === 0 ? (lang === 'en' ? 'Today' : 'Heute') : fmt.format(new Date(d.date + 'T12:00'))}</div>
+        <div class="ic">${WX.icon(d.code)}</div>
+        <div class="max">${Math.round(d.max)}${deg}</div>
+        <div class="min dim">${Math.round(d.min)}${deg}</div>
+        <div class="rain dim">☂ ${d.rainProb ?? 0}%</div>
+      </div>`).join('')
+  }
+  SmartBoard.onData(render)
+  addEventListener('resize', () => SmartBoard.state && render(SmartBoard.state.data))
+</script>
+</body>
+</html>

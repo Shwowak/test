@@ -39,6 +39,7 @@ export const WIDGET_TYPES = {
   iframe: { sources: [], fields: [{ key: 'url', type: 'url' }] },
   device: { sources: [], fields: [{ key: 'device_id', type: 'device' }] },
   room: { sources: [], fields: [{ key: 'room_id', type: 'room' }] },
+  plugin: { sources: [], fields: [{ key: 'plugin_widget', type: 'plugin_widget' }] },
 }
 
 export const DASHBOARD_STYLES = ['seamless', 'tiles', 'glass']

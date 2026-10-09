@@ -67,7 +67,8 @@
     "switch": "Schalter",
     "iframe": "Webseite einbetten",
     "device": "Gerät",
-    "room": "Raum"
+    "room": "Raum",
+    "plugin": "Plugin"
   },
   "fields": {
     "value": "Wert",
@@ -84,7 +85,8 @@
     "limit": "Anzahl",
     "url": "URL",
     "device_id": "Gerät",
-    "room_id": "Raum"
+    "room_id": "Raum",
+    "plugin_widget": "Plugin-Widget"
   },
   "chartStyles": {
     "line": "Linie (Neon)",
@@ -131,7 +133,8 @@
       "logs": "Protokoll",
       "system": "System",
       "integrations": "Integrationen",
-      "general": "Allgemein"
+      "general": "Allgemein",
+      "plugins": "Plugins"
     }
   },
   "profile": {
@@ -184,7 +187,8 @@
       "integration": "Integration",
       "device": "Gerät",
       "automation": "Automation",
-      "settings": "Einstellungen"
+      "settings": "Einstellungen",
+      "plugin": "Plugin"
     },
     "action": {
       "create": "angelegt",
@@ -252,7 +256,13 @@
       "automation_failed": "Automation fehlgeschlagen",
       "automation_loop_blocked": "Automation blockiert (Schleife)",
       "notification_critical": "Kritische Meldung",
-      "notification_emergency": "Notfall-Meldung"
+      "notification_emergency": "Notfall-Meldung",
+      "plugin_installed": "Plugin installiert",
+      "plugin_updated": "Plugin aktualisiert",
+      "plugin_removed": "Plugin entfernt",
+      "plugin_crashed": "Plugin abgestürzt",
+      "plugin_log": "Plugin-Meldung",
+      "plugin_load_failed": "Plugin konnte nicht geladen werden"
     }
   },
   "system": {
@@ -318,6 +328,16 @@
       "not_running": "Integration nicht verbunden",
       "adapter_invalid": "Unbekannte Integration",
       "no_manual_devices": "Diese Integration erkennt Geräte automatisch"
+    },
+    "plugin": {
+      "unverified": "Plugin ist nicht signiert bzw. Schlüssel nicht vertrauenswürdig",
+      "bad_signature": "Signatur ungültig – Paket wurde verändert",
+      "bad_archive": "Ungültiges Plugin-Paket",
+      "invalid_manifest": "manifest.json ungültig",
+      "too_large": "Plugin-Paket zu groß",
+      "builtin_conflict": "ID gehört zu einem mitgelieferten Plugin",
+      "builtin": "Mitgelieferte Plugins können nur deaktiviert werden",
+      "action_failed": "Plugin-Aktion fehlgeschlagen"
     }
   },
   "devices": {
@@ -624,6 +644,46 @@
       "4": "Do",
       "5": "Fr",
       "6": "Sa"
+    }
+  },
+  "plugins": {
+    "hint": "Plugins laufen isoliert (eigener Prozess, kein Dateizugriff) und dürfen nur, was du erlaubst.",
+    "builtin": "Mitgeliefert",
+    "verified": "Signiert",
+    "unverified": "Nicht verifiziert",
+    "enabled": "Aktiv",
+    "permissions": "Berechtigungen",
+    "no_permissions": "Benötigt keine Berechtigungen.",
+    "config": "Einstellungen",
+    "on": "Ein",
+    "saved": "Gespeichert.",
+    "restart": "Neu starten",
+    "remove": "Entfernen",
+    "updated": "Stand",
+    "install": "Plugin installieren",
+    "installed": "„{name}“ installiert.",
+    "security": "Sicherheit",
+    "allow_unsigned": "Unsignierte Plugins ohne Nachfrage erlauben (nur Entwicklung)",
+    "trusted_keys": "Vertrauenswürdige Schlüssel (einer pro Zeile)",
+    "confirm_remove": "Plugin „{name}“ samt Daten entfernen?",
+    "confirm_unsigned": "„{name}“ ist NICHT signiert. Herkunft unbekannt.\nBerechtigungen: {perms}\n\nTrotzdem installieren?",
+    "confirm_untrusted": "„{name}“ ist mit einem unbekannten Schlüssel signiert.\nBerechtigungen: {perms}\n\nTrotzdem installieren?",
+    "disabled": "Plugin deaktiviert",
+    "widget_missing": "Plugin-Widget nicht gefunden",
+    "state": {
+      "running": "läuft",
+      "starting": "startet",
+      "stopped": "gestoppt",
+      "error": "Fehler"
+    },
+    "perms": {
+      "internet": "Internet",
+      "location": "Standort",
+      "storage": "Speicher",
+      "notifications": "Meldungen",
+      "devices_read": "Geräte lesen",
+      "devices_control": "Geräte steuern",
+      "calendar": "Kalender"
     }
   }
 }

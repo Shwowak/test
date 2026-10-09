@@ -8,6 +8,7 @@ import VersionsSettings from './VersionsSettings.vue'
 import SystemSettings from './SystemSettings.vue'
 import IntegrationsSettings from './IntegrationsSettings.vue'
 import GeneralSettings from './GeneralSettings.vue'
+import PluginsSettings from './PluginsSettings.vue'
 
 defineProps({ meta: Object })
 const emit = defineEmits(['changed'])
@@ -19,6 +20,7 @@ const tabs = computed(() => [
   { id: 'profile', icon: '☺', show: true },
   { id: 'general', icon: '⌖', show: true },
   { id: 'integrations', icon: '⌁', show: can('devices.manage') },
+  { id: 'plugins', icon: '⧉', show: can('plugins.view') },
   { id: 'users', icon: '⚇', show: can('users.manage') },
   { id: 'versions', icon: '⟲', show: can('versions.view') },
   { id: 'logs', icon: '☰', show: can('logs.view') },
@@ -38,6 +40,7 @@ const tab = ref('profile')
       <ProfileSettings v-if="tab === 'profile'" :meta="meta" />
       <GeneralSettings v-else-if="tab === 'general'" />
       <IntegrationsSettings v-else-if="tab === 'integrations'" />
+      <PluginsSettings v-else-if="tab === 'plugins'" />
       <UsersSettings v-else-if="tab === 'users'" :meta="meta" />
       <VersionsSettings v-else-if="tab === 'versions'" @restored="emit('changed')" />
       <LogsSettings v-else-if="tab === 'logs'" :meta="meta" />

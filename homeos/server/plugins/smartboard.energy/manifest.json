@@ -1,0 +1,26 @@
+{
+  "id": "smartboard.energy",
+  "name": { "de": "Energie", "en": "Energy" },
+  "description": { "de": "Energiefluss PV · Netz · Batterie · Haus, Tageswerte, Autarkie und Kosten", "en": "Energy flow PV · grid · battery · home, daily totals, self-sufficiency and cost" },
+  "version": "1.0.0",
+  "author": "SmartBoard",
+  "icon": "⚡",
+  "permissions": ["devices:read", "storage", "notifications", "location"],
+  "backend": "backend.js",
+  "config": [
+    { "key": "pv", "type": "device", "label": { "de": "PV-Leistung", "en": "PV power" } },
+    { "key": "grid", "type": "device", "label": { "de": "Netz (+ Bezug / − Einspeisung)", "en": "Grid (+ import / − export)" } },
+    { "key": "grid_invert", "type": "bool", "default": false, "label": { "de": "Netz-Vorzeichen umkehren", "en": "Invert grid sign" } },
+    { "key": "battery", "type": "device", "label": { "de": "Batterie-Leistung (+ Laden / − Entladen)", "en": "Battery power (+ charge / − discharge)" } },
+    { "key": "battery_invert", "type": "bool", "default": false, "label": { "de": "Batterie-Vorzeichen umkehren", "en": "Invert battery sign" } },
+    { "key": "soc", "type": "device", "label": { "de": "Batterie-Ladestand", "en": "Battery state of charge" } },
+    { "key": "house", "type": "device", "label": { "de": "Hausverbrauch (leer = berechnet)", "en": "Home consumption (empty = calculated)" } },
+    { "key": "price_import", "type": "number", "default": 32, "label": { "de": "Strompreis Bezug (ct/kWh)", "en": "Import price (ct/kWh)" } },
+    { "key": "price_export", "type": "number", "default": 8, "label": { "de": "Vergütung Einspeisung (ct/kWh)", "en": "Feed-in tariff (ct/kWh)" } },
+    { "key": "soc_warn", "type": "number", "default": 10, "label": { "de": "Warnung bei Batterie unter (%)", "en": "Warn when battery below (%)" } }
+  ],
+  "widgets": [
+    { "id": "flow", "name": { "de": "Energiefluss", "en": "Energy flow" }, "ui": "ui/flow.html", "minSize": [4, 3] },
+    { "id": "today", "name": { "de": "Energie heute", "en": "Energy today" }, "ui": "ui/today.html", "minSize": [3, 2] }
+  ]
+}

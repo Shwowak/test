@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="dark">
+<link rel="stylesheet" href="style.css">
+<style>
+  .w { height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 4px 8px; box-sizing: border-box; }
+  .row { display: flex; align-items: center; gap: 16px; }
+  .ic { font-size: min(22vh, 18vw); line-height: 1; }
+  .t { font-size: min(30vh, 22vw); font-weight: 200; line-height: 1; }
+  .desc { font-size: min(9vh, 7vw); margin-top: 6px; }
+  .meta { display: flex; gap: 14px; flex-wrap: wrap; font-size: min(7vh, 5vw); margin-top: 6px; }
+</style>
+</head>
+<body>
+<div id="app" class="empty">…</div>
+<script src="/api/v1/plugins/sdk.js"></script>
+<script src="common.js"></script>
+<script>
+  SmartBoard.onData(data => {
+    const w = data.weather, app = document.getElementById('app')
+    const lang = SmartBoard.state.lang
+    if (!w) { app.className = 'empty'; app.textContent = lang === 'en' ? 'Loading weather…' : 'Wetter wird geladen…'; return }
+    const c = w.current, deg = WX.deg(w.units), today = w.days[0]
+    app.className = 'w'
+    app.innerHTML = `
+      <div class="row"><span class="ic">${WX.icon(c.code, c.day)}</span><span class="t accent">${Math.round(c.temp)}${deg}</span></div>
+      <div class="desc">${WX.text(c.code, lang)} <span class="dim">· ${Math.round(today.min)}${deg} / ${Math.round(today.max)}${deg}</span></div>
+      <div class="meta dim">
+        <span>${lang === 'en' ? 'feels' : 'gefühlt'} ${Math.round(c.feels)}${deg}</span>
+        <span>💧 ${c.humidity} %</span>
+        <span>🌬 ${Math.round(c.wind)} ${w.units === 'imperial' ? 'mph' : 'km/h'}</span>
+        <span>☂ ${today.rainProb ?? 0} %</span>
+      </div>`
+  })
+</script>
+</body>
+</html>

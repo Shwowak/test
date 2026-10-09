@@ -1,0 +1,4 @@
+html, body { margin: 0; height: 100%; background: transparent; color: var(--text, #e2e8f0); font-family: var(--font, system-ui, sans-serif); overflow: hidden; user-select: none; }
+.dim { color: var(--dim, #94a3b8); }
+.accent { color: var(--cyan, #22d3ee); text-shadow: 0 0 14px var(--cyan, #22d3ee); }
+.empty { display: flex; height: 100%; align-items: center; justify-content: center; color: var(--dim, #94a3b8); }

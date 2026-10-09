@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="dark">
+<style>
+  html, body { margin: 0; height: 100%; background: transparent; color: var(--text, #e2e8f0); font-family: var(--font, system-ui, sans-serif); user-select: none; }
+  body { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; }
+  #n { font-size: 64px; font-weight: 200; color: var(--cyan, #22d3ee); text-shadow: 0 0 16px var(--cyan, #22d3ee); }
+  button { font: inherit; font-size: 20px; min-width: 64px; min-height: 56px; color: inherit; background: rgba(34, 211, 238, .1); border: 1px solid rgba(34, 211, 238, .4); border-radius: 12px; }
+</style>
+</head>
+<body>
+<div id="n">–</div>
+<div><button id="inc">＋</button> <button id="reset">↺</button></div>
+<script src="/api/v1/plugins/sdk.js"></script>
+<script>
+  SmartBoard.onData(d => { document.getElementById('n').textContent = d.counter?.count ?? '–' })
+  document.getElementById('inc').onclick = () => SmartBoard.action('inc')
+  document.getElementById('reset').onclick = () => SmartBoard.action('reset')
+</script>
+</body>
+</html>

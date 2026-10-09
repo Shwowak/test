@@ -4,10 +4,12 @@ import { api } from '../api.js'
 import { useI18n } from 'vue-i18n'
 import { errorText } from '../i18n.js'
 import { store, loadDevices } from '../devices.js'
+import { plugins, loadPlugins, pluginWidgets } from '../plugins.js'
 
 if (!store.loaded) loadDevices().catch(() => {})
+if (!plugins.loaded) loadPlugins().catch(() => {})
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const props = defineProps({ widget: Object, dashboardId: Number, meta: Object, sources: Array })
 const emit = defineEmits(['saved'])
@@ -89,6 +91,9 @@ async function remove() {
       </select>
       <select v-else-if="f.type === 'room'" v-model.number="form.config[f.key]">
         <option v-for="r in store.rooms" :key="r.id" :value="r.id">{{ r.name }}</option>
+      </select>
+      <select v-else-if="f.type === 'plugin_widget'" v-model="form.config[f.key]" required>
+        <option v-for="o in pluginWidgets(locale)" :key="o.value" :value="o.value">{{ o.label }}</option>
       </select>
       <input v-else-if="f.type === 'color'" v-model="form.config[f.key]" type="color">
       <input v-else-if="f.type === 'number'" v-model="form.config[f.key]" type="number" step="any" inputmode="decimal">

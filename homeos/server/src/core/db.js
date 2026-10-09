@@ -74,6 +74,13 @@ const MIGRATIONS = [
       id INTEGER PRIMARY KEY, automation_id INTEGER NOT NULL REFERENCES automations(id) ON DELETE CASCADE,
       ts TEXT NOT NULL, trigger TEXT, ok INTEGER NOT NULL, error TEXT, duration_ms INTEGER);
     CREATE INDEX IF NOT EXISTS automation_runs_a ON automation_runs(automation_id, id);`),
+  () => db.exec(`
+    CREATE TABLE IF NOT EXISTS plugins (
+      id TEXT PRIMARY KEY, version TEXT NOT NULL, manifest TEXT NOT NULL, source TEXT NOT NULL DEFAULT 'user',
+      enabled INTEGER NOT NULL DEFAULT 1, granted TEXT NOT NULL DEFAULT '[]', config TEXT NOT NULL DEFAULT '{}',
+      verified INTEGER NOT NULL DEFAULT 0, signer TEXT, installed_at TEXT NOT NULL, updated_at TEXT NOT NULL);
+    CREATE TABLE IF NOT EXISTS plugin_storage (plugin_id TEXT NOT NULL, key TEXT NOT NULL, value TEXT NOT NULL, PRIMARY KEY (plugin_id, key));
+    CREATE TABLE IF NOT EXISTS plugin_data (plugin_id TEXT NOT NULL, key TEXT NOT NULL, value TEXT NOT NULL, ts TEXT NOT NULL, PRIMARY KEY (plugin_id, key));`),
 ]
 
 export function migrate() {
