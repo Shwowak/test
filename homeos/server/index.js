@@ -4,7 +4,7 @@ import staticFiles from '@fastify/static'
 import swagger from '@fastify/swagger'
 import swaggerUi from '@fastify/swagger-ui'
 import websocket from '@fastify/websocket'
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { seedAdmin, userFromToken } from './src/core/auth.js'
@@ -20,7 +20,11 @@ import { startAll } from './src/devices/engine.js'
 import automationsModule from './src/modules/automations.js'
 import { startAutomations } from './src/automation/engine.js'
 import pluginsModule from './src/modules/plugins.js'
+import hardwareModule, { isDevice } from './src/modules/hardware.js'
+import { keepOutputs } from './src/system/display.js'
 import { startPlugins, stopPlugins } from './src/plugins/host.js'
+
+process.env.npm_package_version ??= JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')).version
 
 seedAdmin()
 seedDemo()
@@ -52,7 +56,8 @@ app.register(async api => {
     if (!user) return reply.code(401).send({ error: 'unauthorized' })
     req.user = user
   })
-  for (const m of [authModule, usersModule, dashboardsModule, sourcesModule, adminModule, devicesModule, automationsModule, pluginsModule]) await api.register(m)
+  api.get('/health', { schema: { tags: ['system'], summary: 'Liveness probe' }, config: { public: true } }, async () => ({ ok: true, version: process.env.npm_package_version ?? null }))
+  for (const m of [authModule, usersModule, dashboardsModule, sourcesModule, adminModule, devicesModule, automationsModule, pluginsModule, hardwareModule]) await api.register(m)
 }, { prefix: '/api/v1' })
 
 const webDir = join(dirname(fileURLToPath(import.meta.url)), '..', 'web', 'dist')
@@ -65,5 +70,6 @@ await app.listen({ host: '0.0.0.0', port: Number(process.env.PORT ?? 8080) })
 startAll()
 startAutomations()
 startPlugins()
+if (isDevice()) keepOutputs()
 for (const sig of ['SIGTERM', 'SIGINT']) process.once(sig, () => { stopPlugins(); process.exit(0) })
 log('system', 'info', 'system.started', { version: process.env.npm_package_version })

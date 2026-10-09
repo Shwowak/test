@@ -11,6 +11,7 @@ import AutomationsView from './automations/AutomationsView.vue'
 import AlertLayer from './notify/AlertLayer.vue'
 import NotificationCenter from './notify/NotificationCenter.vue'
 import { notes, unread, loadNotifications } from '../notifications.js'
+import { startIdle, kiosk } from '../display.js'
 import { startLive, stopLive, loadIntegrations } from '../devices.js'
 import { onBeforeUnmount, watch } from 'vue'
 
@@ -54,6 +55,7 @@ onBeforeUnmount(stopLive)
 onMounted(async () => {
   if (can('devices.view')) { startLive(); loadIntegrations().catch(() => {}) }
   if (can('notifications.view')) loadNotifications().catch(() => {})
+  startIdle()
   meta.value = await api('GET', '/meta')
   const saved = Number(localStorage.getItem('homeos.dashboard'))
   await Promise.all([loadDashboards(), loadSources()])
@@ -137,7 +139,7 @@ const icons = ['⌂', '◈', '⚡', '☀', '♨', '☎', '♫', '⚙', '⛨', '�
       <button v-if="can('automations.view')" class="tab" :class="{ on: view === 'automations' }" @click="view = 'automations'; editing = false"><span class="ico">⟳</span><span class="nm">{{ t('nav.automations') }}</span></button>
       <button v-if="can('sources.view')" class="tab" @click="showSources = true"><span class="ico">⌬</span><span class="nm">{{ t('nav.sources') }}</span></button>
       <button class="tab" @click="showSettings = true"><span class="ico">⚙</span><span class="nm">{{ t('nav.settings') }}</span></button>
-      <button class="tab" @click="fullscreen"><span class="ico">⛶</span><span class="nm">{{ t('nav.fullscreen') }}</span></button>
+      <button v-if="!kiosk" class="tab" @click="fullscreen"><span class="ico">⛶</span><span class="nm">{{ t('nav.fullscreen') }}</span></button>
       <button class="tab" @click="emit('logout')"><span class="ico">⏻</span><span class="nm">{{ t('nav.logout') }}</span></button>
     </nav>
 

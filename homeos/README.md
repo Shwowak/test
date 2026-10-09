@@ -78,6 +78,15 @@ docker compose -f docker-compose.server.yml up -d
 - **SDK**: `sdk/` – Anleitung, Beispiel-Plugin, Werkzeug `sbp.mjs` (Schlüssel erzeugen, packen, signieren)
 - Bekannte Grenze: Netzwerkzugriff ist im Docker-Betrieb nur über die API gesperrt; harte Sperre per Firewall pro Plugin folgt mit Phase 5 (Linux-Image).
 
+## Phase 5 (Smart-Display-OS)
+
+- **Gerät statt Docker**: Raspberry-Pi-Image (Releases) oder Installer für Debian / Pi OS / x86 → startet direkt ins Dashboard (cage + Chromium-Kiosk) – Details: [`os/README.md`](os/README.md)
+- **Ersteinrichtung am Display** (Admin + PIN), **Bildschirmtastatur** (DE/EN, Weiter/Absenden)
+- **Einstellungen**: Display (Helligkeit, Drehung, automatisch aus/dimmen, Wecken per Touch), Netzwerk (WLAN suchen/verbinden, gespeicherte Netze, Gerätename), Bluetooth (suchen, koppeln, verbinden), Audio (Ausgabe/Mikrofon, Lautstärke, Stumm, Standard, Testton), Update (Kanal, automatisch, jetzt installieren), Neustart/Ausschalten
+- **Updates mit Rollback**: GitHub Actions erzeugt bei jeder neuen Version ein Release (Core + Pi-Image); Geräte installieren es, prüfen den Start und springen bei Fehler automatisch zurück
+- **Plugins ohne Internet-Recht** laufen auf dem Gerät komplett ohne Netzwerk
+- Im Docker-Betrieb bleiben die Hardware-Seiten ausgeblendet (Host verwaltet Netzwerk/Audio)
+
 ## Widgets
 
 | Typ | Datenquellen |

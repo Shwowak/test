@@ -11,7 +11,8 @@
     "name": "Name",
     "back": "Back",
     "close": "Close",
-    "saved": "Saved"
+    "saved": "Saved",
+    "cancel": "Cancel"
   },
   "nav": {
     "hide": "Hide",
@@ -134,7 +135,12 @@
       "system": "System",
       "integrations": "Integrations",
       "general": "General",
-      "plugins": "Plugins"
+      "plugins": "Plugins",
+      "display": "Display",
+      "network": "Network",
+      "bluetooth": "Bluetooth",
+      "audio": "Audio",
+      "update": "Update"
     }
   },
   "profile": {
@@ -262,7 +268,15 @@
       "plugin_removed": "Plugin removed",
       "plugin_crashed": "Plugin crashed",
       "plugin_log": "Plugin message",
-      "plugin_load_failed": "Plugin failed to load"
+      "plugin_load_failed": "Plugin failed to load",
+      "hardware_failed": "Hardware action failed",
+      "wifi_connected": "WiFi connected",
+      "bluetooth_pair": "Bluetooth paired",
+      "bluetooth_connect": "Bluetooth connected",
+      "bluetooth_disconnect": "Bluetooth disconnected",
+      "bluetooth_remove": "Bluetooth device removed",
+      "system_power": "Reboot/power off",
+      "update_requested": "Update requested"
     }
   },
   "system": {
@@ -338,6 +352,14 @@
       "builtin_conflict": "ID belongs to a built-in plugin",
       "builtin": "Built-in plugins can only be disabled",
       "action_failed": "Plugin action failed"
+    },
+    "hardware": {
+      "unavailable": "Only available on the SmartBoard device",
+      "failed": "Action failed"
+    },
+    "setup": {
+      "done": "Already set up",
+      "local_only": "Only possible on the device"
     }
   },
   "devices": {
@@ -685,5 +707,79 @@
       "devices_control": "Control devices",
       "calendar": "Calendar"
     }
+  },
+  "hw": {
+    "not_device": "These functions are only available on the SmartBoard device (image/installation). In Docker the host manages network, Bluetooth and audio.",
+    "idle_title": "Automatic screen off",
+    "idle": "Screen off after (min, 0 = never)",
+    "dim": "Dim first (0 = no, otherwise yes)",
+    "brightness": "Brightness",
+    "no_panels": "No adjustable display found (backlight or DDC/CI).",
+    "off_test": "Test screen off (3 s)",
+    "outputs": "Outputs & rotation",
+    "scan": "Scan",
+    "scanning": "Scanning…",
+    "hidden": "Hidden network",
+    "open": "open",
+    "password": "Password",
+    "connect": "Connect",
+    "disconnect": "Disconnect",
+    "connected": "Connected to {ssid}.",
+    "connected_short": "connected",
+    "saved": "Saved connections",
+    "forget": "Forget",
+    "confirm_forget": "Delete connection “{name}”?",
+    "hostname": "Device name",
+    "hostname_hint": "Reachable on the network as {name}.local",
+    "wifi_on": "WiFi on",
+    "bt_on": "Bluetooth on",
+    "no_bt": "No Bluetooth adapter found.",
+    "paired": "paired",
+    "new": "new",
+    "pair": "Pair",
+    "no_audio": "No audio system found (PipeWire).",
+    "outputs_audio": "Output",
+    "inputs_audio": "Microphones",
+    "default": "Default",
+    "test_tone": "Test tone",
+    "installed": "Installed version",
+    "available": "available: v{v}",
+    "rolled_back": "Update to v{v} failed – rolled back automatically.",
+    "channel": "Channel",
+    "auto": "Install automatically",
+    "update_now": "Check & install now",
+    "update_started": "Update check started. SmartBoard restarts briefly if an update is installed.",
+    "power": "Power",
+    "restart_ui": "Restart interface",
+    "reboot": "Reboot",
+    "poweroff": "Power off",
+    "confirm_restart_ui": "Restart the interface?",
+    "confirm_reboot": "Reboot the device?",
+    "confirm_poweroff": "Power off the device? It can only be turned on at the device.",
+    "power_sent": "Executing…",
+    "state": {
+      "connected": "connected",
+      "disconnected": "disconnected",
+      "unavailable": "unavailable",
+      "connecting": "connecting"
+    },
+    "update_state": {
+      "idle": "up to date",
+      "checking": "checking…",
+      "downloading": "downloading…",
+      "installing": "installing…",
+      "up_to_date": "up to date",
+      "updated": "updated",
+      "failed": "failed"
+    }
+  },
+  "setup": {
+    "title": "First-time setup",
+    "hint": "Create the administrator account for this SmartBoard.",
+    "local_only": "First-time setup is only possible directly on the SmartBoard display.",
+    "repeat": "Repeat password",
+    "pin": "PIN for quick unlock (optional, 4–8 digits)",
+    "submit": "Set up",
+    "mismatch": "Passwords do not match"
   }
 }

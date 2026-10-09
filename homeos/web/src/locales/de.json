@@ -11,7 +11,8 @@
     "name": "Name",
     "back": "Zurück",
     "close": "Schließen",
-    "saved": "Gespeichert"
+    "saved": "Gespeichert",
+    "cancel": "Abbrechen"
   },
   "nav": {
     "hide": "Ausblenden",
@@ -134,7 +135,12 @@
       "system": "System",
       "integrations": "Integrationen",
       "general": "Allgemein",
-      "plugins": "Plugins"
+      "plugins": "Plugins",
+      "display": "Display",
+      "network": "Netzwerk",
+      "bluetooth": "Bluetooth",
+      "audio": "Audio",
+      "update": "Update"
     }
   },
   "profile": {
@@ -262,7 +268,15 @@
       "plugin_removed": "Plugin entfernt",
       "plugin_crashed": "Plugin abgestürzt",
       "plugin_log": "Plugin-Meldung",
-      "plugin_load_failed": "Plugin konnte nicht geladen werden"
+      "plugin_load_failed": "Plugin konnte nicht geladen werden",
+      "hardware_failed": "Hardware-Aktion fehlgeschlagen",
+      "wifi_connected": "WLAN verbunden",
+      "bluetooth_pair": "Bluetooth gekoppelt",
+      "bluetooth_connect": "Bluetooth verbunden",
+      "bluetooth_disconnect": "Bluetooth getrennt",
+      "bluetooth_remove": "Bluetooth-Gerät entfernt",
+      "system_power": "Neustart/Ausschalten",
+      "update_requested": "Update angefordert"
     }
   },
   "system": {
@@ -338,6 +352,14 @@
       "builtin_conflict": "ID gehört zu einem mitgelieferten Plugin",
       "builtin": "Mitgelieferte Plugins können nur deaktiviert werden",
       "action_failed": "Plugin-Aktion fehlgeschlagen"
+    },
+    "hardware": {
+      "unavailable": "Nur auf dem SmartBoard-Gerät verfügbar",
+      "failed": "Aktion fehlgeschlagen"
+    },
+    "setup": {
+      "done": "Bereits eingerichtet",
+      "local_only": "Nur am Gerät möglich"
     }
   },
   "devices": {
@@ -685,5 +707,79 @@
       "devices_control": "Geräte steuern",
       "calendar": "Kalender"
     }
+  },
+  "hw": {
+    "not_device": "Diese Funktionen gibt es nur auf dem SmartBoard-Gerät (Image/Installation). Im Docker-Betrieb verwaltet der Host Netzwerk, Bluetooth und Audio.",
+    "idle_title": "Automatisch ausschalten",
+    "idle": "Display aus nach (min, 0 = nie)",
+    "dim": "Vorher dimmen (0 = nein, sonst ja)",
+    "brightness": "Helligkeit",
+    "no_panels": "Kein regelbares Display gefunden (Backlight oder DDC/CI).",
+    "off_test": "Ausschalten testen (3 s)",
+    "outputs": "Ausgänge & Drehung",
+    "scan": "Suchen",
+    "scanning": "Suche…",
+    "hidden": "Verstecktes Netz",
+    "open": "offen",
+    "password": "Passwort",
+    "connect": "Verbinden",
+    "disconnect": "Trennen",
+    "connected": "Verbunden mit {ssid}.",
+    "connected_short": "verbunden",
+    "saved": "Gespeicherte Verbindungen",
+    "forget": "Vergessen",
+    "confirm_forget": "Verbindung „{name}“ löschen?",
+    "hostname": "Gerätename",
+    "hostname_hint": "Im Netzwerk erreichbar als {name}.local",
+    "wifi_on": "WLAN an",
+    "bt_on": "Bluetooth an",
+    "no_bt": "Kein Bluetooth-Adapter gefunden.",
+    "paired": "gekoppelt",
+    "new": "neu",
+    "pair": "Koppeln",
+    "no_audio": "Kein Audiosystem gefunden (PipeWire).",
+    "outputs_audio": "Ausgabe",
+    "inputs_audio": "Mikrofone",
+    "default": "Standard",
+    "test_tone": "Testton",
+    "installed": "Installierte Version",
+    "available": "verfügbar: v{v}",
+    "rolled_back": "Update auf v{v} fehlgeschlagen – automatisch zurückgesetzt.",
+    "channel": "Kanal",
+    "auto": "Automatisch installieren",
+    "update_now": "Jetzt suchen & installieren",
+    "update_started": "Update-Suche gestartet. Bei einem Update startet SmartBoard kurz neu.",
+    "power": "Energie",
+    "restart_ui": "Oberfläche neu laden",
+    "reboot": "Neu starten",
+    "poweroff": "Ausschalten",
+    "confirm_restart_ui": "Oberfläche neu starten?",
+    "confirm_reboot": "Gerät neu starten?",
+    "confirm_poweroff": "Gerät ausschalten? Einschalten danach nur am Gerät.",
+    "power_sent": "Wird ausgeführt…",
+    "state": {
+      "connected": "verbunden",
+      "disconnected": "getrennt",
+      "unavailable": "nicht verfügbar",
+      "connecting": "verbindet"
+    },
+    "update_state": {
+      "idle": "aktuell",
+      "checking": "prüft…",
+      "downloading": "lädt…",
+      "installing": "installiert…",
+      "up_to_date": "aktuell",
+      "updated": "aktualisiert",
+      "failed": "Fehler"
+    }
+  },
+  "setup": {
+    "title": "Ersteinrichtung",
+    "hint": "Lege das Administrator-Konto für dieses SmartBoard an.",
+    "local_only": "Die Ersteinrichtung ist nur direkt am SmartBoard-Display möglich.",
+    "repeat": "Passwort wiederholen",
+    "pin": "PIN für schnelles Entsperren (optional, 4–8 Ziffern)",
+    "submit": "Einrichten",
+    "mismatch": "Passwörter stimmen nicht überein"
   }
 }

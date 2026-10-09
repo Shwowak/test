@@ -1,0 +1,105 @@
+name: SmartBoard Release (Core + OS-Image)
+
+on:
+  push:
+    branches: [main, claude/zen-cray-34x5xu]
+    paths: ['homeos/**', '.github/workflows/smartboard-release.yml']
+  workflow_dispatch:
+    inputs:
+      image:
+        description: 'Raspberry-Pi-Image bauen'
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: smartboard-release
+  cancel-in-progress: false
+
+jobs:
+  core:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+      created: ${{ steps.rel.outputs.created }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - id: v
+        run: echo "version=$(jq -r .version homeos/server/package.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Build core tarball
+        run: |
+          set -e
+          V=${{ steps.v.outputs.version }}
+          (cd homeos/web && npm ci && npm run build)
+          (cd homeos/server && npm ci --omit=dev)
+          D=$(mktemp -d)
+          mkdir -p "$D/web"
+          cp -r homeos/server "$D/server"
+          cp -r homeos/web/dist "$D/web/dist"
+          echo "$V" > "$D/VERSION"
+          tar -czf "smartboard-core-$V.tar.gz" -C "$D" .
+          sha256sum "smartboard-core-$V.tar.gz" > "smartboard-core-$V.tar.gz.sha256"
+
+      - name: Sign (optional, secret UPDATE_SIGNING_KEY)
+        env:
+          KEY: ${{ secrets.UPDATE_SIGNING_KEY }}
+        if: env.KEY != ''
+        run: |
+          V=${{ steps.v.outputs.version }}
+          printf '%s\n' "$KEY" > key.pem
+          openssl pkeyutl -sign -inkey key.pem -rawin -in "smartboard-core-$V.tar.gz" -out "smartboard-core-$V.tar.gz.sig"
+          rm key.pem
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: core
+          path: smartboard-core-*
+
+      - id: rel
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          V=${{ steps.v.outputs.version }}
+          if gh release view "core-v$V" >/dev/null 2>&1; then
+            echo "Release core-v$V existiert bereits"
+            echo "created=false" >> "$GITHUB_OUTPUT"
+          else
+            gh release create "core-v$V" smartboard-core-$V.tar.gz* --target "$GITHUB_SHA" --title "SmartBoard OS $V" \
+              --notes "SmartBoard Core $V. Geräte mit SmartBoard OS aktualisieren sich automatisch. Raspberry-Pi-Image folgt als Anhang (Build ca. 30–60 min)."
+            echo "created=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  rpi-image:
+    needs: core
+    if: needs.core.outputs.created == 'true' || (github.event_name == 'workflow_dispatch' && inputs.image)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: core
+
+      - name: Tools
+        run: sudo apt-get update -q && sudo apt-get install -y -q qemu-user-static binfmt-support parted e2fsprogs xz-utils
+
+      - name: Build image
+        run: |
+          V=${{ needs.core.outputs.version }}
+          sudo homeos/os/build-rpi-image.sh "smartboard-core-$V.tar.gz" "smartboard-os-$V-rpi-arm64.img.xz"
+
+      - name: Attach to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          V=${{ needs.core.outputs.version }}
+          gh release upload "core-v$V" smartboard-os-$V-rpi-arm64.img.xz smartboard-os-$V-rpi-arm64.img.xz.sha256 --clobber

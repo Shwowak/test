@@ -1,4 +1,5 @@
-import { fork } from 'node:child_process'
+import { spawn } from 'node:child_process'
+import { canIsolateNetwork } from '../system/exec.js'
 import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -135,18 +136,18 @@ export function startPlugin(id) {
   if (!existsSync(join(dir, 'manifest.json'))) return setStatus(id, 'error', 'files_missing')
   if (!p.manifest.backend) return setStatus(id, 'running')
   const file = join(dir, p.manifest.backend)
-  const child = fork(RUNNER, [], {
-    execArgv: ['--experimental-permission', `--allow-fs-read=${RUNNER}`, `--allow-fs-read=${dir}`, '--max-old-space-size=96', '--disable-warning=ExperimentalWarning'],
-    env: { NODE_ENV: 'production', TZ: process.env.TZ ?? '' }, serialization: 'json', stdio: ['ignore', 'ignore', 'pipe', 'ipc'],
-  })
-  const entry = { child, actions: new Map(), nextId: 1, stderr: '' }
+  const nodeArgs = ['--experimental-permission', `--allow-fs-read=${RUNNER}`, `--allow-fs-read=${dir}`, '--max-old-space-size=96', '--disable-warning=ExperimentalWarning', RUNNER]
+  const isolate = !p.granted.includes('internet') && canIsolateNetwork()
+  const [cmd, args] = isolate ? ['unshare', ['--user', '--map-root-user', '--net', '--', process.execPath, ...nodeArgs]] : [process.execPath, nodeArgs]
+  const child = spawn(cmd, args, { env: { NODE_ENV: 'production', TZ: process.env.TZ ?? '' }, serialization: 'json', stdio: ['ignore', 'ignore', 'pipe', 'ipc'] })
+  const entry = { child, actions: new Map(), nextId: 1, stderr: '', isolated: isolate }
   procs.set(id, entry)
   setStatus(id, 'starting')
   child.stderr.on('data', d => { entry.stderr = (entry.stderr + d).slice(-2000) })
   child.on('message', async msg => {
     const cur = getPlugin(id)
     if (!cur) return
-    if (msg.t === 'ready') setStatus(id, 'running')
+    if (msg.t === 'ready') { setStatus(id, 'running'); status.get(id).isolated = entry.isolated }
     else if (msg.t === 'fatal') setStatus(id, 'error', msg.error)
     else if (msg.t === 'call') {
       try {

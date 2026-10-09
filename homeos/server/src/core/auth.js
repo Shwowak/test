@@ -5,7 +5,7 @@ import { log } from './logger.js'
 export const PERMISSIONS = [
   'dashboards.view', 'dashboards.edit', 'sources.view', 'sources.edit', 'devices.view', 'devices.control', 'devices.manage',
   'notifications.view', 'notifications.manage', 'automations.view', 'automations.manage', 'plugins.view', 'plugins.manage',
-  'users.manage', 'logs.view', 'versions.view', 'versions.restore', 'system.view', 'profile.edit',
+  'users.manage', 'logs.view', 'versions.view', 'versions.restore', 'system.view', 'system.manage', 'profile.edit',
 ]
 
 export const ROLES = {
@@ -87,6 +87,7 @@ export function loginSucceeded(key, user, ip, method) {
 export function seedAdmin() {
   if (db.prepare('SELECT COUNT(*) c FROM users').get().c > 0) return
   const pw = process.env.HOMEOS_ADMIN_PASSWORD
+  if (!pw && process.env.SMARTBOARD_SETUP === '1') return
   if (!pw) throw new Error('HOMEOS_ADMIN_PASSWORD fehlt (erster Start)')
   db.prepare("INSERT INTO users (name, password, role) VALUES (?, ?, 'admin')").run(process.env.HOMEOS_ADMIN_USER ?? 'admin', hashSecret(pw))
   log('users', 'info', 'user.created', { name: process.env.HOMEOS_ADMIN_USER ?? 'admin', role: 'admin' })

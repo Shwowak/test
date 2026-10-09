@@ -1,0 +1,105 @@
+#!/bin/bash
+# SmartBoard update agent: core releases side by side, atomic switch, health check, automatic rollback.
+set -uo pipefail
+
+CONF=${SB_CONF:-/etc/smartboard/update.conf}
+BASE=${SB_BASE:-/opt/smartboard}
+DATA=${SB_DATA:-/var/lib/smartboard}
+API=${SB_API:-https://api.github.com}
+CORE_URL=${SB_CORE_URL:-http://127.0.0.1:8080}
+HEALTH_WAIT=${SB_HEALTH_WAIT:-90}
+SYSTEMCTL=${SB_SYSTEMCTL:-systemctl}
+STATE=$DATA/update.json
+SETTINGS=$DATA/update-settings.json
+REPO=shwowak/test
+TOKEN=
+PUBKEY=/etc/smartboard/update.pub
+KEEP=3
+# shellcheck source=/dev/null
+[ -f "$CONF" ] && . "$CONF"
+
+MODE=manual
+[ "${1:-}" = "--timer" ] && MODE=timer
+[ "${1:-}" = "--install" ] && MODE=install
+
+current() { basename "$(readlink -f $BASE/current)" 2>/dev/null; }
+state() {
+  local status=$1; shift
+  jq -n --arg status "$status" --arg checked "$(date -Is)" --arg current "$(current)" "$@" \
+    '{status: $status, checked: $checked, current: $current} + $ARGS.named' > "$STATE.tmp" && mv "$STATE.tmp" "$STATE"
+  chown smartboard:smartboard "$STATE" 2>/dev/null
+}
+fail() { echo "update: $1" >&2; state failed --arg error "$1"; exit 1; }
+api() {
+  local auth=()
+  [ -n "$TOKEN" ] && auth=(-H "Authorization: Bearer $TOKEN")
+  curl -fsSL --retry 3 -H "Accept: application/vnd.github+json" "${auth[@]}" "$@"
+}
+download() {
+  local auth=()
+  [ -n "$TOKEN" ] && auth=(-H "Authorization: Bearer $TOKEN")
+  curl -fsSL --retry 3 -H "Accept: application/octet-stream" "${auth[@]}" -o "$2" "$1"
+}
+healthy() {
+  for _ in $(seq 1 "$HEALTH_WAIT"); do
+    v=$(curl -fs "$CORE_URL/api/v1/health" | jq -r .version 2>/dev/null) && [ "$v" = "$1" ] && return 0
+    sleep 1
+  done
+  return 1
+}
+
+CHANNEL=$(jq -r '.channel // "stable"' "$SETTINGS" 2>/dev/null || echo stable)
+AUTO=$(jq -r 'if .auto == false then "false" else "true" end' "$SETTINGS" 2>/dev/null || echo true)
+[ "$MODE" = timer ] && [ "$AUTO" = false ] && { state idle; exit 0; }
+
+state checking
+RELEASES=$(api "$API/repos/$REPO/releases?per_page=30") || fail "release list not reachable"
+FILTER='.[] | select(.tag_name | startswith("core-v")) | select(.draft | not)'
+[ "$CHANNEL" = stable ] && FILTER="$FILTER | select(.prerelease | not)"
+LATEST=$(echo "$RELEASES" | jq -r "[$FILTER | .tag_name | ltrimstr(\"core-v\")] | .[]" | sort -V | tail -1)
+[ -n "$LATEST" ] || { state up_to_date; exit 0; }
+CUR=$(current)
+if [ "$MODE" != install ] && [ -n "$CUR" ] && [ "$(printf '%s\n%s\n' "$LATEST" "$CUR" | sort -V | tail -1)" = "$CUR" ]; then
+  state up_to_date; exit 0
+fi
+
+REL=$(echo "$RELEASES" | jq -c ".[] | select(.tag_name == \"core-v$LATEST\")")
+asset() { echo "$REL" | jq -r --arg n "$1" '.assets[] | select(.name == $n) | .url'; }
+TAR="smartboard-core-$LATEST.tar.gz"
+URL=$(asset "$TAR"); [ -n "$URL" ] || fail "asset $TAR missing"
+TMP=$(mktemp -d); trap 'rm -rf "$TMP"' EXIT
+state downloading --arg available "$LATEST"
+download "$URL" "$TMP/$TAR" || fail "download failed"
+download "$(asset "$TAR.sha256")" "$TMP/$TAR.sha256" || fail "checksum missing"
+(cd "$TMP" && sha256sum -c "$TAR.sha256" >/dev/null) || fail "checksum mismatch"
+if [ -s "$PUBKEY" ]; then
+  SIGURL=$(asset "$TAR.sig"); [ -n "$SIGURL" ] || fail "signature missing"
+  download "$SIGURL" "$TMP/$TAR.sig" || fail "signature download failed"
+  openssl pkeyutl -verify -pubin -inkey "$PUBKEY" -rawin -in "$TMP/$TAR" -sigfile "$TMP/$TAR.sig" >/dev/null 2>&1 || fail "signature invalid"
+fi
+
+state installing --arg available "$LATEST"
+DEST=$BASE/releases/$LATEST
+rm -rf "$DEST.new" && mkdir -p "$DEST.new"
+tar -xzf "$TMP/$TAR" -C "$DEST.new" || fail "extract failed"
+rm -rf "$DEST" && mv "$DEST.new" "$DEST"
+chown -R root:root "$DEST" 2>/dev/null
+
+PREV=$(readlink -f $BASE/current)
+ln -sfn "$DEST" $BASE/current.new && mv -T $BASE/current.new $BASE/current
+$SYSTEMCTL restart smartboard-core.service
+if healthy "$LATEST"; then
+  $SYSTEMCTL restart smartboard-kiosk.service 2>/dev/null
+  ls -1d $BASE/releases/*/ 2>/dev/null | sort -V | head -n -$KEEP | while read -r old; do
+    [ "$(readlink -f "$old")" != "$(readlink -f $BASE/current)" ] && rm -rf "$old"
+  done
+  state updated --arg previous "$(basename "$PREV")"
+  echo "update: installed $LATEST"
+else
+  if [ -n "$PREV" ] && [ -d "$PREV" ]; then
+    ln -sfn "$PREV" $BASE/current.new && mv -T $BASE/current.new $BASE/current
+    $SYSTEMCTL restart smartboard-core.service
+  fi
+  state failed --arg error "health check failed" --arg rolled_back "$LATEST"
+  exit 1
+fi

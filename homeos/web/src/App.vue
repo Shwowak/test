@@ -4,6 +4,8 @@ import { api } from './api.js'
 import { setLocale } from './i18n.js'
 import Login from './components/Login.vue'
 import Shell from './components/Shell.vue'
+import Keyboard from './components/Keyboard.vue'
+import { kiosk } from './display.js'
 
 const user = ref(null)
 const ready = ref(false)
@@ -32,4 +34,5 @@ async function logout() {
     <Login v-if="!user" @login="setUser" />
     <Shell v-else @logout="logout" />
   </template>
+  <Keyboard v-if="kiosk" />
 </template>

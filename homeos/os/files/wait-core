@@ -1,0 +1,8 @@
+#!/bin/sh
+i=0
+while [ $i -lt 120 ]; do
+  curl -fs -o /dev/null http://127.0.0.1:8080/api/v1/health && exit 0
+  i=$((i + 1))
+  sleep 1
+done
+exit 0

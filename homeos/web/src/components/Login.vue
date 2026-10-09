@@ -14,7 +14,23 @@ const pinUsers = ref([])
 const error = ref('')
 const busy = ref(false)
 
+const setup = ref(null)
+const setupForm = ref({ name: 'admin', password: '', password2: '', pin: '' })
+
+async function doSetup() {
+  error.value = ''
+  const f = setupForm.value
+  if (f.password !== f.password2) { error.value = t('setup.mismatch'); return }
+  busy.value = true
+  try {
+    emit('login', await api('POST', '/auth/setup', { name: f.name, password: f.password, pin: f.pin || undefined }))
+  } catch (e) {
+    error.value = errorText(e)
+  } finally { busy.value = false }
+}
+
 onMounted(async () => {
+  try { const s = await api('GET', '/auth/setup'); if (s.needed) setup.value = s } catch {}
   try {
     pinUsers.value = await api('GET', '/auth/pin-users')
     if (pinUsers.value.length) {
@@ -46,7 +62,7 @@ function press(d) {
 
 <template>
   <main class="wrap">
-    <form class="card" @submit.prevent="submit">
+    <form class="card" @submit.prevent="setup ? doSetup() : submit()">
       <div class="logo">
         <svg viewBox="0 0 64 64" width="64" height="64" aria-hidden="true">
           <path d="M8 32h12l6-10h12l6 10h12M20 32v14h24V32M32 8v14M26 46v10M38 46v10" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -55,6 +71,20 @@ function press(d) {
         <h1>{{ t('app.name') }}</h1>
       </div>
 
+      <template v-if="setup">
+        <h2 class="st">{{ t('setup.title') }}</h2>
+        <p v-if="!setup.local" class="hint">{{ t('setup.local_only') }}</p>
+        <template v-else>
+          <p class="hint">{{ t('setup.hint') }}</p>
+          <div class="field"><label>{{ t('login.user') }}</label><input v-model="setupForm.name" required maxlength="40"></div>
+          <div class="field"><label>{{ t('login.password') }}</label><input v-model="setupForm.password" type="password" required autocomplete="new-password"></div>
+          <div class="field"><label>{{ t('setup.repeat') }}</label><input v-model="setupForm.password2" type="password" required autocomplete="new-password"></div>
+          <div class="field"><label>{{ t('setup.pin') }}</label><input v-model="setupForm.pin" inputmode="numeric" pattern="[0-9]{4,8}" autocomplete="off"></div>
+          <button class="btn primary full" :disabled="busy">{{ t('setup.submit') }}</button>
+        </template>
+      </template>
+
+      <template v-else>
       <div class="tabs">
         <button type="button" class="btn" :class="{ active: mode === 'pin' }" :disabled="!pinUsers.length" @click="mode = 'pin'">{{ t('login.pin') }}</button>
         <button type="button" class="btn" :class="{ active: mode === 'password' }" @click="mode = 'password'">{{ t('login.password') }}</button>
@@ -77,6 +107,7 @@ function press(d) {
         <div class="field"><label for="u">{{ t('login.user') }}</label><input id="u" v-model="name" autocomplete="username"></div>
         <div class="field"><label for="p">{{ t('login.password') }}</label><input id="p" v-model="password" type="password" autocomplete="current-password"></div>
         <button class="btn primary full" :disabled="busy">{{ t('login.submit') }}</button>
+      </template>
       </template>
 
       <p v-if="error" class="error">{{ error }}</p>
@@ -102,5 +133,7 @@ h1 { margin: 0; font-size: 26px; letter-spacing: 0.25em; font-weight: 300; }
 .pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .key { min-height: 64px; font-size: 26px; font-family: var(--mono); }
 .full { width: 100%; }
+.st { font-weight: 300; text-align: center; margin: 0 0 8px; }
+.hint { color: var(--dim); text-align: center; }
 .lang { margin-top: 18px; width: 100%; min-height: 44px; background: transparent; border: 1px solid var(--line); border-radius: 10px; padding: 0 10px; color: var(--dim); }
 </style>

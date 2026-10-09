@@ -1,0 +1,12 @@
+[Unit]
+Description=SmartBoard update check (daily, 03:30 + random delay)
+
+[Timer]
+OnCalendar=*-*-* 03:30
+RandomizedDelaySec=45min
+OnBootSec=15min
+Persistent=true
+Unit=smartboard-update-timer.service
+
+[Install]
+WantedBy=timers.target

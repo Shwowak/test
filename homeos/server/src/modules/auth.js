@@ -32,6 +32,32 @@ export default async function authModule(app) {
     return publicUser(user)
   })
 
+  const setupNeeded = () => db.prepare('SELECT COUNT(*) c FROM users').get().c === 0
+  const local = ip => ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(ip)
+
+  app.get('/auth/setup', { schema: { tags: ['auth'], summary: 'First-run setup needed?' }, config: { public: true } },
+    async req => ({ needed: setupNeeded(), local: local(req.ip) }))
+
+  app.post('/auth/setup', {
+    schema: {
+      tags: ['auth'], summary: 'First-run: create the admin (only on the device display, only once)',
+      body: { type: 'object', required: ['name', 'password'], properties: { name: { type: 'string', minLength: 1, maxLength: 40 }, password: { type: 'string' }, pin: { type: 'string' } } },
+    },
+    config: { public: true },
+  }, async (req, reply) => {
+    if (!setupNeeded()) throw new HttpError(409, 'setup.done')
+    if (!local(req.ip)) throw new HttpError(403, 'setup.local_only')
+    const pwErr = passwordProblem(req.body.password)
+    if (pwErr) throw badRequest(pwErr)
+    if (req.body.pin) { const pinErr = pinProblem(req.body.pin); if (pinErr) throw badRequest(pinErr) }
+    const id = db.prepare("INSERT INTO users (name, password, pin, role) VALUES (?, ?, ?, 'admin')")
+      .run(req.body.name.trim(), hashSecret(req.body.password), req.body.pin ? hashSecret(req.body.pin) : null).lastInsertRowid
+    log('users', 'info', 'user.created', { name: req.body.name, role: 'admin', setup: true })
+    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(id)
+    reply.setCookie('homeos_session', createSession(user.id), { path: '/', httpOnly: true, sameSite: 'strict', secure, maxAge: SESSION_DAYS * 86400 })
+    return publicUser(user)
+  })
+
   app.get('/auth/pin-users', { schema: { tags: ['auth'], summary: 'Users that can log in with PIN (names only)' }, config: { public: true } },
     async () => db.prepare('SELECT name, COALESCE(display_name, name) AS display_name FROM users WHERE pin IS NOT NULL AND disabled = 0 ORDER BY name').all())
 

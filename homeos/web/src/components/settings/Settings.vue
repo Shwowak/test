@@ -9,6 +9,7 @@ import SystemSettings from './SystemSettings.vue'
 import IntegrationsSettings from './IntegrationsSettings.vue'
 import GeneralSettings from './GeneralSettings.vue'
 import PluginsSettings from './PluginsSettings.vue'
+import HardwareSettings from './HardwareSettings.vue'
 
 defineProps({ meta: Object })
 const emit = defineEmits(['changed'])
@@ -19,12 +20,17 @@ const can = p => user.value?.permissions?.includes(p)
 const tabs = computed(() => [
   { id: 'profile', icon: '☺', show: true },
   { id: 'general', icon: '⌖', show: true },
+  { id: 'display', icon: '◐', show: can('system.view') },
+  { id: 'network', icon: '📶', show: can('system.view') },
+  { id: 'bluetooth', icon: 'ᛒ', show: can('system.view') },
+  { id: 'audio', icon: '♪', show: can('system.view') },
   { id: 'integrations', icon: '⌁', show: can('devices.manage') },
   { id: 'plugins', icon: '⧉', show: can('plugins.view') },
   { id: 'users', icon: '⚇', show: can('users.manage') },
   { id: 'versions', icon: '⟲', show: can('versions.view') },
   { id: 'logs', icon: '☰', show: can('logs.view') },
   { id: 'system', icon: '◉', show: can('system.view') },
+  { id: 'update', icon: '⇣', show: can('system.view') },
 ].filter(x => x.show))
 const tab = ref('profile')
 </script>
@@ -40,6 +46,7 @@ const tab = ref('profile')
       <ProfileSettings v-if="tab === 'profile'" :meta="meta" />
       <GeneralSettings v-else-if="tab === 'general'" />
       <IntegrationsSettings v-else-if="tab === 'integrations'" />
+      <HardwareSettings v-else-if="['display', 'network', 'bluetooth', 'audio', 'update'].includes(tab)" :section="tab" />
       <PluginsSettings v-else-if="tab === 'plugins'" />
       <UsersSettings v-else-if="tab === 'users'" :meta="meta" />
       <VersionsSettings v-else-if="tab === 'versions'" @restored="emit('changed')" />

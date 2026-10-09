@@ -1,0 +1,23 @@
+[Unit]
+Description=SmartBoard Core
+After=network-online.target NetworkManager.service bluetooth.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=smartboard
+Group=smartboard
+WorkingDirectory=/opt/smartboard/current/server
+EnvironmentFile=-/etc/smartboard/core.env
+Environment=NODE_ENV=production HOMEOS_DB=/var/lib/smartboard/homeos.db PORT=8080 SMARTBOARD_HAL=1 XDG_RUNTIME_DIR=/run/user/@UID@
+ExecStart=/opt/smartboard/node/bin/node --disable-warning=ExperimentalWarning index.js
+Restart=always
+RestartSec=3
+NoNewPrivileges=yes
+ProtectSystem=full
+PrivateTmp=yes
+ReadWritePaths=/var/lib/smartboard
+TimeoutStopSec=15
+
+[Install]
+WantedBy=multi-user.target

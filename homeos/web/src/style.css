@@ -163,3 +163,10 @@ button, input, select, textarea { font: inherit; color: inherit; }
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
 }
+
+input[type='range'] { -webkit-appearance: none; appearance: none; height: 6px; border-radius: 3px; background: rgba(148, 163, 184, 0.2); outline: none; }
+input[type='range']::-webkit-slider-thumb { -webkit-appearance: none; width: 32px; height: 32px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 14px var(--cyan); cursor: pointer; }
+input[type='range']::-moz-range-thumb { width: 32px; height: 32px; border: 0; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 14px var(--cyan); }
+.kiosk, .kiosk * { cursor: none !important; }
+.osk-open body { padding-bottom: 360px; }
+.osk-open .sheet .body, .osk-open .main { padding-bottom: 360px !important; }

@@ -1,0 +1,113 @@
+import { readFileSync, writeFileSync, statfsSync } from 'node:fs'
+import { dirname, resolve } from 'node:path'
+import { requirePerm, HttpError } from '../core/http.js'
+import { log } from '../core/logger.js'
+import { getSetting, setSetting } from '../core/settings.js'
+import { run, has, canIsolateNetwork } from '../system/exec.js'
+import { displayStatus, setBrightness, setPower, setOutput } from '../system/display.js'
+import { networkStatus, wifiScan, wifiConnect, wifiRadio, forget, setHostname } from '../system/network.js'
+import * as bt from '../system/bluetooth.js'
+import { audioStatus, setVolume, setMute, setDefault } from '../system/audio.js'
+
+const DATA = dirname(resolve(process.env.HOMEOS_DB ?? './data/homeos.db'))
+const UPDATE_STATE = resolve(process.env.SMARTBOARD_UPDATE_STATE ?? `${DATA}/update.json`)
+const UPDATE_SETTINGS = resolve(`${DATA}/update-settings.json`)
+export const isDevice = () => process.env.SMARTBOARD_HAL === '1'
+
+const wrap = (category, fn) => async req => {
+  if (!isDevice()) throw new HttpError(409, 'hardware.unavailable')
+  try {
+    const r = await fn(req)
+    return r ?? { ok: true }
+  } catch (e) {
+    if (e instanceof HttpError) throw e
+    log(category, 'error', 'hardware.failed', { error: e.message }, req.user?.id)
+    throw new HttpError(422, 'hardware.failed', { message: e.message })
+  }
+}
+
+const body = (props, required = []) => ({ body: { type: 'object', required, properties: props } })
+
+export default async function hardwareModule(app) {
+  const s = (summary, extra = {}) => ({ tags: ['hardware'], summary, ...extra })
+  const manage = requirePerm('system.manage')
+
+  app.get('/hardware', { schema: s('Hardware capabilities of this device'), preHandler: requirePerm('system.view') }, async () => {
+    let storage = null
+    try { const f = statfsSync(DATA); storage = { total: f.blocks * f.bsize, free: f.bavail * f.bsize } } catch {}
+    let temp = null
+    try { temp = Number(readFileSync('/sys/class/thermal/thermal_zone0/temp', 'utf8')) / 1000 } catch {}
+    return {
+      device: isDevice(), storage, temperature: temp, pluginNetworkIsolation: canIsolateNetwork(),
+      tools: Object.fromEntries(['nmcli', 'bluetoothctl', 'wpctl', 'wlr-randr', 'ddcutil', 'systemctl'].map(c => [c, has(c)])),
+      display: getSetting('display') ?? { idle: 0, dim: 0, night: null },
+    }
+  })
+
+  app.put('/hardware/display/settings', {
+    schema: s('Idle / night settings', body({ idle: { type: 'integer', minimum: 0, maximum: 1440 }, dim: { type: 'integer', minimum: 0, maximum: 100 }, night: { type: ['object', 'null'] } })),
+    preHandler: manage,
+  }, async req => {
+    const cur = getSetting('display') ?? {}
+    setSetting('display', { ...cur, ...req.body })
+    return getSetting('display')
+  })
+
+  app.get('/hardware/display', { schema: s('Panels and outputs'), preHandler: requirePerm('system.view') }, wrap('system', () => displayStatus()))
+  app.post('/hardware/display/brightness', { schema: s('Set brightness', body({ id: { type: 'string' }, value: { type: 'number' } }, ['id', 'value'])), preHandler: requirePerm('dashboards.view') },
+    wrap('system', req => setBrightness(req.body.id, req.body.value)))
+  app.post('/hardware/display/power', { schema: s('Screen on/off (backlight / DDC)', body({ on: { type: 'boolean' } }, ['on'])), preHandler: requirePerm('dashboards.view') },
+    wrap('system', req => setPower(req.body.on)))
+  app.post('/hardware/display/output', { schema: s('Rotation / scale / mode', body({ name: { type: 'string' }, transform: { type: 'string' }, scale: { type: 'number' }, mode: { type: 'string' } }, ['name'])), preHandler: manage },
+    wrap('system', req => setOutput(req.body.name, req.body)))
+
+  app.get('/hardware/network', { schema: s('Network status'), preHandler: requirePerm('system.view') }, wrap('network', () => networkStatus()))
+  app.get('/hardware/network/wifi', { schema: s('Scan WiFi'), preHandler: manage }, wrap('network', () => wifiScan()))
+  app.post('/hardware/network/wifi', { schema: s('Connect WiFi', body({ ssid: { type: 'string', maxLength: 64 }, password: { type: 'string', maxLength: 128 }, hidden: { type: 'boolean' } }, ['ssid'])), preHandler: manage },
+    wrap('network', async req => { await wifiConnect(req.body.ssid, req.body.password, req.body.hidden); log('network', 'info', 'wifi.connected', { ssid: req.body.ssid }, req.user.id) }))
+  app.post('/hardware/network/radio', { schema: s('WiFi on/off', body({ on: { type: 'boolean' } }, ['on'])), preHandler: manage }, wrap('network', req => wifiRadio(req.body.on)))
+  app.delete('/hardware/network/connections/:uuid', { schema: s('Forget connection'), preHandler: manage }, wrap('network', req => forget(req.params.uuid)))
+  app.post('/hardware/network/hostname', { schema: s('Set hostname', body({ name: { type: 'string' } }, ['name'])), preHandler: manage }, wrap('network', req => setHostname(req.body.name)))
+
+  app.get('/hardware/bluetooth', { schema: s('Bluetooth status'), preHandler: requirePerm('system.view') }, wrap('bluetooth', () => bt.bluetoothStatus()))
+  app.post('/hardware/bluetooth/scan', { schema: s('Scan for devices'), preHandler: manage }, wrap('bluetooth', () => bt.scan(8)))
+  app.post('/hardware/bluetooth/power', { schema: s('Bluetooth on/off', body({ on: { type: 'boolean' } }, ['on'])), preHandler: manage }, wrap('bluetooth', req => bt.power(req.body.on)))
+  for (const action of ['pair', 'connect', 'disconnect', 'remove']) {
+    app.post(`/hardware/bluetooth/${action}`, { schema: s(`Bluetooth ${action}`, body({ address: { type: 'string' } }, ['address'])), preHandler: manage },
+      wrap('bluetooth', async req => { await bt[action](req.body.address); log('bluetooth', 'info', `bluetooth.${action}`, { address: req.body.address }, req.user.id) }))
+  }
+
+  app.get('/hardware/audio', { schema: s('Audio devices'), preHandler: requirePerm('system.view') }, wrap('system', () => audioStatus()))
+  app.post('/hardware/audio/volume', { schema: s('Volume', body({ id: { type: ['string', 'integer'] }, value: { type: 'number' } }, ['id', 'value'])), preHandler: requirePerm('dashboards.view') },
+    wrap('system', req => setVolume(req.body.id, req.body.value)))
+  app.post('/hardware/audio/mute', { schema: s('Mute', body({ id: { type: ['string', 'integer'] }, muted: { type: 'boolean' } }, ['id', 'muted'])), preHandler: requirePerm('dashboards.view') },
+    wrap('system', req => setMute(req.body.id, req.body.muted)))
+  app.post('/hardware/audio/default', { schema: s('Default device', body({ id: { type: 'integer' } }, ['id'])), preHandler: manage }, wrap('system', req => setDefault(req.body.id)))
+
+  app.post('/hardware/power', { schema: s('Reboot / power off / restart UI', body({ action: { type: 'string', enum: ['reboot', 'poweroff', 'restart-ui'] } }, ['action'])), preHandler: manage },
+    wrap('system', async req => {
+      log('system', 'warning', 'system.power', { action: req.body.action }, req.user.id)
+      const args = req.body.action === 'restart-ui' ? ['restart', 'smartboard-kiosk.service'] : [req.body.action]
+      setTimeout(() => run('systemctl', args, { timeout: 15000 }).catch(e => log('system', 'error', 'hardware.failed', { error: e.message })), 800)
+    }))
+
+  app.get('/hardware/update', { schema: s('OS/core update status'), preHandler: requirePerm('system.view') }, async () => {
+    let state = null
+    try { state = JSON.parse(readFileSync(UPDATE_STATE, 'utf8')) } catch {}
+    let settings = { channel: 'stable', auto: true }
+    try { settings = { ...settings, ...JSON.parse(readFileSync(UPDATE_SETTINGS, 'utf8')) } } catch {}
+    return { device: isDevice(), version: process.env.npm_package_version ?? null, state, settings }
+  })
+  app.put('/hardware/update', { schema: s('Update settings', body({ channel: { type: 'string', enum: ['stable', 'beta'] }, auto: { type: 'boolean' } })), preHandler: manage }, async req => {
+    let cur = {}
+    try { cur = JSON.parse(readFileSync(UPDATE_SETTINGS, 'utf8')) } catch {}
+    writeFileSync(UPDATE_SETTINGS, JSON.stringify({ ...cur, ...req.body }))
+    return { ok: true }
+  })
+  app.post('/hardware/update/check', { schema: s('Check and install update now'), preHandler: manage },
+    wrap('updates', async req => {
+      log('updates', 'info', 'update.requested', {}, req.user.id)
+      await run('systemctl', ['start', '--no-block', 'smartboard-update.service'], { timeout: 10000 })
+    }))
+}
+

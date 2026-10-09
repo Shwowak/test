@@ -1,0 +1,2 @@
+ACTION=="add", SUBSYSTEM=="backlight", RUN+="/bin/chgrp video /sys%p/brightness /sys%p/bl_power", RUN+="/bin/chmod g+w /sys%p/brightness /sys%p/bl_power"
+KERNEL=="i2c-[0-9]*", GROUP="i2c", MODE="0660"
