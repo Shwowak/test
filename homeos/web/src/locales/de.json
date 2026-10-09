@@ -1020,5 +1020,14 @@
     "code": "Zugangscode",
     "submit": "Öffnen",
     "wrong": "Code falsch"
+  },
+  "autogen": {
+    "title": "Automatisch erstellen",
+    "hint": "Erstellt eine Übersicht und je Raum ein Dashboard aus den erkannten Geräten. Räume werden aus Home Assistant (Bereiche) übernommen, Geräte automatisch einsortiert. Unwichtige Entitäten (Diagnose, Signalstärke …) werden ausgelassen.",
+    "preview": "{devices_used} von {devices_total} Geräten in {rooms} Räumen werden verwendet.",
+    "done": "{dashboards} Dashboards erstellt, {devices_used} Geräte in {rooms} Räume sortiert.",
+    "per_room": "Zusätzlich ein Dashboard pro Raum",
+    "run": "Dashboards erstellen",
+    "confirm": "Vorher automatisch erstellte Dashboards werden ersetzt. Fortfahren?"
   }
 }

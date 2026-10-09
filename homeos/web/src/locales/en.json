@@ -1020,5 +1020,14 @@
     "code": "Access code",
     "submit": "Open",
     "wrong": "Wrong code"
+  },
+  "autogen": {
+    "title": "Create automatically",
+    "hint": "Creates an overview and one dashboard per room from discovered devices. Rooms are taken from Home Assistant areas and devices sorted in automatically. Unimportant entities (diagnostics, signal strength …) are skipped.",
+    "preview": "{devices_used} of {devices_total} devices in {rooms} rooms will be used.",
+    "done": "{dashboards} dashboards created, {devices_used} devices sorted into {rooms} rooms.",
+    "per_room": "Also one dashboard per room",
+    "run": "Create dashboards",
+    "confirm": "Previously auto-created dashboards will be replaced. Continue?"
   }
 }

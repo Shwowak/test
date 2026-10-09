@@ -4,6 +4,7 @@ import { recordChange } from '../core/versions.js'
 import { log } from '../core/logger.js'
 import { WIDGET_TYPES, DASHBOARD_STYLES } from './registry.js'
 import { resolve, callService } from './sources-adapters.js'
+import { generate } from './autogen.js'
 
 const widgetRow = r => r && { ...r, config: json(r.config) }
 const sourceRow = r => r && { ...r, config: json(r.config) }
@@ -44,6 +45,15 @@ export default async function dashboardsModule(app) {
       .run(String(name || 'Dashboard'), String(icon || '◈'), pos, styleOf(style)).lastInsertRowid
     recordChange(req.user, 'dashboard', id, 'create', name)
     return getDashboard(id)
+  })
+
+  app.post('/dashboards/generate', {
+    schema: t('Auto-create dashboards from devices and rooms', { body: { type: 'object', properties: { replace: { type: 'boolean' }, rooms: { type: 'boolean' }, dryRun: { type: 'boolean' } } } }),
+    preHandler: [edit, requirePerm('devices.manage')],
+  }, async req => {
+    const r = generate(req.body ?? {})
+    if (!req.body?.dryRun) recordChange(req.user, 'dashboard', r.first, 'create', 'auto')
+    return r
   })
 
   app.put('/dashboards/:id', { schema: t('Update dashboard', { body: dashboardBody }), preHandler: edit }, async req => {

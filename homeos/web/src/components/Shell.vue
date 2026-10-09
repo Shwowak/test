@@ -17,7 +17,7 @@ import { voice } from '../speech.js'
 import Unlock from './Unlock.vue'
 import { features, loadFeatures } from '../features.js'
 import { computed as comp2 } from 'vue'
-import { startLive, stopLive, loadIntegrations } from '../devices.js'
+import { startLive, stopLive, loadIntegrations, loadDevices } from '../devices.js'
 import { onBeforeUnmount, watch } from 'vue'
 
 const { t } = useI18n()
@@ -139,8 +139,24 @@ function fullscreen() {
   else document.documentElement.requestFullscreen?.()
 }
 
-function newDashboard() {
+const autogen = ref(null)
+const autogenBusy = ref(false)
+const autogenRooms = ref(true)
+async function newDashboard() {
   dashForm.value = { name: '', icon: '◈', style: 'seamless' }
+  autogen.value = null
+  autogen.value = await api('POST', '/dashboards/generate', { dryRun: true }).catch(() => null)
+}
+async function runAutogen() {
+  autogenBusy.value = true
+  try {
+    const r = await api('POST', '/dashboards/generate', { rooms: autogenRooms.value, replace: true })
+    autogen.value = { ...r, done: true }
+    await loadDashboards()
+    if (r.first) select(r.first)
+    dashForm.value = null
+    loadDevices().catch(() => {})
+  } finally { autogenBusy.value = false }
 }
 function editDashboard() {
   dashForm.value = { ...active.value }
@@ -254,6 +270,16 @@ const icons = ['⌂', '◈', '⚡', '☀', '♨', '☎', '♫', '⚙', '⛨', '�
           <button class="btn primary">{{ t('common.save') }}</button>
         </div>
       </form>
+      <div v-if="!dashForm.id" class="autogen">
+        <div class="label sec">{{ t('autogen.title') }}</div>
+        <p class="hint">{{ t('autogen.hint') }}</p>
+        <p v-if="autogen" class="hint">{{ autogen.done ? t('autogen.done', autogen) : t('autogen.preview', autogen) }}</p>
+        <label class="check"><input v-model="autogenRooms" type="checkbox"> {{ t('autogen.per_room') }}</label>
+        <div class="row">
+          <span class="grow" />
+          <button type="button" class="btn primary" :disabled="autogenBusy" @click="runAutogen">✦ {{ t('autogen.run') }}</button>
+        </div>
+      </div>
     </Sheet>
   </div>
 </template>
