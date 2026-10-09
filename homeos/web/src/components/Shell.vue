@@ -16,6 +16,7 @@ import { startIdle, kiosk } from '../display.js'
 import Assistant from './assistant/Assistant.vue'
 import { voice } from '../speech.js'
 import Unlock from './Unlock.vue'
+import Suggest from './Suggest.vue'
 import { features, loadFeatures } from '../features.js'
 import { computed as comp2 } from 'vue'
 import { startLive, stopLive, loadIntegrations, loadDevices } from '../devices.js'
@@ -34,6 +35,16 @@ function requireAdmin(action, perm) {
 function runAction(action) {
   if (action === 'settings') showSettings.value = true
   else if (action === 'edit') editing.value = !editing.value
+  else if (action === 'autogen') applySuggest()
+}
+const suggest = ref(null)
+async function applySuggest() {
+  const r = await api('POST', '/dashboards/generate', { rooms: true, replace: true }).catch(() => null)
+  if (!r) return
+  await loadDashboards()
+  if (r.first) select(r.first)
+  loadDevices().catch(() => {})
+  suggest.value?.refresh()
 }
 function onUnlocked(u) {
   const pending = unlock.value
@@ -199,7 +210,6 @@ const icons = ['⌂', '◈', '⚡', '☀', '♨', '☎', '♫', '⚙', '⛨', '�
       <button v-if="can('devices.view') && !isViewer" class="tab" :class="{ on: view === 'devices' }" @click="view = 'devices'; editing = false"><span class="ico">▦</span><span class="nm">{{ t('nav.devices') }}</span></button>
       <button v-if="can('automations.view') && features.automations && !isViewer" class="tab" :class="{ on: view === 'automations' }" @click="view = 'automations'; editing = false"><span class="ico">⟳</span><span class="nm">{{ t('nav.automations') }}</span></button>
       <button v-if="can('ai.use') && features.assistant" class="tab" @click="assistant = { listen: false }"><span class="ico">✦</span><span class="nm">{{ t('nav.assistant') }}</span></button>
-      <button v-if="can('sources.view')" class="tab" @click="showSources = true"><span class="ico">⌬</span><span class="nm">{{ t('nav.sources') }}</span></button>
       <button class="tab" @click="requireAdmin('settings', 'system.view')"><span class="ico">{{ isViewer ? '🔒' : '⚙' }}</span><span class="nm">{{ t('nav.settings') }}</span></button>
       <button v-if="!kiosk" class="tab" @click="fullscreen"><span class="ico">⛶</span><span class="nm">{{ t('nav.fullscreen') }}</span></button>
       <button v-if="!isViewer" class="tab" @click="emit('logout')"><span class="ico">{{ features.viewer ? '🔒' : '⏻' }}</span><span class="nm">{{ features.viewer ? t('nav.lock') : t('nav.logout') }}</span></button>
@@ -225,6 +235,7 @@ const icons = ['⌂', '◈', '⚡', '☀', '♨', '☎', '♫', '⚙', '⛨', '�
         </div>
       </header>
 
+      <Suggest v-if="view === 'dashboard' && !editing" ref="suggest" @apply="requireAdmin('autogen', 'dashboards.edit')" />
       <DevicesView v-if="view === 'devices'" />
       <AutomationsView v-else-if="view === 'automations'" />
       <Board v-else-if="active && meta" :key="active.id" :dashboard="active" :editing="editing" :meta="meta" :sources="sources" />

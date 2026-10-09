@@ -1,5 +1,6 @@
 import { db, json } from '../core/db.js'
 import { notFound, badRequest, requirePerm, HttpError } from '../core/http.js'
+import { can } from '../core/auth.js'
 import { recordChange } from '../core/versions.js'
 import { log } from '../core/logger.js'
 import { WIDGET_TYPES, DASHBOARD_STYLES } from './registry.js'
@@ -49,8 +50,9 @@ export default async function dashboardsModule(app) {
 
   app.post('/dashboards/generate', {
     schema: t('Auto-create dashboards from devices and rooms', { body: { type: 'object', properties: { replace: { type: 'boolean' }, rooms: { type: 'boolean' }, dryRun: { type: 'boolean' } } } }),
-    preHandler: [edit, requirePerm('devices.manage')],
+    preHandler: view,
   }, async req => {
+    if (!req.body?.dryRun && !(can(req.user, 'dashboards.edit') && can(req.user, 'devices.manage'))) throw new HttpError(403, 'forbidden')
     const r = generate(req.body ?? {})
     if (!req.body?.dryRun) recordChange(req.user, 'dashboard', r.first, 'create', 'auto')
     return r

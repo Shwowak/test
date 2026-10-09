@@ -659,7 +659,12 @@
     },
     "admin_timeout": "Nach Änderungen automatisch sperren nach (min, 0 = nie)",
     "network_code": "Zugangscode fürs Netzwerk (optional – Geräte im Heimnetz müssen ihn einmal eingeben, am Display nie)",
-    "network_code_ph": "leer = kein Code"
+    "network_code_ph": "leer = kein Code",
+    "theme": "Design",
+    "themes": {
+      "apple": "Apple (klar, ruhig)",
+      "neon": "Neon (Sci-Fi)"
+    }
   },
   "notifications": {
     "title": "Meldungen",
@@ -1048,5 +1053,14 @@
     "badge": "EINSATZ",
     "end": "Beenden",
     "map": "Karte öffnen"
+  },
+  "suggest": {
+    "title": "{n} Geräte erkannt – Dashboards vorschlagen?",
+    "sub": "{d} fertige Dashboards in {r} Räumen, mit deinen echten Werten.",
+    "view": "Vorschau",
+    "later": "Später",
+    "preview": "Vorschlag",
+    "clock": "Uhrzeit",
+    "apply": "Übernehmen"
   }
 }

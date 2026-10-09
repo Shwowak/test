@@ -11,7 +11,7 @@ const grad = (dir, stops) => new echarts.graphic.LinearGradient(...(dir === 'h' 
 function neonLine(values, c1, c2, width = 3) {
   return {
     type: 'line', data: values, smooth: 0.45, symbol: 'none',
-    lineStyle: { width, color: grad('h', [c1, c2]), shadowColor: c1, shadowBlur: 18 },
+    lineStyle: { width, color: grad('h', [c1, c2]), shadowColor: c1, shadowBlur: document.documentElement.classList.contains('theme-apple') ? 0 : 18 },
     areaStyle: { color: grad('v', [c1 + '55', c1 + '00']) },
   }
 }
@@ -27,11 +27,11 @@ useChart(el, () => {
     series = [{
       type: 'bar', data: values.map((v, i) => {
         const col = SPECTRUM[i % SPECTRUM.length]
-        return { value: v, itemStyle: { color: grad('v', [col, col + '10']), shadowColor: col, shadowBlur: 12 } }
+        return { value: v, itemStyle: { color: grad('v', [col, col + '10']), shadowColor: col, shadowBlur: document.documentElement.classList.contains('theme-apple') ? 0 : 12 } }
       }), barWidth: '45%',
     }]
   } else if (style === 'bar') {
-    series = [{ type: 'bar', data: values, barWidth: '35%', itemStyle: { color: grad('v', [color, color + '10']), shadowColor: color, shadowBlur: 12 } }]
+    series = [{ type: 'bar', data: values, barWidth: '35%', itemStyle: { color: grad('v', [color, color + '10']), shadowColor: color, shadowBlur: document.documentElement.classList.contains('theme-apple') ? 0 : 12 } }]
   } else if (style === 'wave') {
     const shadow = values.map((v, i) => Number(((values[(i + 2) % values.length] ?? v) * 0.75).toFixed(2)))
     series = [neonLine(shadow, '#3B82F6', '#8B5CF6', 2), neonLine(values, color, '#8B5CF6', 3)]

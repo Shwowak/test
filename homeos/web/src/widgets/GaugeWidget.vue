@@ -18,7 +18,7 @@ useChart(el, () => {
       endAngle: -40,
       radius: '95%',
       center: ['50%', '58%'],
-      progress: { show: true, width: 14, roundCap: true, itemStyle: { color, shadowColor: color, shadowBlur: 18 } },
+      progress: { show: true, width: 14, roundCap: true, itemStyle: { color, shadowColor: color, shadowBlur: document.documentElement.classList.contains('theme-apple') ? 0 : 18 } },
       axisLine: { lineStyle: { width: 14, color: [[1, 'rgba(148,163,184,0.12)']] }, roundCap: true },
       pointer: { show: false },
       axisTick: { show: false },

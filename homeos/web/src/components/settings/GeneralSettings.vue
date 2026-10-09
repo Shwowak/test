@@ -3,7 +3,7 @@ import { ref, onMounted, inject } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { api } from '../../api.js'
 import { errorText } from '../../i18n.js'
-import { loadFeatures } from '../../features.js'
+import { loadFeatures, applyTheme } from '../../features.js'
 
 const { t, d } = useI18n()
 const user = inject('user')
@@ -26,6 +26,12 @@ async function load() {
   if (canEdit()) users.value = await api('GET', '/users').catch(() => [])
 }
 onMounted(load)
+
+async function setTheme(v) {
+  s.value.theme = v
+  applyTheme(v)
+  await api('PUT', '/settings', { theme: v }).catch(e => { msg.value = errorText(e) })
+}
 
 async function save() {
   msg.value = ''
@@ -57,6 +63,10 @@ function locate() {
     </div>
     <p class="sun">☀ {{ t('general.sunrise') }} {{ s.sun.sunrise ? d(new Date(s.sun.sunrise), 'long') : '—' }}<br>☾ {{ t('general.sunset') }} {{ s.sun.sunset ? d(new Date(s.sun.sunset), 'long') : '—' }}</p>
     <template v-if="canEdit()">
+      <h3>{{ t('general.theme') }}</h3>
+      <div class="row">
+        <button v-for="v in ['apple', 'neon']" :key="v" type="button" class="btn" :class="{ active: (s.theme ?? 'apple') === v }" @click="setTheme(v)">{{ t('general.themes.' + v) }}</button>
+      </div>
       <h3>{{ t('general.features') }}</h3>
       <p class="sun">{{ t('general.features_hint') }}</p>
       <label v-for="k in ['control', 'automations', 'assistant', 'cameras']" :key="k" class="chk"><input v-model="feats[k]" type="checkbox"> {{ t('general.feature.' + k) }}</label>

@@ -13,6 +13,8 @@ import HardwareSettings from './HardwareSettings.vue'
 import AiSettings from './AiSettings.vue'
 import CamerasSettings from './CamerasSettings.vue'
 import AlarmSettings from './AlarmSettings.vue'
+import SourceManager from '../SourceManager.vue'
+import { api } from '../../api.js'
 import { features } from '../../features.js'
 
 defineProps({ meta: Object })
@@ -40,6 +42,9 @@ const tabs = computed(() => [
   { id: 'update', icon: '⇣', show: can('system.view') },
 ].filter(x => x.show))
 const tab = ref('profile')
+const sources = ref([])
+const loadSources = async () => { sources.value = can('sources.view') ? await api('GET', '/sources').catch(() => []) : [] }
+loadSources()
 </script>
 
 <template>
@@ -52,7 +57,13 @@ const tab = ref('profile')
     <div class="pane">
       <ProfileSettings v-if="tab === 'profile'" :meta="meta" />
       <GeneralSettings v-else-if="tab === 'general'" />
-      <IntegrationsSettings v-else-if="tab === 'integrations'" />
+      <template v-else-if="tab === 'integrations'">
+        <IntegrationsSettings />
+        <details v-if="can('sources.view') && meta" class="adv">
+          <summary>{{ t('sources.title') }}</summary>
+          <SourceManager :meta="meta" :sources="sources" @changed="loadSources" />
+        </details>
+      </template>
       <HardwareSettings v-else-if="['display', 'network', 'bluetooth', 'audio', 'update'].includes(tab)" :section="tab" />
       <AiSettings v-else-if="tab === 'assistant'" />
       <CamerasSettings v-else-if="tab === 'cameras'" />
@@ -67,6 +78,8 @@ const tab = ref('profile')
 </template>
 
 <style scoped>
+.adv { margin-top: 28px; }
+.adv summary { cursor: pointer; color: var(--dim); font-weight: 600; padding: 12px 0; }
 .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
 .tabs .btn { font-size: 16px; }
 </style>

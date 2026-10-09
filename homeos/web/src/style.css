@@ -181,3 +181,82 @@ input[type='range']::-moz-range-thumb { width: 32px; height: 32px; border: 0; bo
 
 .keynav :focus { outline: 3px solid var(--cyan) !important; outline-offset: 2px; box-shadow: 0 0 18px rgba(34, 211, 238, .55) !important; }
 :focus-visible { outline: 3px solid var(--cyan); outline-offset: 2px; }
+
+/* ── Apple-Design ─────────────────────────────────────────── */
+.theme-apple {
+  --bg: #000;
+  --bg2: #1c1c1e;
+  --glass: rgba(44, 44, 46, 0.62);
+  --glass-strong: rgba(28, 28, 30, 0.94);
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.18);
+  --text: #f5f5f7;
+  --dim: #98989d;
+  --cyan: #0a84ff;
+  --blue: #0a84ff;
+  --magenta: #ff375f;
+  --violet: #bf5af2;
+  --gold: #ff9f0a;
+  --ok: #30d158;
+  --warn: #ffd60a;
+  --err: #ff453a;
+  --radius: 22px;
+  --font: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Inter', 'Helvetica Neue', system-ui, sans-serif;
+}
+.theme-apple body, .theme-apple {
+  background:
+    radial-gradient(1100px 760px at 85% -10%, rgba(10, 132, 255, 0.28), transparent 62%),
+    radial-gradient(900px 700px at -10% 110%, rgba(191, 90, 242, 0.22), transparent 60%),
+    radial-gradient(800px 600px at 50% 60%, rgba(255, 159, 10, 0.07), transparent 70%),
+    linear-gradient(180deg, #0d0d12, #000);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.01em;
+}
+.theme-apple body::before, .theme-apple body::after { display: none; }
+.theme-apple *:not(.dot) { text-shadow: none !important; }
+
+.theme-apple .btn {
+  border: 0;
+  border-radius: 14px;
+  background: rgba(118, 118, 128, 0.24);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  font-weight: 500;
+  box-shadow: none;
+}
+.theme-apple .btn:hover { background: rgba(118, 118, 128, 0.32); }
+.theme-apple .btn.primary { background: #0a84ff; color: #fff; box-shadow: none; font-weight: 600; }
+.theme-apple .btn.active { background: #f5f5f7; color: #000; box-shadow: none; }
+.theme-apple .btn.danger { background: rgba(255, 69, 58, 0.18); color: #ff453a; }
+
+.theme-apple .field label, .theme-apple .label { text-transform: none; letter-spacing: 0; font-size: 14px; font-weight: 600; color: var(--dim); }
+.theme-apple .field input, .theme-apple .field select, .theme-apple .field textarea { border: 0; border-radius: 12px; background: rgba(118, 118, 128, 0.2); }
+.theme-apple .field input:focus, .theme-apple .field select:focus, .theme-apple .field textarea:focus { box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.55); }
+
+.theme-apple .grid-stack-item-content,
+.theme-apple .style-tiles .grid-stack-item-content,
+.theme-apple .style-glass .grid-stack-item-content {
+  inset: 6px !important;
+  border: 0;
+  border-radius: var(--radius);
+  background: rgba(44, 44, 46, 0.55);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
+}
+.theme-apple .style-tiles .grid-stack-item-content::after { display: none; }
+.theme-apple .grid-stack-placeholder > .placeholder-content { border: 2px dashed rgba(255, 255, 255, 0.3) !important; border-radius: var(--radius); background: rgba(255, 255, 255, 0.04) !important; }
+.theme-apple .grid-stack > .grid-stack-item > .ui-resizable-se::after { border-color: rgba(255, 255, 255, 0.5); }
+
+.theme-apple input[type='range'] { height: 28px; border-radius: 14px; background: rgba(118, 118, 128, 0.3); }
+.theme-apple input[type='range']::-webkit-slider-thumb { width: 28px; height: 28px; background: #fff; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35); }
+.theme-apple input[type='range']::-moz-range-thumb { width: 28px; height: 28px; background: #fff; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35); }
+
+.theme-apple .keynav :focus { outline: 3px solid #0a84ff !important; box-shadow: 0 0 0 6px rgba(10, 132, 255, 0.25) !important; }
+.theme-apple :focus-visible { outline-color: #0a84ff; }
+.theme-apple .lite .sheet, .lite.theme-apple .sheet { background: #1c1c1e !important; }
+.theme-apple .grid-stack .v, .theme-apple .grid-stack .t, .theme-apple .grid-stack .val { font-family: var(--font) !important; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+.theme-apple .grid-stack .v { font-weight: 600 !important; }
+.theme-apple .grid-stack .title::before { display: none !important; }
+.theme-apple .grid-stack .title { text-transform: none !important; letter-spacing: 0 !important; font-size: 15px !important; font-weight: 600 !important; color: var(--dim) !important; }

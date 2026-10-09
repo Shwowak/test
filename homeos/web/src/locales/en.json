@@ -659,7 +659,12 @@
     },
     "admin_timeout": "Lock automatically after changes (min, 0 = never)",
     "network_code": "Network access code (optional – devices on the home network enter it once, never on the display)",
-    "network_code_ph": "empty = no code"
+    "network_code_ph": "empty = no code",
+    "theme": "Design",
+    "themes": {
+      "apple": "Apple (clean)",
+      "neon": "Neon (sci-fi)"
+    }
   },
   "notifications": {
     "title": "Notifications",
@@ -1048,5 +1053,14 @@
     "badge": "ALARM",
     "end": "End",
     "map": "Open map"
+  },
+  "suggest": {
+    "title": "{n} devices found – suggest dashboards?",
+    "sub": "{d} ready-made dashboards in {r} rooms, with your real values.",
+    "view": "Preview",
+    "later": "Later",
+    "preview": "Suggestion",
+    "clock": "Time",
+    "apply": "Apply"
   }
 }
