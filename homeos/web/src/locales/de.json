@@ -523,7 +523,8 @@
   "adapters": {
     "home_assistant": "Home Assistant",
     "mqtt": "MQTT (Zigbee2MQTT, Tasmota, ESPHome …)",
-    "rest": "REST / HTTP"
+    "rest": "REST / HTTP",
+    "modbus": "Modbus TCP (Wechselrichter, Zähler, Wallbox)"
   },
   "integrations": {
     "add": "Integration hinzufügen",
@@ -557,7 +558,10 @@
     "password": "Passwort",
     "discovery_prefix": "Discovery-Präfix",
     "headers": "Header (JSON)",
-    "interval": "Abfrageintervall (Sekunden)"
+    "interval": "Abfrageintervall (Sekunden)",
+    "host": "Host / IP",
+    "port": "Port (502)",
+    "unit_id": "Unit-ID (Standard 1)"
   },
   "integrationPlaceholders": {
     "home_assistant": {
@@ -577,11 +581,24 @@
     "on_value": "Wert für „An“",
     "on_url": "URL zum Einschalten",
     "off_url": "URL zum Ausschalten",
-    "method": "HTTP-Methode"
+    "method": "HTTP-Methode",
+    "table": "Registertyp",
+    "address": "Adresse",
+    "datatype": "Datentyp",
+    "word_order": "Wortreihenfolge",
+    "scale": "Faktor (z. B. 0.1)",
+    "unit_id": "Unit-ID (Slave)"
   },
   "restOptions": {
     "sensor": "Sensor",
-    "switch": "Schalter"
+    "switch": "Schalter",
+    "binary": "Kontakt",
+    "holding": "Holding-Register",
+    "input": "Input-Register",
+    "coil": "Coil",
+    "discrete": "Discrete Input",
+    "big": "Big-Endian",
+    "little": "Little-Endian (Wörter getauscht)"
   },
   "general": {
     "place": "Ort",

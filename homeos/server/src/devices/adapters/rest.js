@@ -25,6 +25,8 @@ export default class RestAdapter {
   ]
 
   static manualDevices = true
+  static deviceFields = REST_DEVICE_FIELDS
+  static definition = restDefinition
 
   constructor(integration, ctx) {
     this.cfg = integration.config

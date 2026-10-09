@@ -4,9 +4,10 @@ import { log } from '../core/logger.js'
 import { validateCommand } from './model.js'
 import HomeAssistantAdapter from './adapters/homeassistant.js'
 import MqttAdapter from './adapters/mqtt.js'
+import ModbusAdapter from './adapters/modbus.js'
 import RestAdapter from './adapters/rest.js'
 
-export const ADAPTERS = { home_assistant: HomeAssistantAdapter, mqtt: MqttAdapter, rest: RestAdapter }
+export const ADAPTERS = { home_assistant: HomeAssistantAdapter, mqtt: MqttAdapter, rest: RestAdapter, modbus: ModbusAdapter }
 
 const SECRET_KEYS = new Set(Object.values(ADAPTERS).flatMap(A => A.fields.filter(f => f.type === 'secret').map(f => f.key)))
 export const redactConfig = c => Object.fromEntries(Object.entries(c).map(([k, v]) => [k, SECRET_KEYS.has(k) && v ? '••••••' : v]))

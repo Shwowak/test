@@ -10,7 +10,7 @@ import {
   ADAPTERS, deviceRow, integrationRow, redactConfig, mergeConfigSecrets, startIntegration, stopIntegration,
   integrationStatus, getDevice, commandDevice, testIntegration, invalidate,
 } from '../devices/engine.js'
-import { REST_DEVICE_FIELDS, restDefinition } from '../devices/adapters/rest.js'
+import { REST_DEVICE_FIELDS } from '../devices/adapters/rest.js'
 
 const withLive = r => {
   const d = deviceRow(r)
@@ -135,10 +135,11 @@ export default async function devicesModule(app) {
     preHandler: manage,
   }, async req => {
     const i = integrationRow(db.prepare('SELECT * FROM integrations WHERE id = ?').get(req.body.integration_id))
-    if (!i || !ADAPTERS[i.adapter]?.manualDevices) throw badRequest('integration.no_manual_devices')
+    const A = ADAPTERS[i?.adapter]
+    if (!A?.manualDevices) throw badRequest('integration.no_manual_devices')
     const m = req.body.meta
-    if (!m.state_url) throw badRequest('validation')
-    const def = restDefinition(m)
+    if (A.deviceFields.some(f => f.required && (m[f.key] ?? '') === '')) throw badRequest('validation')
+    const def = A.definition(m)
     const id = db.prepare(`INSERT INTO devices (integration_id, native_id, name, type, capabilities, meta, room_id, adopted)
       VALUES (?, ?, ?, ?, ?, ?, ?, 1)`).run(i.id, `manual-${Date.now()}`, req.body.name, def.type, JSON.stringify(def.capabilities), JSON.stringify(m), req.body.room_id ?? null).lastInsertRowid
     recordChange(req.user, 'device', id, 'create', req.body.name)
@@ -205,7 +206,7 @@ export default async function devicesModule(app) {
 
   app.get('/devices/meta/registry', { schema: tD('Device types, capability kinds, adapters') , preHandler: view }, async () => ({
     types: DEVICE_TYPES, capabilities: CAPABILITY_KINDS,
-    adapters: Object.fromEntries(Object.entries(ADAPTERS).map(([k, A]) => [k, { fields: A.fields, manualDevices: !!A.manualDevices }])),
+    adapters: Object.fromEntries(Object.entries(ADAPTERS).map(([k, A]) => [k, { fields: A.fields, manualDevices: !!A.manualDevices, deviceFields: A.deviceFields ?? [] }])),
     restDeviceFields: REST_DEVICE_FIELDS,
   }))
 

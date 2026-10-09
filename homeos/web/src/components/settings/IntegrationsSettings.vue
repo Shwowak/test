@@ -20,7 +20,7 @@ onMounted(async () => {
 
 const adapters = computed(() => store.registry?.adapters ?? {})
 const fields = computed(() => form.value ? adapters.value[form.value.adapter]?.fields ?? [] : [])
-const manualFields = computed(() => (store.registry?.restDeviceFields ?? []).filter(f => !f.for || f.for.includes(manual.value?.meta.kind)))
+const manualFields = computed(() => (adapters.value[manual.value?.adapter]?.deviceFields ?? []).filter(f => !f.for || f.for.includes(manual.value?.meta.kind)))
 
 function create(adapter) {
   form.value = { adapter, name: t('adapters.' + adapter), config: adapter === 'mqtt' ? { discovery_prefix: 'homeassistant' } : adapter === 'rest' ? { interval: 30 } : {}, enabled: true }
@@ -73,12 +73,14 @@ async function remove() {
 }
 
 function addManual(i) {
-  manual.value = { integration_id: i.id, name: '', room_id: null, meta: { kind: 'sensor', method: 'POST' } }
+  manual.value = { integration_id: i.id, adapter: i.adapter, name: '', room_id: null, meta: i.adapter === 'modbus' ? { kind: 'sensor', table: 'holding', address: 0, datatype: 'uint16', word_order: 'big' } : { kind: 'sensor', method: 'POST' } }
 }
 async function saveManual() {
   error.value = ''
   try {
-    await api('POST', '/devices', manual.value)
+    const { adapter, ...body } = manual.value
+    if (adapter === 'modbus') for (const k of ['address', 'scale', 'unit_id']) if (body.meta[k] !== '' && body.meta[k] != null) body.meta[k] = Number(body.meta[k])
+    await api('POST', '/devices', body)
     manual.value = null
     await Promise.all([loadIntegrations(), loadDevices()])
   } catch (e) {
@@ -99,7 +101,7 @@ async function saveManual() {
       <div v-for="f in manualFields" :key="f.key" class="field">
         <label>{{ t('restFields.' + f.key) }}</label>
         <select v-if="f.type === 'select'" v-model="manual.meta[f.key]"><option v-for="o in f.options" :key="o" :value="o">{{ t('restOptions.' + o, o) }}</option></select>
-        <input v-else v-model="manual.meta[f.key]" :type="f.type === 'url' ? 'url' : 'text'" :required="f.required">
+        <input v-else v-model="manual.meta[f.key]" :type="f.type === 'url' ? 'url' : f.type === 'number' ? 'number' : 'text'" step="any" :required="f.required">
       </div>
       <p v-if="error" class="error">{{ error }}</p>
       <div class="row">
