@@ -23,7 +23,8 @@ async function pair(d) {
 }
 const inst = getCurrentInstance()
 onMounted(async () => {
-  inst?.proxy?.$el?.scrollIntoView?.({ behavior: 'smooth', block: 'start' }) await run('load', () => api('GET', '/setup/bluetooth')); if (st.value?.available) scan() })
+  inst?.proxy?.$el?.scrollIntoView?.({ behavior: 'smooth', block: 'start' })
+  await run('load', () => api('GET', '/setup/bluetooth')); if (st.value?.available) scan() })
 </script>
 
 <template>
