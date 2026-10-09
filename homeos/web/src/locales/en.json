@@ -550,7 +550,14 @@
     "sunrise": "Sunrise",
     "sunset": "Sunset",
     "locate": "Detect location",
-    "saved": "Saved."
+    "saved": "Saved.",
+    "autologin": "Sign-in",
+    "autologin_user": "Start without password as",
+    "autologin_off": "Off – sign-in required",
+    "autologin_scope": "Applies to",
+    "scope_device": "SmartBoard display only",
+    "scope_lan": "all devices on the home network",
+    "autologin_warn": "Everyone on the home network gets admin rights. Better pick a user with role “User” or “Restricted”."
   },
   "notifications": {
     "title": "Notifications",

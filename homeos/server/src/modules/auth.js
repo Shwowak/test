@@ -1,8 +1,9 @@
 import { db } from '../core/db.js'
 import {
   verifySecret, hashSecret, createSession, publicUser, loginBlocked, loginFailed, loginSucceeded,
-  passwordProblem, pinProblem, SESSION_DAYS, can,
+  passwordProblem, pinProblem, SESSION_DAYS, can, userFromToken,
 } from '../core/auth.js'
+import { getSetting, isLanIp, isLocalIp } from '../core/settings.js'
 import { HttpError, badRequest, requirePerm } from '../core/http.js'
 import { log } from '../core/logger.js'
 import { LOCALES } from './registry.js'
@@ -33,7 +34,7 @@ export default async function authModule(app) {
   })
 
   const setupNeeded = () => db.prepare('SELECT COUNT(*) c FROM users').get().c === 0
-  const local = ip => ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(ip)
+  const local = isLocalIp
 
   app.get('/auth/setup', { schema: { tags: ['auth'], summary: 'First-run setup needed?' }, config: { public: true } },
     async req => ({ needed: setupNeeded(), local: local(req.ip) }))
@@ -68,7 +69,17 @@ export default async function authModule(app) {
     return { ok: true }
   })
 
-  app.get('/auth/me', { schema: { tags: ['auth'] } }, async req => publicUser(req.user))
+  app.get('/auth/me', { schema: { tags: ['auth'], summary: 'Current user (or automatic login if enabled)' }, config: { public: true } }, async (req, reply) => {
+    const session = userFromToken(req.cookies.homeos_session)
+    if (session) return publicUser(session)
+    const auto = getSetting('autologin')
+    const allowed = auto?.user_id && (auto.scope === 'lan' ? isLanIp(req.ip) : isLocalIp(req.ip))
+    const user = allowed && db.prepare('SELECT * FROM users WHERE id = ? AND disabled = 0').get(auto.user_id)
+    if (!user) throw new HttpError(401, 'unauthorized')
+    reply.setCookie('homeos_session', createSession(user.id), { path: '/', httpOnly: true, sameSite: 'strict', secure, maxAge: SESSION_DAYS * 86400 })
+    log('auth', 'info', 'login.auto', { name: user.name, ip: req.ip }, user.id)
+    return publicUser(user)
+  })
 
   app.put('/auth/me', {
     schema: {

@@ -550,7 +550,14 @@
     "sunrise": "Sonnenaufgang",
     "sunset": "Sonnenuntergang",
     "locate": "Standort ermitteln",
-    "saved": "Gespeichert."
+    "saved": "Gespeichert.",
+    "autologin": "Anmeldung",
+    "autologin_user": "Ohne Passwort starten als",
+    "autologin_off": "Aus – Anmeldung nötig",
+    "autologin_scope": "Gilt für",
+    "scope_device": "nur am SmartBoard-Display",
+    "scope_lan": "alle Geräte im Heimnetz",
+    "autologin_warn": "Jeder im Heimnetz hat dann Admin-Rechte. Besser einen Benutzer mit Rolle „Benutzer“ oder „Eingeschränkt“ wählen."
   },
   "notifications": {
     "title": "Meldungen",

@@ -95,6 +95,7 @@ export default async function automationsModule(app) {
     schema: tS('Update general settings', { body: { type: 'object', properties: {
       location: { type: 'object', required: ['lat', 'lon'], properties: { lat: { type: 'number', minimum: -90, maximum: 90 }, lon: { type: 'number', minimum: -180, maximum: 180 }, name: { type: 'string', maxLength: 80 } } },
       timezone: { type: 'string', maxLength: 64 },
+      autologin: { type: ['object', 'null'], properties: { user_id: { type: 'integer' }, scope: { type: 'string', enum: ['device', 'lan'] } } },
     } } }),
     preHandler: requirePerm('users.manage'),
   }, async req => {
@@ -103,6 +104,11 @@ export default async function automationsModule(app) {
       setSetting('timezone', req.body.timezone)
     }
     if (req.body.location) setSetting('location', req.body.location)
+    if (req.body.autologin !== undefined) {
+      const a = req.body.autologin
+      if (a?.user_id && !db.prepare('SELECT id FROM users WHERE id = ?').get(a.user_id)) throw badRequest('user.not_found')
+      setSetting('autologin', a?.user_id ? { user_id: a.user_id, scope: a.scope ?? 'device' } : null)
+    }
     recordChange(req.user, 'settings', null, 'update')
     return allSettings()
   })

@@ -10,14 +10,20 @@ const canEdit = () => user.value?.permissions?.includes('users.manage')
 const s = ref(null)
 const msg = ref('')
 const zones = Intl.supportedValuesOf?.('timeZone') ?? []
+const users = ref([])
+const auto = ref({ user_id: null, scope: 'device' })
 
-async function load() { s.value = await api('GET', '/settings') }
+async function load() {
+  s.value = await api('GET', '/settings')
+  auto.value = { user_id: s.value.autologin?.user_id ?? null, scope: s.value.autologin?.scope ?? 'device' }
+  if (canEdit()) users.value = await api('GET', '/users').catch(() => [])
+}
 onMounted(load)
 
 async function save() {
   msg.value = ''
   try {
-    await api('PUT', '/settings', { timezone: s.value.timezone, location: { name: s.value.location.name ?? '', lat: Number(s.value.location.lat), lon: Number(s.value.location.lon) } })
+    await api('PUT', '/settings', { autologin: auto.value.user_id ? auto.value : null, timezone: s.value.timezone, location: { name: s.value.location.name ?? '', lat: Number(s.value.location.lat), lon: Number(s.value.location.lon) } })
     await load()
     msg.value = t('general.saved')
   } catch (e) { msg.value = errorText(e) }
@@ -42,6 +48,20 @@ function locate() {
       <select v-model="s.timezone" :disabled="!canEdit()"><option v-for="z in zones" :key="z" :value="z">{{ z }}</option></select>
     </div>
     <p class="sun">☀ {{ t('general.sunrise') }} {{ s.sun.sunrise ? d(new Date(s.sun.sunrise), 'long') : '—' }}<br>☾ {{ t('general.sunset') }} {{ s.sun.sunset ? d(new Date(s.sun.sunset), 'long') : '—' }}</p>
+    <template v-if="canEdit()">
+      <h3>{{ t('general.autologin') }}</h3>
+      <div class="two">
+        <div class="field">
+          <label>{{ t('general.autologin_user') }}</label>
+          <select v-model="auto.user_id"><option :value="null">{{ t('general.autologin_off') }}</option><option v-for="u in users" :key="u.id" :value="u.id">{{ u.display_name || u.name }} ({{ t('roles.' + u.role) }})</option></select>
+        </div>
+        <div class="field">
+          <label>{{ t('general.autologin_scope') }}</label>
+          <select v-model="auto.scope" :disabled="!auto.user_id"><option value="device">{{ t('general.scope_device') }}</option><option value="lan">{{ t('general.scope_lan') }}</option></select>
+        </div>
+      </div>
+      <p v-if="auto.user_id && auto.scope === 'lan' && users.find(u => u.id === auto.user_id)?.role === 'admin'" class="warn">⚠ {{ t('general.autologin_warn') }}</p>
+    </template>
     <div v-if="canEdit()" class="row">
       <button type="button" class="btn" @click="locate">⌖ {{ t('general.locate') }}</button>
       <span class="grow" />
@@ -57,4 +77,6 @@ function locate() {
 .row { display: flex; gap: 12px; }
 .grow { flex: 1; }
 .msg { color: var(--cyan); }
+.warn { color: var(--warn); }
+h3 { font-weight: 400; margin: 22px 0 8px; }
 </style>
