@@ -17,6 +17,22 @@ if (kiosk) {
   window.addEventListener('pointerdown', e => root.classList.toggle('touch-only', e.pointerType === 'touch'), { passive: true })
 }
 
+export function defaultScale() {
+  return !kiosk && matchMedia('(pointer: fine)').matches && innerWidth >= 900 ? 0.8 : 1
+}
+export function getScale() {
+  try { const v = Number(localStorage.getItem('homeos.scale')); if (v >= 0.5 && v <= 1.5) return v } catch {}
+  return defaultScale()
+}
+export function setScale(v) {
+  document.documentElement.style.zoom = String(v)
+  document.documentElement.style.setProperty('--zoom', String(v))
+  try { localStorage.setItem('homeos.scale', String(v)) } catch {}
+  window.dispatchEvent(new Event('resize'))
+}
+document.documentElement.style.zoom = String(getScale())
+document.documentElement.style.setProperty('--zoom', String(getScale()))
+
 export function setLite(on) {
   document.documentElement.classList.toggle('lite', !!on)
   try { localStorage.setItem('homeos.lite', on ? '1' : '0') } catch {}

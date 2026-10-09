@@ -834,7 +834,10 @@
       "up_to_date": "aktuell",
       "updated": "aktualisiert",
       "failed": "Fehler"
-    }
+    },
+    "scale": "Darstellungsgröße (dieses Gerät)",
+    "scale_reset": "Standard",
+    "scale_hint": "Gilt nur für diesen Bildschirm/Browser. Am Mac/PC standardmäßig 80 %, am Touch-Display 100 %."
   },
   "setup": {
     "title": "Ersteinrichtung",

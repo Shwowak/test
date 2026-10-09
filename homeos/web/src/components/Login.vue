@@ -147,7 +147,7 @@ function press(d) {
 </template>
 
 <style scoped>
-.wrap { min-height: 100vh; display: grid; place-items: center; padding: 24px; }
+.wrap { min-height: calc(100vh / var(--zoom, 1)); display: grid; place-items: center; padding: 24px; }
 .card { width: min(440px, 100%); padding: 32px; border-radius: 24px; border: 1px solid var(--line); background: var(--glass); backdrop-filter: blur(16px); box-shadow: 0 0 60px rgba(34, 211, 238, 0.08); }
 .logo { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 22px; }
 .logo svg { filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.6)); }

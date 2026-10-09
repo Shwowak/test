@@ -3,7 +3,7 @@ import { ref, computed, onMounted, inject, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { api } from '../../api.js'
 import { errorText } from '../../i18n.js'
-import { hw, loadHardware } from '../../display.js'
+import { hw, loadHardware, getScale, setScale, defaultScale } from '../../display.js'
 
 const props = defineProps({ section: String })
 const { t, d } = useI18n()
@@ -17,6 +17,8 @@ const wifi = ref(null)
 const join = ref(null)
 const hostname = ref('')
 const displaySettings = ref({ idle: 0, dim: 0 })
+const scale = ref(Math.round(getScale() * 100))
+function applyScale(v) { scale.value = Number(v); setScale(scale.value / 100) }
 
 const call = async (key, fn, ok) => {
   busy.value = key
@@ -105,6 +107,13 @@ const saveUpdate = () => call('updset', () => api('PUT', '/hardware/update', dat
     <p v-if="msg" class="msg">{{ msg }}</p>
 
     <template v-if="section === 'display'">
+      <h3>{{ t('hw.scale') }}</h3>
+      <div class="slider">
+        <input type="range" min="50" max="150" step="5" :value="scale" @change="applyScale($event.target.value)">
+        <b>{{ scale }} %</b>
+        <button class="btn" @click="applyScale(Math.round(defaultScale() * 100))">{{ t('hw.scale_reset') }}</button>
+      </div>
+      <p class="hint">{{ t('hw.scale_hint') }}</p>
       <h3>{{ t('hw.idle_title') }}</h3>
       <div class="two">
         <div class="field"><label>{{ t('hw.idle') }}</label><input v-model="displaySettings.idle" type="number" min="0" max="1440" :disabled="!canManage"></div>

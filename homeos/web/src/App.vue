@@ -55,7 +55,7 @@ async function logout() {
 </template>
 
 <style scoped>
-.nc { min-height: 100vh; display: grid; place-items: center; }
+.nc { min-height: calc(100vh / var(--zoom, 1)); display: grid; place-items: center; }
 .nc form { display: flex; flex-direction: column; gap: 12px; width: min(360px, 90vw); text-align: center; }
 .nc h1 { font-weight: 300; letter-spacing: .25em; }
 .nc p { color: var(--dim); }

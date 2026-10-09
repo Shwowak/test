@@ -834,7 +834,10 @@
       "up_to_date": "up to date",
       "updated": "updated",
       "failed": "failed"
-    }
+    },
+    "scale": "Display size (this device)",
+    "scale_reset": "Default",
+    "scale_hint": "Applies only to this screen/browser. Default 80 % on Mac/PC, 100 % on touch displays."
   },
   "setup": {
     "title": "First-time setup",
