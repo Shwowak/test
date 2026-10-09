@@ -45,7 +45,8 @@
   "styles": {
     "seamless": "Seamless",
     "tiles": "Tiles (HUD)",
-    "glass": "Glass"
+    "glass": "Glass",
+    "apple": "Apple"
   },
   "widget": {
     "add": "Add widget",
