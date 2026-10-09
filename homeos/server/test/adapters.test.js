@@ -57,3 +57,11 @@ test('command validation', () => {
   assert.equal(validateCommand({ capabilities: caps }, 'onoff', true), null)
   assert.ok(validateCommand({ capabilities: caps }, 'brightness', 150))
 })
+
+test('nice device names', async () => {
+  const { niceName } = await import('../src/modules/autogen.js')
+  assert.equal(niceName('battery_discharge_energy'), 'Batterie Entladung Energie')
+  assert.equal(niceName('sensor.pv_power_today'), 'PV Leistung heute')
+  assert.equal(niceName('Deckenlicht Küche'), 'Deckenlicht Küche')
+  assert.equal(niceName('grid_import_total'), 'Netz Bezug gesamt')
+})

@@ -66,7 +66,7 @@ defineExpose({ refresh, openPreview: () => { open.value = true } })
         <template v-else-if="w.type === 'room'">
           <small>{{ w.title }}</small>
           <ul>
-            <li v-for="id in w.devices.slice(0, w.h * 2)" :key="id"><span>{{ dev(id)?.name ?? '…' }}</span><b>{{ value(dev(id)) }}</b></li>
+            <li v-for="id in w.devices.slice(0, w.h * 2)" :key="id"><span>{{ plan.names?.[id] ?? dev(id)?.name ?? '…' }}</span><b>{{ value(dev(id)) }}</b></li>
             <li v-if="w.devices.length > w.h * 2" class="more">+{{ w.devices.length - w.h * 2 }}</li>
           </ul>
         </template>
