@@ -1,11 +1,10 @@
 [Unit]
-Description=SmartBoard update check (daily, 03:30 + random delay)
+Description=SmartBoard update check (every 30 min)
 
 [Timer]
-OnCalendar=*-*-* 03:30
-RandomizedDelaySec=45min
-OnBootSec=15min
-Persistent=true
+OnBootSec=3min
+OnUnitActiveSec=30min
+RandomizedDelaySec=5min
 Unit=smartboard-update-timer.service
 
 [Install]

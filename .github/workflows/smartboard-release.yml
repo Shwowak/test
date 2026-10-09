@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.v.outputs.version }}
-      created: ${{ steps.rel.outputs.created }}
+      new_base: ${{ steps.rel.outputs.new_base }}
     steps:
       - uses: actions/checkout@v4
 
@@ -32,7 +32,10 @@ jobs:
           node-version: 22
 
       - id: v
-        run: echo "version=$(jq -r .version homeos/server/package.json)" >> "$GITHUB_OUTPUT"
+        run: |
+          BASE=$(jq -r .version homeos/server/package.json)
+          echo "base=$BASE" >> "$GITHUB_OUTPUT"
+          echo "version=$BASE.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
 
       - name: Build core tarball
         run: |
@@ -40,10 +43,12 @@ jobs:
           V=${{ steps.v.outputs.version }}
           (cd homeos/web && npm ci && npm run build)
           (cd homeos/server && npm ci --omit=dev)
+          jq --arg v "$V" '.version = $v' homeos/server/package.json > /tmp/pkg.json && cp /tmp/pkg.json homeos/server/package.json
           D=$(mktemp -d)
           mkdir -p "$D/web"
           cp -r homeos/server "$D/server"
           cp -r homeos/web/dist "$D/web/dist"
+          mkdir -p "$D/os" && cp -r homeos/os/apply.sh homeos/os/files "$D/os/"
           echo "$V" > "$D/VERSION"
           tar -czf "smartboard-core-$V.tar.gz" -C "$D" .
           sha256sum "smartboard-core-$V.tar.gz" > "smartboard-core-$V.tar.gz.sha256"
@@ -68,18 +73,19 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           V=${{ steps.v.outputs.version }}
-          if gh release view "core-v$V" >/dev/null 2>&1; then
-            echo "Release core-v$V existiert bereits"
-            echo "created=false" >> "$GITHUB_OUTPUT"
-          else
-            gh release create "core-v$V" smartboard-core-$V.tar.gz* --target "$GITHUB_SHA" --title "SmartBoard OS $V" \
-              --notes "SmartBoard Core $V. Geräte mit SmartBoard OS aktualisieren sich automatisch. Raspberry-Pi-Image folgt als Anhang (Build ca. 30–60 min)."
-            echo "created=true" >> "$GITHUB_OUTPUT"
-          fi
+          BASE=${{ steps.v.outputs.base }}
+          if gh release list --limit 200 --json tagName -q '.[].tagName' | grep -q "^core-v$BASE\."; then NEW_BASE=false; else NEW_BASE=true; fi
+          gh release create "core-v$V" smartboard-core-$V.tar.gz* --target "$GITHUB_SHA" --title "SmartBoard OS $V" \
+            --notes "Automatisches Update $V ($(git log -1 --pretty=%s | head -c 200)). Geräte installieren es selbstständig."
+          echo "new_base=$NEW_BASE" >> "$GITHUB_OUTPUT"
+          # alte Zwischenstände aufräumen (Releases mit OS-Image bleiben)
+          gh release list --limit 200 --json tagName,createdAt -q 'sort_by(.createdAt) | reverse | .[].tagName' | grep '^core-v' | tail -n +16 | while read -r tag; do
+            if ! gh release view "$tag" --json assets -q '.assets[].name' | grep -q '\.img\.xz$'; then gh release delete "$tag" --yes --cleanup-tag; fi
+          done
 
   rpi-image:
     needs: core
-    if: needs.core.outputs.created == 'true' || (github.event_name == 'workflow_dispatch' && inputs.image)
+    if: needs.core.outputs.new_base == 'true' || (github.event_name == 'workflow_dispatch' && inputs.image)
     runs-on: ubuntu-24.04
     timeout-minutes: 150
     steps:

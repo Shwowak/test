@@ -89,6 +89,7 @@ PREV=$(readlink -f $BASE/current)
 ln -sfn "$DEST" $BASE/current.new && mv -T $BASE/current.new $BASE/current
 $SYSTEMCTL restart smartboard-core.service
 if healthy "$LATEST"; then
+  [ -x "$DEST/os/apply.sh" ] && [ "$SYSTEMCTL" = systemctl ] && bash "$DEST/os/apply.sh"
   $SYSTEMCTL restart smartboard-kiosk.service 2>/dev/null
   ls -1d $BASE/releases/*/ 2>/dev/null | sort -V | head -n -$KEEP | while read -r old; do
     [ "$(readlink -f "$old")" != "$(readlink -f $BASE/current)" ] && rm -rf "$old"
