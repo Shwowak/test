@@ -82,6 +82,8 @@ state installing --arg available "$LATEST"
 DEST=$BASE/releases/$LATEST
 rm -rf "$DEST.new" && mkdir -p "$DEST.new"
 tar -xzf "$TMP/$TAR" -C "$DEST.new" || fail "extract failed"
+chmod 755 "$DEST.new"
+chmod -R a+rX "$DEST.new"
 rm -rf "$DEST" && mv "$DEST.new" "$DEST"
 chown -R root:root "$DEST" 2>/dev/null
 
@@ -101,6 +103,7 @@ else
     ln -sfn "$PREV" $BASE/current.new && mv -T $BASE/current.new $BASE/current
     $SYSTEMCTL restart smartboard-core.service
   fi
-  state failed --arg error "health check failed" --arg rolled_back "$LATEST"
+  LOGTAIL=$(journalctl -u smartboard-core.service -n 15 --no-pager -o cat 2>/dev/null | tail -c 1500)
+  state failed --arg error "health check failed" --arg rolled_back "$LATEST" --arg log "$LOGTAIL"
   exit 1
 fi

@@ -234,6 +234,7 @@ const saveUpdate = () => call('updset', () => api('PUT', '/hardware/update', dat
         <small v-if="data.state">{{ t('hw.update_state.' + data.state.status, data.state.status) }}{{ data.state.available ? ' · ' + t('hw.available', { v: data.state.available }) : '' }}{{ data.state.checked ? ' · ' + d(new Date(data.state.checked), 'long') : '' }}</small>
         <small v-if="data.state?.error" class="err">{{ data.state.error }}</small>
         <small v-if="data.state?.rolled_back" class="err">{{ t('hw.rolled_back', { v: data.state.rolled_back }) }}</small>
+        <pre v-if="data.state?.log" class="log">{{ data.state.log }}</pre>
       </div>
       <template v-if="canManage && data.device">
         <div class="two">
@@ -276,5 +277,6 @@ h3 { margin: 22px 0 10px; font-weight: 400; }
 .out small { color: var(--dim); }
 .chk { display: flex; gap: 8px; align-items: center; }
 .big { font-family: var(--mono); font-size: 30px; margin: 4px 0; }
+.log { font-size: 11px; color: var(--dim); white-space: pre-wrap; max-height: 160px; overflow: auto; margin: 6px 0 0; }
 .label { color: var(--dim); font-size: 12px; letter-spacing: .15em; text-transform: uppercase; }
 </style>

@@ -50,6 +50,7 @@ jobs:
           cp -r homeos/web/dist "$D/web/dist"
           mkdir -p "$D/os" && cp -r homeos/os/apply.sh homeos/os/files "$D/os/"
           echo "$V" > "$D/VERSION"
+          chmod 755 "$D"
           tar -czf "smartboard-core-$V.tar.gz" -C "$D" .
           sha256sum "smartboard-core-$V.tar.gz" > "smartboard-core-$V.tar.gz.sha256"
 

@@ -107,6 +107,7 @@ VER=$(tar -xzOf "$CORE" ./VERSION 2>/dev/null || tar -xzOf "$CORE" VERSION)
 DEST=/opt/smartboard/releases/$VER
 rm -rf "$DEST" && mkdir -p "$DEST"
 tar -xzf "$CORE" -C "$DEST"
+chmod 755 "$DEST" && chmod -R a+rX "$DEST"
 ln -sfn "$DEST" /opt/smartboard/current
 echo "  Version $VER"
 
