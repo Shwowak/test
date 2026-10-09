@@ -837,7 +837,8 @@
     },
     "scale": "Darstellungsgröße (dieses Gerät)",
     "scale_reset": "Standard",
-    "scale_hint": "Gilt nur für diesen Bildschirm/Browser. Am Mac/PC standardmäßig 80 %, am Touch-Display 100 %."
+    "scale_hint": "Gilt nur für diesen Bildschirm/Browser. Am Mac/PC standardmäßig 80 %, am Touch-Display 100 %.",
+    "docker_update": "Dieses SmartBoard läuft in Docker (z. B. auf dem Mac). Updates kommen hier automatisch über Watchtower – nichts zu tun. Auf dem Raspberry Pi gibt es an dieser Stelle „Jetzt suchen & installieren“."
   },
   "setup": {
     "title": "Ersteinrichtung",

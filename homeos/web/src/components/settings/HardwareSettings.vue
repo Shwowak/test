@@ -122,7 +122,8 @@ const saveUpdate = () => call('updset', () => api('PUT', '/hardware/update', dat
       <button v-if="canManage" class="btn" @click="saveDisplay">{{ t('common.save') }}</button>
     </template>
 
-    <p v-if="hw.info && !hw.info.device" class="hint">{{ t('hw.not_device') }}</p>
+    <p v-if="hw.info && !hw.info.device && section === 'update'" class="hint">🐳 {{ t('hw.docker_update') }}</p>
+    <p v-else-if="hw.info && !hw.info.device" class="hint">{{ t('hw.not_device') }}</p>
     <p v-else-if="!data && busy === 'load'" class="hint">…</p>
 
     <template v-if="data && section === 'display'">
@@ -234,7 +235,7 @@ const saveUpdate = () => call('updset', () => api('PUT', '/hardware/update', dat
         <small v-if="data.state?.error" class="err">{{ data.state.error }}</small>
         <small v-if="data.state?.rolled_back" class="err">{{ t('hw.rolled_back', { v: data.state.rolled_back }) }}</small>
       </div>
-      <template v-if="canManage">
+      <template v-if="canManage && data.device">
         <div class="two">
           <div class="field"><label>{{ t('hw.channel') }}</label><select v-model="data.settings.channel"><option value="stable">stable</option><option value="beta">beta</option></select></div>
           <div class="field"><label>{{ t('hw.auto') }}</label><label class="chk"><input v-model="data.settings.auto" type="checkbox"> {{ t('plugins.on') }}</label></div>
