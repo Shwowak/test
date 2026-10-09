@@ -31,6 +31,9 @@ jobs:
         with:
           node-version: 22
 
+      - name: Tests
+        run: cd homeos/server && npm ci && npm test
+
       - id: v
         run: |
           BASE=$(jq -r .version homeos/server/package.json)

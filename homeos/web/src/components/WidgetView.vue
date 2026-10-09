@@ -1,19 +1,20 @@
 <script setup>
+import { defineAsyncComponent } from 'vue'
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { api } from '../api.js'
 import { errorText } from '../i18n.js'
 import ClockWidget from '../widgets/ClockWidget.vue'
 import TextWidget from '../widgets/TextWidget.vue'
 import KpiWidget from '../widgets/KpiWidget.vue'
-import GaugeWidget from '../widgets/GaugeWidget.vue'
-import ChartWidget from '../widgets/ChartWidget.vue'
-import CalendarWidget from '../widgets/CalendarWidget.vue'
+const GaugeWidget = defineAsyncComponent(() => import('../widgets/GaugeWidget.vue'))
+const ChartWidget = defineAsyncComponent(() => import('../widgets/ChartWidget.vue'))
+const CalendarWidget = defineAsyncComponent(() => import('../widgets/CalendarWidget.vue'))
 import SwitchWidget from '../widgets/SwitchWidget.vue'
-import IframeWidget from '../widgets/IframeWidget.vue'
+const IframeWidget = defineAsyncComponent(() => import('../widgets/IframeWidget.vue'))
 import DeviceWidget from '../widgets/DeviceWidget.vue'
 import RoomWidget from '../widgets/RoomWidget.vue'
-import PluginWidget from '../widgets/PluginWidget.vue'
-import CameraWidget from '../widgets/CameraWidget.vue'
+const PluginWidget = defineAsyncComponent(() => import('../widgets/PluginWidget.vue'))
+const CameraWidget = defineAsyncComponent(() => import('../widgets/CameraWidget.vue'))
 
 const props = defineProps({ widget: Object, editing: Boolean })
 

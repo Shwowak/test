@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "HOMEOS_DB=:memory: node --disable-warning=ExperimentalWarning --test test/*.test.js",
     "start": "node --disable-warning=ExperimentalWarning index.js"
   },
   "keywords": [],
