@@ -3,7 +3,7 @@ import { ref, computed, onMounted, inject, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { api } from '../../api.js'
 import { errorText } from '../../i18n.js'
-import { hw, loadHardware, getScale, setScale, defaultScale } from '../../display.js'
+import { hw, loadHardware, getScale, setScale, resetScale } from '../../display.js'
 
 const props = defineProps({ section: String })
 const { t, d } = useI18n()
@@ -111,7 +111,7 @@ const saveUpdate = () => call('updset', () => api('PUT', '/hardware/update', dat
       <div class="slider">
         <input type="range" min="50" max="150" step="5" :value="scale" @change="applyScale($event.target.value)">
         <b>{{ scale }} %</b>
-        <button class="btn" @click="applyScale(Math.round(defaultScale() * 100))">{{ t('hw.scale_reset') }}</button>
+        <button class="btn" @click="resetScale(); scale = Math.round(getScale() * 100)">{{ t('hw.scale_reset') }}</button>
       </div>
       <p class="hint">{{ t('hw.scale_hint') }}</p>
       <h3>{{ t('hw.idle_title') }}</h3>

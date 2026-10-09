@@ -18,16 +18,28 @@ if (kiosk) {
 }
 
 export function defaultScale() {
-  return !kiosk && matchMedia('(pointer: fine)').matches && innerWidth >= 900 ? 0.8 : 1
+  if (kiosk || !matchMedia('(pointer: fine)').matches) return 1
+  const w = innerWidth
+  return w < 1100 ? 0.7 : w < 1500 ? 0.75 : w < 1900 ? 0.85 : 0.95
 }
+const stored = () => { try { return localStorage.getItem('homeos.scale') } catch { return null } }
+window.addEventListener('resize', () => {
+  if (stored()) return
+  const v = defaultScale()
+  if (String(v) !== document.documentElement.style.zoom) { document.documentElement.style.zoom = String(v); document.documentElement.style.setProperty('--zoom', String(v)) }
+})
 export function getScale() {
   try { const v = Number(localStorage.getItem('homeos.scale')); if (v >= 0.5 && v <= 1.5) return v } catch {}
   return defaultScale()
 }
-export function setScale(v) {
+export function resetScale() {
+  try { localStorage.removeItem('homeos.scale') } catch {}
+  setScale(defaultScale(), false)
+}
+export function setScale(v, save = true) {
   document.documentElement.style.zoom = String(v)
   document.documentElement.style.setProperty('--zoom', String(v))
-  try { localStorage.setItem('homeos.scale', String(v)) } catch {}
+  if (save) try { localStorage.setItem('homeos.scale', String(v)) } catch {}
   window.dispatchEvent(new Event('resize'))
 }
 document.documentElement.style.zoom = String(getScale())

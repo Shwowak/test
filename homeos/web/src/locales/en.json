@@ -836,8 +836,8 @@
       "failed": "failed"
     },
     "scale": "Display size (this device)",
-    "scale_reset": "Default",
-    "scale_hint": "Applies only to this screen/browser. Default 80 % on Mac/PC, 100 % on touch displays.",
+    "scale_reset": "Auto",
+    "scale_hint": "Applies only to this screen/browser. “Auto” adapts to the window size (Mac/PC smaller, touch display/TV 100 %).",
     "docker_update": "This SmartBoard runs in Docker (e.g. on a Mac). Updates arrive automatically via Watchtower – nothing to do. On the Raspberry Pi this page offers “Check & install now”."
   },
   "setup": {
