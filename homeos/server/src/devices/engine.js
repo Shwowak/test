@@ -10,8 +10,9 @@ import Zigbee2MqttAdapter from './adapters/zigbee2mqtt.js'
 import ZwaveJsAdapter from './adapters/zwavejs.js'
 import MatterAdapter from './adapters/matter.js'
 import KnxAdapter from './adapters/knx.js'
+import EvccAdapter from './adapters/evcc.js'
 
-export const ADAPTERS = { home_assistant: HomeAssistantAdapter, mqtt: MqttAdapter, rest: RestAdapter, zigbee2mqtt: Zigbee2MqttAdapter, zwavejs: ZwaveJsAdapter, matter: MatterAdapter, knx: KnxAdapter, modbus: ModbusAdapter }
+export const ADAPTERS = { home_assistant: HomeAssistantAdapter, mqtt: MqttAdapter, rest: RestAdapter, zigbee2mqtt: Zigbee2MqttAdapter, zwavejs: ZwaveJsAdapter, matter: MatterAdapter, knx: KnxAdapter, modbus: ModbusAdapter, evcc: EvccAdapter }
 
 const SECRET_KEYS = new Set(Object.values(ADAPTERS).flatMap(A => A.fields.filter(f => f.type === 'secret').map(f => f.key)))
 export const redactConfig = c => Object.fromEntries(Object.entries(c).map(([k, v]) => [k, SECRET_KEYS.has(k) && v ? '••••••' : v]))

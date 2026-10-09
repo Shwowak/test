@@ -479,7 +479,11 @@
     "energy": "Energie",
     "motion": "Bewegung",
     "contact": "Kontakt",
-    "smoke": "Rauch"
+    "smoke": "Rauch",
+    "mode": "Lademodus",
+    "charging": "Lädt",
+    "connected": "Fahrzeug verbunden",
+    "vehicle": "Fahrzeug"
   },
   "quantities": {
     "temperature": "Temperatur",
@@ -529,7 +533,8 @@
     "zigbee2mqtt": "Zigbee (Zigbee2MQTT)",
     "zwavejs": "Z-Wave (Z-Wave JS)",
     "matter": "Matter / Thread",
-    "knx": "KNX (KNXnet/IP)"
+    "knx": "KNX (KNXnet/IP)",
+    "evcc": "evcc (PV-Überschussladen)"
   },
   "integrations": {
     "add": "Integration hinzufügen",
@@ -558,7 +563,8 @@
       "zwavejs": "Z-Wave JS Server (z. B. ws://192.168.1.10:3000, Z-Wave JS UI → WS-Server aktivieren).",
       "matter": "Python Matter Server (z. B. ws://192.168.1.10:5580/ws). Thread benötigt einen Border-Router.",
       "knx": "IP-Adresse der KNX-IP-Schnittstelle. Leer lassen für Routing per Multicast.",
-      "modbus": "IP-Adresse des Geräts (Wechselrichter, Zähler, Wallbox). Register dann als manuelle Geräte anlegen."
+      "modbus": "IP-Adresse des Geräts (Wechselrichter, Zähler, Wallbox). Register dann als manuelle Geräte anlegen.",
+      "evcc": "Adresse von evcc, z. B. http://192.168.1.20:7070. Passwort nur nötig, um den Lademodus zu ändern."
     },
     "permit_join": "Anlernen",
     "commission": "Matter-Gerät koppeln",
@@ -1062,5 +1068,11 @@
     "preview": "Vorschlag",
     "clock": "Uhrzeit",
     "apply": "Übernehmen"
+  },
+  "options": {
+    "off": "Aus",
+    "pv": "PV",
+    "minpv": "Min+PV",
+    "now": "Schnell"
   }
 }

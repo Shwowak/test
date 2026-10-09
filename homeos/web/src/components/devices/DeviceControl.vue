@@ -11,6 +11,8 @@ const caps = computed(() => Object.fromEntries(props.device.capabilities.map(c =
 const s = computed(() => props.device.state ?? {})
 const offline = computed(() => props.device.connection === 'offline')
 const measures = computed(() => props.device.capabilities.filter(c => c.kind === 'measurement'))
+const selects = computed(() => props.device.capabilities.filter(c => c.kind === 'select'))
+const texts = computed(() => props.device.capabilities.filter(c => c.kind === 'text'))
 const binaries = computed(() => props.device.capabilities.filter(c => c.kind === 'binary'))
 
 async function send(cap, value) {
@@ -65,10 +67,16 @@ const adjustTemp = d => {
       <span class="knob" /><span>{{ s.lock ? t('capabilities.locked') : t('capabilities.unlocked') }}</span>
     </button>
 
+    <div v-for="c in selects" :key="c.id" class="seg">
+      <button v-for="o in c.options" :key="o" class="btn" :class="{ active: s[c.id] === o }" :disabled="disabled || offline" @click="send(c.id, o)">{{ t('options.' + o, o) }}</button>
+    </div>
+
     <div v-for="c in measures" :key="c.id" class="measure">
       <span class="num">{{ fmt(s[c.id], c) }}</span><span class="unit">{{ c.unit }}</span>
       <span v-if="measures.length > 1 || compact" class="lbl">{{ t('quantities.' + c.quantity, c.quantity) }}</span>
     </div>
+
+    <div v-for="c in texts" :key="c.id" class="binary"><span class="lbl">{{ t('capabilities.' + c.id, c.id) }}</span> {{ s[c.id] ?? '—' }}</div>
 
     <div v-for="c in binaries" :key="c.id" class="binary" :class="{ active: s[c.id] }">
       <span class="dot" />{{ binText(c.id, s[c.id]) }}
@@ -103,4 +111,6 @@ input[type='range'] { width: 100%; height: 44px; accent-color: var(--cyan); }
 .binary .dot { width: 12px; height: 12px; border-radius: 50%; background: #475569; }
 .binary.active .dot { background: var(--magenta); box-shadow: 0 0 12px var(--magenta); animation: pulse 1.4s infinite; }
 @keyframes pulse { 50% { opacity: 0.4; } }
+.seg { display: flex; gap: 6px; flex-wrap: wrap; }
+.seg .btn { min-height: 44px; padding: 0 14px; font-size: 15px; }
 </style>

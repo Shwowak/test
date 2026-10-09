@@ -14,6 +14,7 @@ export const CAPABILITY_KINDS = {
   measurement: { writable: false, value: 'number' },
   binary: { writable: false, value: 'boolean' },
   text: { writable: false, value: 'string' },
+  select: { writable: true, value: 'enum', options: [] },
 }
 
 export function cap(id, kind, extra = {}) {

@@ -479,7 +479,11 @@
     "energy": "Energy",
     "motion": "Motion",
     "contact": "Contact",
-    "smoke": "Smoke"
+    "smoke": "Smoke",
+    "mode": "Charge mode",
+    "charging": "Charging",
+    "connected": "Vehicle connected",
+    "vehicle": "Vehicle"
   },
   "quantities": {
     "temperature": "Temperature",
@@ -529,7 +533,8 @@
     "zigbee2mqtt": "Zigbee (Zigbee2MQTT)",
     "zwavejs": "Z-Wave (Z-Wave JS)",
     "matter": "Matter / Thread",
-    "knx": "KNX (KNXnet/IP)"
+    "knx": "KNX (KNXnet/IP)",
+    "evcc": "evcc (solar charging)"
   },
   "integrations": {
     "add": "Add integration",
@@ -558,7 +563,8 @@
       "zwavejs": "Z-Wave JS server (e.g. ws://192.168.1.10:3000).",
       "matter": "Python Matter Server (e.g. ws://192.168.1.10:5580/ws). Thread needs a border router.",
       "knx": "IP address of the KNX IP interface. Leave empty for multicast routing.",
-      "modbus": "IP address of the device (inverter, meter, wallbox). Then add registers as manual devices."
+      "modbus": "IP address of the device (inverter, meter, wallbox). Then add registers as manual devices.",
+      "evcc": "evcc address, e.g. http://192.168.1.20:7070. Password only needed to change the charge mode."
     },
     "permit_join": "Pair devices",
     "commission": "Pair Matter device",
@@ -1062,5 +1068,11 @@
     "preview": "Suggestion",
     "clock": "Time",
     "apply": "Apply"
+  },
+  "options": {
+    "off": "Off",
+    "pv": "Solar",
+    "minpv": "Min+Solar",
+    "now": "Fast"
   }
 }
