@@ -1,5 +1,5 @@
 import { randomInt, randomBytes } from 'node:crypto'
-import { readFileSync } from 'node:fs'
+import { readFileSync, readdirSync } from 'node:fs'
 import { networkInterfaces, hostname } from 'node:os'
 import { db } from '../core/db.js'
 import { log } from '../core/logger.js'
@@ -14,9 +14,17 @@ export const setupState = {
 export const setupNeeded = () => db.prepare('SELECT COUNT(*) c FROM users').get().c === 0
 const uptime = () => { try { return Number(readFileSync('/proc/uptime', 'utf8').split(' ')[0]) } catch { return 9999 } }
 
+export function displayConnected() {
+  try {
+    return readdirSync('/sys/class/drm').some(n => /^card\d+-/.test(n) && readFileSync(`/sys/class/drm/${n}/status`, 'utf8').trim() === 'connected')
+  } catch { return true }
+}
+export const headless = () => process.env.SMARTBOARD_HAL === '1' && !displayConnected() && uptime() < 1800
+
 let failures = 0
 export function setupAllowed(req) {
   if (isLocalIp(req.ip)) return true
+  if (headless()) return true
   const code = req.headers['x-setup-code'] ?? req.body?.code
   if (!code) return false
   if (String(code) === setupState.code) return true

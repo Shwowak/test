@@ -4,7 +4,7 @@ import {
   passwordProblem, pinProblem, SESSION_DAYS, can, userFromToken, ensureViewer,
 } from '../core/auth.js'
 import { getSetting, setSetting, isLanIp, isLocalIp } from '../core/settings.js'
-import { setupAllowed } from '../system/setupnet.js'
+import { setupAllowed, headless } from '../system/setupnet.js'
 import { HttpError, badRequest, requirePerm } from '../core/http.js'
 import { log } from '../core/logger.js'
 import { LOCALES } from './registry.js'
@@ -38,7 +38,7 @@ export default async function authModule(app) {
   const local = isLocalIp
 
   app.get('/auth/setup', { schema: { tags: ['auth'], summary: 'First-run setup needed?' }, config: { public: true } },
-    async req => ({ needed: setupNeeded(), local: local(req.ip), codeRequired: !local(req.ip) && process.env.SMARTBOARD_HAL === '1' }))
+    async req => ({ needed: setupNeeded(), local: local(req.ip), codeRequired: !local(req.ip) && process.env.SMARTBOARD_HAL === '1' && !headless() }))
 
   app.post('/auth/setup', {
     schema: {

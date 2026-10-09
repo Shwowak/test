@@ -31,7 +31,9 @@ async function refresh() {
 
 onMounted(async () => {
   await refresh()
-  if (!props.local && info.value.device) step.value = 'code'
+  let needCode = false
+  try { needCode = (await api('GET', '/auth/setup')).codeRequired } catch {}
+  if (!props.local && info.value.device && needCode) step.value = 'code'
   else if (info.value.device && !info.value.online) { step.value = 'network'; scan() }
   else step.value = 'account'
   timer = setInterval(refresh, 5000)
