@@ -77,3 +77,141 @@ API: `POST /api/v1/dashboards/generate` mit `{ dryRun, exclude: [deviceIds], inc
 | Vorschlags-Logik | `server/src/modules/autogen.js` (+ Test in `server/test/adapters.test.js`) |
 | Raster/Größen | `web/src/components/Board.vue` |
 | Neue Geräte-Quelle | `server/src/devices/adapters/` (siehe AGENTS.md) |
+
+---
+
+# Teil 2 – Code im Detail
+
+## Stack
+| Teil | Technik |
+|---|---|
+| Frontend | Vue 3.5 (Composition API, `<script setup>`), Vite 8, vue-i18n 11 |
+| Raster | gridstack 14 |
+| Diagramme/Anzeigen | echarts 6 (Tree-Shaking: Line, Bar, Gauge, Canvas) |
+| Backend | Node 22, Fastify 5, `node:sqlite` (synchron, kein ORM), @fastify/websocket, mqtt |
+| Tests | `node:test` (`server/test/*.test.js`) |
+
+## Board.vue – Raster
+```js
+grid = GridStack.init({
+  column: 12, cellHeight: 90, margin: 0, float: false,
+  staticGrid: !props.editing,            // nur im Bearbeiten-Modus verschiebbar
+  animate: true,
+  columnOpts: { breakpoints: [{ w: 700, c: 1 }, { w: 1100, c: 6 }] },
+  draggable: { cancel: '.no-drag' }, resizable: { handles: 'se' },
+}, el.value)
+grid.on('change', saveLayout)            // → PUT /dashboards/:id/layout [{id,x,y,w,h}]
+```
+Template: pro Widget ein `.grid-stack-item` mit `gs-x/gs-y/gs-w/gs-h/gs-id`, darin `<WidgetView>`. Die Klasse `style-<seamless|tiles|glass|apple>` am Container steuert die Ansicht.
+
+## WidgetView.vue – Datenschleife
+```js
+const components = { clock, text, kpi, gauge, chart, calendar, switch, iframe, device, room, plugin, camera }
+const needsData = ['kpi', 'gauge', 'chart', 'calendar', 'switch']
+async function refresh() { data.value = await api('GET', `/widgets/${props.widget.id}/data`) }
+timer = setInterval(refresh, Math.max(5, widget.config.device_id ? 5 : widget.config.refresh ?? 30) * 1000)
+// <component :is="components[widget.type]" :widget="widget" :data="data" :editing="editing" />
+```
+Device- und Room-Widgets lesen direkt aus `store.devices` (live per WebSocket), nicht über `/data`.
+
+## Widget-Komponenten
+**KpiWidget.vue** – reine CSS-Zahl, skaliert per Container-Query:
+```vue
+<div class="k">                                   <!-- container-type: size -->
+  <div class="v" :style="{ color }">{{ text }}<span class="u">{{ data?.unit }}</span></div>
+  <div class="bar" :style="{ background: `linear-gradient(90deg, ${color}, transparent)` }" />
+</div>
+<style>.v { font-size: clamp(28px, 48cqh, 110px) }</style>
+```
+**useChart.js** – gemeinsamer ECharts-Hook:
+```js
+echarts.use([LineChart, BarChart, GaugeChart, GridComponent, TooltipComponent, CanvasRenderer])
+export function useChart(el, buildOption, deps) {
+  onMounted(() => { chart = echarts.init(el.value, null, { renderer: 'canvas' }); render(); new ResizeObserver(() => chart.resize()).observe(el.value) })
+  watch(deps, () => chart.setOption(buildOption(), true), { deep: true })   // Animation bei Wertänderung
+}
+```
+**ChartWidget.vue** – Stile:
+```js
+line:     [{ type: 'line', smooth: 0.45, symbol: 'none', lineStyle: { width: 3, color: Verlauf(color→#22D3EE) }, areaStyle: Verlauf(color 33%→0) }]
+wave:     zwei Linien (versetzte Kopie × 0,75 + Hauptlinie)
+bar:      [{ type: 'bar', barWidth: '35%', itemStyle: { color: Verlauf(color→transparent) } }]
+spectrum: Balken, jede Säule eigene Farbe aus SPECTRUM
+// Achsen dezent: Labels aus, gestrichelte Hilfslinien, Tooltip mit Einheit
+```
+**GaugeWidget.vue**:
+```js
+{ type: 'gauge', min, max, startAngle: 220, endAngle: -40, radius: '95%',
+  progress: { show: true, width: 14, roundCap: true, itemStyle: { color } },
+  axisLine: { lineStyle: { width: 14, color: [[1, 'rgba(148,163,184,0.12)']] } },
+  pointer/axisTick/splitLine/axisLabel: { show: false },
+  detail: { valueAnimation: true, formatter: '{value} %' } }
+```
+
+## Server – Datenauflösung (`sources-adapters.js`)
+```js
+export async function resolve(widget, source) {
+  const wc = widget.config
+  if (wc.device_id && wc.capability) {
+    const d = getDevice(wc.device_id)
+    const unit = wc.unit || d.capabilities.find(c => c.id === wc.capability)?.unit || ''
+    if (widget.type === 'chart') return { values: deviceHistory(d.id, wc.capability), unit }
+    return { value: d.state[wc.capability] ?? null, unit, offline: d.connection === 'offline' }
+  }
+  if (!source || source.type === 'static') return { value: wc.value, values: wc.values, unit: wc.unit }
+  // rest_json: JSON-Pfad; home_assistant: /api/states/<entity_id>; ical: Termine
+}
+```
+
+## Server – Live-Zustand und Verlauf (`devices/engine.js`)
+```js
+ctx.update(nativeId, statePatch, { connection }) →
+  d.state = { ...d.state, ...statePatch }
+  remember(id, statePatch)              // Zahlen → history Map `${id}:${cap}` → [[ts, v]] max 1440, 1/min
+  persistQueue.set(id, d)               // gebündeltes Schreiben in SQLite
+  bus.emit('device.state', {...})       // → WebSocket /api/v1/events → Browser
+export const deviceHistory = (id, cap) => (history.get(`${id}:${cap}`) ?? []).map(x => x[1])
+```
+
+## Server – Vorschlag (`modules/autogen.js`)
+```js
+const COLORS = { temperature: '#22D3EE', humidity: '#3B82F6', power: '#F59E0B', energy: '#22C55E', battery: '#22C55E', cpu: '#8B5CF6', memory: '#22D3EE', disk: '#EC4899' }
+const GAUGE = ['cpu', 'memory', 'disk', 'humidity', 'battery', 'co2']
+
+function valueWidget(d, c, title) {               // Messwert → passendes Widget
+  if (c.quantity === 'power') return { type: 'chart', w: 6, h: 3, config: { device_id, capability, style: 'line', color } }
+  if (GAUGE.includes(c.quantity)) return { type: 'gauge', w: 3, h: 3, config: { ..., min: 0, max: 100 } }
+  return { type: 'kpi', w: 3, h: 2, config: { ..., decimals: c.quantity === 'temperature' ? 1 : 0 } }
+}
+
+function packer() {                               // Regal-Packen auf 12 Spalten
+  const cols = Array(12).fill(0)
+  return (w, h) => { /* niedrigste freie Position x..x+w suchen */ }
+}
+// buildPlan(): Übersicht + TOPICS (energy/climate/security/server) + Räume → [{ name, icon, widgets:[{type,title,x,y,w,h,config}] }]
+// generate({ dryRun, exclude, include }): dryRun → Vorschau; sonst Transaktion: Geräte übernehmen/benennen/einsortieren, Dashboards + Widgets anlegen
+```
+
+## CSS-Kernregeln (`web/src/style.css`)
+```css
+.theme-apple { --bg:#000; --text:#f5f5f7; --dim:#98989d; --cyan:#0a84ff; --ok:#30d158; --radius:22px;
+               --font:-apple-system, 'SF Pro Display', 'Inter', system-ui, sans-serif }
+.theme-apple body { background: radial-gradient(… blau oben rechts), radial-gradient(… violett unten links), linear-gradient(#0d0d12, #000) }
+/* Widgets immer randlos/transparent – in jedem Design und jeder Ansicht */
+html .grid-stack-item-content { border:0!important; background:transparent!important; box-shadow:none!important; backdrop-filter:none!important }
+.style-seamless …-content { inset: 0 }   .style-tiles { inset: 2px }   .style-glass { inset: 6px }   .style-apple { inset: 8px }
+.lite …  /* Pi-Modus: Blur/Schatten aus für weniger GPU-Last */
+```
+
+## REST-API (Auszug, Prefix `/api/v1`)
+| Methode | Pfad | Zweck |
+|---|---|---|
+| GET/POST/PUT/DELETE | `/dashboards`, `/dashboards/:id` | Dashboards |
+| GET/POST | `/dashboards/:id/widgets` | Widgets lesen/anlegen |
+| PUT | `/dashboards/:id/layout` | Positionen speichern |
+| PUT/DELETE | `/widgets/:id` | Widget ändern/löschen |
+| GET | `/widgets/:id/data` | Wert(e) eines Widgets |
+| POST | `/dashboards/generate` | Vorschlag (dryRun) / anlegen |
+| GET | `/devices`, `/integrations`, `/registry` | Geräte, Integrationen, Typen |
+| WS | `/events` | Live: device.state, notification, alarm … |
+Vollständige API-Doku: `http://<smartboard>/api/docs` (Swagger).
