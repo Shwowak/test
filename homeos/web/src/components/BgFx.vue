@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
-import { features } from '../features.js'
+import { features, fxState } from '../features.js'
 
 const el = ref(null)
 let raf = 0
@@ -14,6 +14,7 @@ let last = 0
 
 const COLORS = ['#00f0ff', '#0a84ff', '#ff007a', '#30d158', '#ff9f0a', '#af52de']
 const lite = () => document.documentElement.classList.contains('lite')
+const mode = () => (fxState.off ? 'off' : features.fx ?? 'particles')
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches
 
 function resize() {
@@ -67,10 +68,10 @@ function frame(now) {
   const fps = lite() ? 20 : 40
   if (now - last < 1000 / fps) return
   last = now
-  const mode = features.fx ?? 'particles'
+  const m = mode()
   ctx.clearRect(0, 0, w, h)
-  if (mode === 'particles' || mode === 'both') drawParticles(now)
-  if (mode === 'circuit' || mode === 'both') drawCircuit()
+  if (m === 'particles' || m === 'both') drawParticles(now)
+  if (m === 'circuit' || m === 'both') drawCircuit()
 }
 
 function drawParticles(now) {
@@ -126,7 +127,7 @@ function drawCircuit() {
 
 function start() {
   stop()
-  if ((features.fx ?? 'particles') === 'off' || reduced()) { ctx?.clearRect(0, 0, w, h); return }
+  if (mode() === 'off' || reduced()) { ctx?.clearRect(0, 0, w, h); return }
   raf = requestAnimationFrame(frame)
 }
 function stop() { cancelAnimationFrame(raf); raf = 0 }
@@ -134,7 +135,7 @@ const vis = () => (document.hidden ? stop() : start())
 
 onMounted(() => { resize(); start(); addEventListener('resize', resize); document.addEventListener('visibilitychange', vis) })
 onBeforeUnmount(() => { stop(); removeEventListener('resize', resize); document.removeEventListener('visibilitychange', vis) })
-watch(() => features.fx, start)
+watch(mode, start)
 </script>
 
 <template>

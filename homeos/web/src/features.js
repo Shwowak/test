@@ -10,6 +10,14 @@ export function applyTheme(theme) {
   try { localStorage.setItem('homeos_theme', t) } catch {}
 }
 
+let off = false
+try { off = localStorage.getItem('homeos.fx.off') === '1' } catch {}
+export const fxState = reactive({ off })
+export function toggleFx() {
+  fxState.off = !fxState.off
+  try { localStorage.setItem('homeos.fx.off', fxState.off ? '1' : '0') } catch {}
+}
+
 export async function loadFeatures() {
   try {
     const s = await api('GET', '/settings')

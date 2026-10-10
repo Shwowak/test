@@ -17,7 +17,7 @@ import Assistant from './assistant/Assistant.vue'
 import { voice } from '../speech.js'
 import Unlock from './Unlock.vue'
 import Suggest from './Suggest.vue'
-import { features, loadFeatures } from '../features.js'
+import { features, loadFeatures, fxState, toggleFx } from '../features.js'
 import { computed as comp2 } from 'vue'
 import { startLive, stopLive, loadIntegrations, loadDevices } from '../devices.js'
 import { onBeforeUnmount, watch } from 'vue'
@@ -221,6 +221,7 @@ const icons = ['⌂', '◈', '⚡', '☀', '♨', '☎', '♫', '⚙', '⛨', '�
           <button v-if="can('ai.use') && features.assistant" class="btn icon" :aria-label="t('assistant.speak')" @click="assistant = { listen: true }">🎙</button>
           <button v-if="can('notifications.view')" class="btn icon bell" :class="{ hot: unread }" :aria-label="t('notifications.title')" @click="showNotes = true">🔔<span v-if="unread" class="badge">{{ unread }}</span></button>
           <button v-if="railHidden" class="btn icon" :aria-label="t('nav.show')" @click="toggleRail">☰</button>
+          <button v-if="view === 'dashboard' && features.fx !== 'off'" class="btn icon" :class="{ active: !fxState.off }" :title="t('general.fx')" :aria-pressed="!fxState.off" @click="toggleFx">✦</button>
           <button v-if="view === 'dashboard' && active && meta && !isViewer" class="btn" @click="cycleStyle">◐ {{ t('styles.' + active.style) }}</button>
           <button v-if="editing && active" class="btn" @click="editDashboard">{{ t('dashboard.label') }} ✎</button>
           <button v-if="view === 'dashboard' && (can('dashboards.edit') || isViewer)" class="btn" :class="{ active: editing, primary: editing }" @click="requireAdmin('edit', 'dashboards.edit')">
