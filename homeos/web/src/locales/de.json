@@ -700,7 +700,9 @@
       "particles": "Partikel",
       "circuit": "Leiterbahnen",
       "both": "Beides"
-    }
+    },
+    "open_access": "Ohne Passwort und PIN (jeder im Heimnetz darf alles einstellen)",
+    "open_access_warn": "Kein Schutz: Jeder im Heimnetz kann Einstellungen ändern. Danach unten speichern."
   },
   "notifications": {
     "title": "Meldungen",

@@ -700,7 +700,9 @@
       "particles": "Particles",
       "circuit": "Circuits",
       "both": "Both"
-    }
+    },
+    "open_access": "No password or PIN (everyone on the home network can change settings)",
+    "open_access_warn": "No protection: anyone on the home network can change settings. Save below afterwards."
   },
   "notifications": {
     "title": "Notifications",

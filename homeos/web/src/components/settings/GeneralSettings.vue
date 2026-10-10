@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, inject } from 'vue'
+import { computed, ref, onMounted, inject } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { api } from '../../api.js'
 import { errorText } from '../../i18n.js'
@@ -37,6 +37,14 @@ async function setFx(v) {
   s.value.fx = v
   features.fx = v
   await api('PUT', '/settings', { fx: v }).catch(e => { msg.value = errorText(e) })
+}
+
+const openAccess = computed(() => !!auto.value.user_id && users.value.find(u => u.id === auto.value.user_id)?.role === 'admin')
+function setOpen(on) {
+  const target = on ? users.value.find(u => u.role === 'admin' && !u.disabled) : users.value.find(u => u.name === 'anzeige') ?? users.value.find(u => u.role === 'guest')
+  auto.value = { user_id: target?.id ?? null, scope: 'lan' }
+  if (on) adminTimeout.value = 0
+  else if (!Number(adminTimeout.value)) adminTimeout.value = 10
 }
 
 async function save() {
@@ -81,6 +89,8 @@ function locate() {
       <p class="sun">{{ t('general.features_hint') }}</p>
       <label v-for="k in ['control', 'automations', 'assistant', 'cameras']" :key="k" class="chk"><input v-model="feats[k]" type="checkbox"> {{ t('general.feature.' + k) }}</label>
       <h3>{{ t('general.autologin') }}</h3>
+      <label class="chk"><input type="checkbox" :checked="openAccess" @change="setOpen($event.target.checked)"> {{ t('general.open_access') }}</label>
+      <p v-if="openAccess" class="warn">⚠ {{ t('general.open_access_warn') }}</p>
       <div class="field"><label>{{ t('general.network_code') }}</label><input v-model="netCode" type="text" maxlength="64" autocomplete="off" :placeholder="t('general.network_code_ph')"></div>
       <div class="field"><label>{{ t('general.admin_timeout') }}</label><input v-model="adminTimeout" type="number" min="0" max="1440"></div>
       <div class="two">
