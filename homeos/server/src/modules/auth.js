@@ -84,11 +84,11 @@ export default async function authModule(app) {
 
   app.get('/auth/me', { schema: { tags: ['auth'], summary: 'Current user (or automatic login if enabled)' }, config: { public: true } }, async (req, reply) => {
     const session = userFromToken(req.cookies.homeos_session)
-    if (session) return publicUser(session)
-    const net = getSetting('network_code')
-    if (net && !local(req.ip) && req.cookies.homeos_netcode !== net) throw new HttpError(401, 'netcode.required')
     const auto = getSetting('autologin')
     const allowed = auto?.user_id && (auto.scope === 'lan' ? isLanIp(req.ip) : isLocalIp(req.ip))
+    if (session && !(allowed && session.role === 'guest' && session.id !== auto.user_id)) return publicUser(session)
+    const net = getSetting('network_code')
+    if (net && !local(req.ip) && req.cookies.homeos_netcode !== net) throw new HttpError(401, 'netcode.required')
     const user = allowed && db.prepare('SELECT * FROM users WHERE id = ? AND disabled = 0').get(auto.user_id)
     if (!user) throw new HttpError(401, 'unauthorized')
     reply.setCookie('homeos_session', createSession(user.id), { path: '/', httpOnly: true, sameSite: 'strict', secure, maxAge: SESSION_DAYS * 86400 })
