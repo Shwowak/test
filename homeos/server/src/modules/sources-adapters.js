@@ -1,3 +1,4 @@
+import { getDevice, deviceHistory } from '../devices/engine.js'
 export const SOURCE_TYPES = {
   static: { fields: [] },
   rest_json: {
@@ -82,6 +83,14 @@ export function parseIcal(text) {
 
 export async function resolve(widget, source) {
   const wc = widget.config
+  if (wc.device_id && wc.capability) {
+    const d = getDevice(wc.device_id)
+    if (!d) throw new Error('device not found')
+    const c = d.capabilities.find(x => x.id === wc.capability)
+    const unit = wc.unit || c?.unit || ''
+    if (widget.type === 'chart') return { values: deviceHistory(d.id, wc.capability), unit }
+    return { value: d.state[wc.capability] ?? null, unit, label: d.name, offline: d.connection === 'offline' }
+  }
   if (!source || source.type === 'static') {
     return { value: wc.value ?? null, values: wc.values ?? null, unit: wc.unit ?? '' }
   }

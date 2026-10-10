@@ -25,8 +25,15 @@ const error = ref('')
 const typeDef = computed(() => props.meta.widgetTypes[form.value.type])
 const allowedSources = computed(() => props.sources.filter(s => typeDef.value.sources.includes(s.type)))
 const sourceType = computed(() => props.sources.find(s => s.id === form.value.source_id)?.type ?? 'static')
+const devOptions = computed(() => Object.values(store.devices).filter(d => d.adopted && d.capabilities.some(c => c.kind === 'measurement' || c.value === 'number')).sort((a, b) => a.name.localeCompare(b.name)))
+const capOptions = computed(() => store.devices[form.value.config.device_id]?.capabilities.filter(c => c.kind === 'measurement' || c.value === 'number') ?? [])
+function pickDevice() {
+  const c = capOptions.value
+  if (!c.some(x => x.id === form.value.config.capability)) form.value.config.capability = c[0]?.id ?? null
+}
 const visibleFields = computed(() => typeDef.value.fields.filter(f => {
-  if (f.static) return sourceType.value === 'static'
+  if (f.type === 'device_value') return sourceType.value === 'static'
+  if (f.static) return sourceType.value === 'static' && !form.value.config.device_id
   if (f.for) return f.for.includes(sourceType.value)
   return true
 }))
@@ -84,7 +91,16 @@ async function remove() {
 
     <div v-for="f in visibleFields" :key="f.key" class="field">
       <label>{{ t('fields.' + f.key) }}</label>
-      <textarea v-if="f.type === 'textarea'" v-model="form.config[f.key]" />
+      <template v-if="f.type === 'device_value'">
+        <select v-model.number="form.config.device_id" @change="pickDevice">
+          <option :value="null">{{ t('widget.manual_value') }}</option>
+          <option v-for="d in devOptions" :key="d.id" :value="d.id">{{ d.name }}</option>
+        </select>
+        <select v-if="form.config.device_id" v-model="form.config.capability">
+          <option v-for="c in capOptions" :key="c.id" :value="c.id">{{ t('quantities.' + (c.quantity ?? c.id), c.quantity ?? c.id) }}{{ c.unit ? ' (' + c.unit + ')' : '' }}</option>
+        </select>
+      </template>
+      <textarea v-else-if="f.type === 'textarea'" v-model="form.config[f.key]" />
       <select v-else-if="f.type === 'select'" v-model="form.config[f.key]">
         <option v-for="v in f.options" :key="v" :value="v">{{ t('chartStyles.' + v) }}</option>
       </select>

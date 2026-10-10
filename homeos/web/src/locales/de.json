@@ -59,7 +59,8 @@
     "refresh": "Aktualisierung (Sekunden)",
     "need_source": "Erst unter „Quellen“ eine passende Datenquelle anlegen: {types}",
     "confirm_delete": "Widget löschen?",
-    "no_url": "Keine URL"
+    "no_url": "Keine URL",
+    "manual_value": "Eigener Wert"
   },
   "widgetTypes": {
     "clock": "Uhr & Datum",
@@ -92,7 +93,8 @@
     "device_id": "Gerät",
     "room_id": "Raum",
     "plugin_widget": "Plugin-Widget",
-    "camera_id": "Kamera"
+    "camera_id": "Kamera",
+    "device_value": "Wert von Gerät"
   },
   "chartStyles": {
     "line": "Linie (Neon)",

@@ -59,7 +59,8 @@
     "refresh": "Refresh (seconds)",
     "need_source": "Create a matching data source under “Sources” first: {types}",
     "confirm_delete": "Delete widget?",
-    "no_url": "No URL"
+    "no_url": "No URL",
+    "manual_value": "Manual value"
   },
   "widgetTypes": {
     "clock": "Clock & date",
@@ -92,7 +93,8 @@
     "device_id": "Device",
     "room_id": "Room",
     "plugin_widget": "Plugin widget",
-    "camera_id": "Camera"
+    "camera_id": "Camera",
+    "device_value": "Value from device"
   },
   "chartStyles": {
     "line": "Line (neon)",

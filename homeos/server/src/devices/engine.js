@@ -53,6 +53,21 @@ export function invalidate(id) {
   else live.delete(id)
 }
 
+const history = new Map()
+function remember(id, patch) {
+  const now = Date.now()
+  for (const [k, v] of Object.entries(patch ?? {})) {
+    if (typeof v !== 'number' || Number.isNaN(v)) continue
+    const key = `${id}:${k}`
+    const h = history.get(key) ?? []
+    if (h.length && now - h.at(-1)[0] < 60000) h[h.length - 1] = [h.at(-1)[0], v]
+    else h.push([now, v])
+    if (h.length > 1440) h.shift()
+    history.set(key, h)
+  }
+}
+export const deviceHistory = (id, cap) => (history.get(`${id}:${cap}`) ?? []).map(x => x[1])
+
 function makeContext(integration) {
   const iid = integration.id
   const find = nativeId => db.prepare('SELECT id FROM devices WHERE integration_id = ? AND native_id = ?').get(iid, nativeId)?.id
@@ -78,7 +93,7 @@ function makeContext(integration) {
       if (!id) return
       const d = getLive(id)
       const prevConn = d.connection
-      if (statePatch) d.state = { ...d.state, ...statePatch }
+      if (statePatch) { d.state = { ...d.state, ...statePatch }; remember(id, statePatch) }
       if (extra.connection) d.connection = extra.connection
       if (extra.battery != null) d.battery = extra.battery
       d.last_seen = new Date().toISOString()

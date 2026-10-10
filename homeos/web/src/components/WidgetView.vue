@@ -44,7 +44,7 @@ async function refresh() {
 function schedule() {
   clearInterval(timer)
   refresh()
-  timer = setInterval(refresh, Math.max(5, props.widget.config.refresh ?? 30) * 1000)
+  timer = setInterval(refresh, Math.max(5, props.widget.config.device_id ? 5 : props.widget.config.refresh ?? 30) * 1000)
 }
 
 onMounted(schedule)

@@ -4,6 +4,7 @@ export const WIDGET_TYPES = {
   kpi: {
     sources: ['static', 'rest_json', 'home_assistant'],
     fields: [
+      { key: 'device_value', type: 'device_value' },
       { key: 'value', type: 'text', static: true },
       { key: 'path', type: 'text', for: ['rest_json'] },
       { key: 'entity_id', type: 'text', for: ['home_assistant'] },
@@ -15,6 +16,7 @@ export const WIDGET_TYPES = {
   gauge: {
     sources: ['static', 'rest_json', 'home_assistant'],
     fields: [
+      { key: 'device_value', type: 'device_value' },
       { key: 'value', type: 'number', static: true },
       { key: 'path', type: 'text', for: ['rest_json'] },
       { key: 'entity_id', type: 'text', for: ['home_assistant'] },
@@ -27,6 +29,7 @@ export const WIDGET_TYPES = {
   chart: {
     sources: ['static', 'rest_json'],
     fields: [
+      { key: 'device_value', type: 'device_value' },
       { key: 'values', type: 'list', static: true },
       { key: 'path', type: 'text', for: ['rest_json'] },
       { key: 'style', type: 'select', options: ['line', 'wave', 'bar', 'spectrum'] },
