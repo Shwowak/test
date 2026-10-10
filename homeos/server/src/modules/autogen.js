@@ -5,7 +5,7 @@ import { invalidate } from '../devices/engine.js'
 const QUANTITIES = ['temperature', 'humidity', 'power', 'energy', 'co2', 'illuminance', 'pressure', 'cpu', 'memory', 'disk']
 const ENERGY_TYPES = ['pv', 'battery', 'wallbox', 'energy_meter']
 const ORDER = ['light', 'switch', 'outlet', 'cover', 'blind', 'thermostat', 'heating', 'lock', 'media', 'door', 'window', 'motion', 'smoke', 'energy_meter', 'pv', 'battery', 'wallbox', 'sensor', 'vehicle', 'other']
-const ROOM_ICONS = [[/wohn|living/i, '⌂'], [/küche|kitchen/i, '☕'], [/schlaf|bed/i, '☾'], [/bad|bath/i, '♒'], [/kind|kid/i, '✦'], [/büro|office|arbeit/i, '▤'], [/garten|garden|außen|outdoor|terrasse/i, '☀'], [/garage|keller|basement|technik/i, '⚙'], [/flur|diele|hall/i, '◈']]
+const ROOM_ICONS = [[/wohn|living/i, '⌂'], [/küche|kitchen/i, '☕'], [/schlaf|bed/i, '☾'], [/bad|bath/i, '♒'], [/kind|kid/i, '✦'], [/büro|office|arbeit/i, '▤'], [/garten|garden|außen|outdoor|terrasse/i, '☀'], [/garage|keller|basement|technik|server/i, '⚙'], [/flur|diele|hall/i, '◈']]
 
 const WORDS = {
   battery: 'Batterie', batterie: 'Batterie', discharge: 'Entladung', discharging: 'Entladung', charge: 'Ladung', charging: 'Laden',
@@ -49,6 +49,54 @@ function roomFor(name) {
 
 const rank = d => (ORDER.indexOf(d.type) + 1 || 99)
 
+const COLORS = { temperature: '#22D3EE', humidity: '#3B82F6', power: '#F59E0B', energy: '#22C55E', battery: '#22C55E', cpu: '#8B5CF6', memory: '#22D3EE', disk: '#EC4899', co2: '#A3E635', illuminance: '#FACC15', pressure: '#94A3B8' }
+const GAUGE = ['cpu', 'memory', 'disk', 'humidity', 'battery', 'co2']
+const PRIMARY = ['power', 'temperature', 'cpu', 'memory', 'disk', 'humidity', 'energy', 'battery', 'co2', 'illuminance', 'pressure']
+
+function packer() {
+  const cols = Array(12).fill(0)
+  return (w, h) => {
+    let best = null
+    for (let x = 0; x + w <= 12; x++) {
+      const y = Math.max(...cols.slice(x, x + w))
+      if (!best || y < best.y) best = { x, y }
+    }
+    for (let i = best.x; i < best.x + w; i++) cols[i] = best.y + h
+    return best
+  }
+}
+
+function measures(d) {
+  return d.capabilities.filter(c => c.kind === 'measurement' && PRIMARY.includes(c.quantity)).sort((a, b) => PRIMARY.indexOf(a.quantity) - PRIMARY.indexOf(b.quantity))
+}
+
+function valueWidget(d, c, title) {
+  const q = c.quantity
+  const color = COLORS[q] ?? '#0A84FF'
+  const bind = { device_id: d.id, capability: c.id, color }
+  if (q === 'power') return { type: 'chart', title, w: 6, h: 3, config: { ...bind, style: 'line', unit: c.unit } }
+  if (GAUGE.includes(q)) return { type: 'gauge', title, w: 3, h: 3, config: { ...bind, min: 0, max: q === 'co2' ? 2000 : 100, unit: c.unit } }
+  return { type: 'kpi', title, w: 3, h: 2, config: { ...bind, unit: c.unit, decimals: q === 'temperature' ? 1 : 0 } }
+}
+
+function deviceWidgets(d) {
+  const ms = measures(d)
+  if (d.capabilities.some(c => c.writable) || !ms.length) return [{ type: 'device', title: d.nice, w: 3, h: 2, config: { device_id: d.id } }]
+  if (d.meta?.proxmox === 'node') {
+    const by = q => ms.find(c => c.quantity === q)
+    return [
+      ...['cpu', 'memory', 'disk'].filter(by).map(q => valueWidget(d, by(q), `${d.nice} · ${q === 'cpu' ? 'CPU' : q === 'memory' ? 'RAM' : 'Speicher'}`)),
+      by('cpu') && { type: 'chart', title: `${d.nice} · CPU-Verlauf`, w: 6, h: 3, config: { device_id: d.id, capability: by('cpu').id, style: 'line', color: COLORS.cpu, unit: '%' } },
+    ].filter(Boolean)
+  }
+  return [valueWidget(d, ms[0], d.nice)]
+}
+
+function layout(items) {
+  const place = packer()
+  return items.map(w => ({ ...w, ...place(w.w, w.h) }))
+}
+
 function buildPlan(picked, perRoom) {
   const roomNames = new Map(db.prepare('SELECT id, name FROM rooms').all().map(r => [r.id, r.name]))
   const byRoom = new Map()
@@ -57,24 +105,28 @@ function buildPlan(picked, perRoom) {
     if (d.roomName) byRoom.set(d.roomName, [...(byRoom.get(d.roomName) ?? []), d])
   }
   const rooms = [...byRoom].sort((a, b) => b[1].length - a[1].length)
-  const home = { name: 'Übersicht', icon: '⌂', widgets: [{ type: 'clock', title: '', x: 0, y: 0, w: 3, h: 2, config: {} }] }
-  picked.filter(d => ENERGY_TYPES.includes(d.type) || d.capabilities.some(c => c.quantity === 'power')).sort((a, b) => rank(a) - rank(b)).slice(0, 3)
-    .forEach((d, i) => home.widgets.push({ type: 'device', title: d.nice, x: 3 + i * 3, y: 0, w: 3, h: 2, config: { device_id: d.id } }))
-  const cols = [2, 2, 2]
-  for (const [name, devs] of rooms) {
-    const c = cols.indexOf(Math.min(...cols))
-    const h = Math.max(3, Math.min(9, 1 + Math.ceil(devs.length * 0.6)))
-    home.widgets.push({ type: 'room', title: name, x: c * 4, y: cols[c], w: 4, h, room: name, devices: devs.map(d => d.id) })
-    cols[c] += h
-  }
-  const dashboards = [home]
+  const top = []
+  const firstWith = q => picked.find(d => measures(d)[0]?.quantity === q || measures(d).some(c => c.quantity === q))
+  const capOf = (d, q) => measures(d).find(c => c.quantity === q)
+  const powers = picked.filter(d => capOf(d, 'power')).sort((a, b) => rank(a) - rank(b))
+  const temp = firstWith('temperature')
+  top.push({ type: 'clock', title: '', w: 3, h: 2, config: {} })
+  const kpis = []
+  if (temp) kpis.push([temp, capOf(temp, 'temperature')])
+  for (const d of powers) kpis.push([d, capOf(d, 'power')])
+  for (const d of picked) for (const c of measures(d)) if (!['power'].includes(c.quantity) && !kpis.some(([x, y]) => x === d && y === c) && !(c.quantity === 'temperature' && temp)) kpis.push([d, c])
+  for (const [d, c] of kpis.slice(0, 3)) top.push({ type: 'kpi', title: d.nice, w: 3, h: 2, config: { device_id: d.id, capability: c.id, color: d.type === 'pv' ? COLORS.energy : COLORS[c.quantity] ?? '#0A84FF', unit: c.unit, decimals: c.quantity === 'temperature' ? 1 : 0 } })
+  if (powers[0]) top.push({ type: 'chart', title: `${powers[0].nice} · Verlauf`, w: 8, h: 3, config: { device_id: powers[0].id, capability: capOf(powers[0], 'power').id, style: 'line', color: '#EC4899', unit: 'W' } })
+  const gaugeDev = picked.find(d => measures(d).some(c => GAUGE.includes(c.quantity)))
+  if (gaugeDev) { const used = top.filter(w => w.config?.device_id === gaugeDev.id).map(w => w.config.capability); const c = measures(gaugeDev).find(x => GAUGE.includes(x.quantity) && !used.includes(x.id)) ?? measures(gaugeDev).find(x => GAUGE.includes(x.quantity)); top.push({ ...valueWidget(gaugeDev, c, gaugeDev.nice), w: 4 }) }
+  for (const [name, devs] of rooms) top.push({ type: 'room', title: name, w: 4, h: Math.max(3, Math.min(8, 1 + Math.ceil(devs.length * 0.6))), room: name, devices: devs.map(d => d.id) })
+  const dashboards = [{ name: 'Übersicht', icon: '⌂', widgets: layout(top) }]
   if (perRoom) {
     for (const [name, devs] of rooms.filter(([, d]) => d.length >= 3).slice(0, 12)) {
-      dashboards.push({
-        name, icon: ROOM_ICONS.find(([re]) => re.test(name))?.[1] ?? '◈',
-        widgets: devs.sort((a, b) => rank(a) - rank(b) || a.nice.localeCompare(b.nice)).slice(0, 24)
-          .map((d, i) => ({ type: 'device', title: d.nice, x: (i % 4) * 3, y: Math.floor(i / 4) * 2, w: 3, h: 2, config: { device_id: d.id } })),
-      })
+      const sorted = devs.sort((a, b) => rank(a) - rank(b) || a.nice.localeCompare(b.nice))
+      const items = sorted.flatMap(deviceWidgets).slice(0, 24)
+      items.sort((a, b) => (b.w * b.h) - (a.w * a.h))
+      dashboards.push({ name, icon: ROOM_ICONS.find(([re]) => re.test(name))?.[1] ?? '◈', widgets: layout(items) })
     }
   }
   return { dashboards, rooms: byRoom.size }

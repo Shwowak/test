@@ -39,6 +39,11 @@ function value(d) {
   return b ? (d.state[b.id] ? '●' : '○') : '—'
 }
 const dev = id => store.devices[id]
+function capValue(d, id) {
+  const v = d?.state?.[id]
+  const c = d?.capabilities.find(x => x.id === id)
+  return typeof v === 'number' ? `${n(v, { maximumFractionDigits: 1 })} ${c?.unit ?? ''}` : '—'
+}
 const clock = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 function apply() { open.value = false; emit('apply') }
 defineExpose({ refresh, openPreview: () => { open.value = true } })
@@ -62,6 +67,10 @@ defineExpose({ refresh, openPreview: () => { open.value = true } })
         <template v-else-if="w.type === 'device'">
           <small>{{ TYPE_ICONS[dev(w.config.device_id)?.type] ?? '◈' }} {{ w.title }}</small>
           <b class="big">{{ value(dev(w.config.device_id)) }}</b>
+        </template>
+        <template v-else-if="['kpi', 'gauge', 'chart'].includes(w.type)">
+          <small>{{ w.title }}</small>
+          <b class="big" :style="{ color: w.config.color }">{{ capValue(dev(w.config.device_id), w.config.capability) }}</b>
         </template>
         <template v-else-if="w.type === 'room'">
           <small>{{ w.title }}</small>

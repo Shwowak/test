@@ -88,8 +88,12 @@ export async function resolve(widget, source) {
     if (!d) throw new Error('device not found')
     const c = d.capabilities.find(x => x.id === wc.capability)
     const unit = wc.unit || c?.unit || ''
-    if (widget.type === 'chart') return { values: deviceHistory(d.id, wc.capability), unit }
-    return { value: d.state[wc.capability] ?? null, unit, label: d.name, offline: d.connection === 'offline' }
+    if (widget.type === 'chart') {
+      const h = deviceHistory(d.id, wc.capability)
+      const v = d.state[wc.capability]
+      return { values: h.length > 1 ? h : typeof v === 'number' ? [v, v] : h, unit }
+    }
+    return { value: d.state[wc.capability] ?? null, unit, offline: d.connection === 'offline' }
   }
   if (!source || source.type === 'static') {
     return { value: wc.value ?? null, values: wc.values ?? null, unit: wc.unit ?? '' }
