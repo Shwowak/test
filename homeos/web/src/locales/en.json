@@ -1089,7 +1089,21 @@
     "later": "Later",
     "preview": "Suggestion",
     "clock": "Time",
-    "apply": "Apply"
+    "apply": "Apply",
+    "scan_title": "Discovered devices",
+    "scan_hint": "{n} useful devices found ({s} technical entries hidden). Untick what should not be on a dashboard.",
+    "next": "Show suggestions",
+    "plan_hint": "Suggestions with your real values. Untick what you do not want.",
+    "apply_n": "Create {n} dashboards",
+    "no_room": "no room",
+    "topics": {
+      "energy": "☀ Solar & energy",
+      "climate": "♨ Climate",
+      "security": "⛨ Security",
+      "server": "⚙ Servers",
+      "control": "💡 Lights & switches",
+      "other": "◈ Other"
+    }
   },
   "options": {
     "off": "Off",

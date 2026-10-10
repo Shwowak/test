@@ -22,7 +22,7 @@ const WORDS = {
 
 export function niceName(name) {
   const raw = String(name ?? '').trim()
-  if (!raw || (/\s/.test(raw) && !/_/.test(raw) && !/^[a-z0-9.]+$/.test(raw))) return raw
+  if (!raw || (/\s/.test(raw) && !/_/.test(raw) && !/^[a-z0-9.]+$/.test(raw))) return raw.replace(/\b(Kueche|Buero|Haustuer|Tuer|Aussen)\b/gi, w => WORDS[w.toLowerCase()])
   const words = raw.replace(/^[a-z_]+\./, '').split(/[_.\-\s]+/).filter(Boolean)
   const out = []
   for (const w of words) {
@@ -216,14 +216,23 @@ function buildPlan(picked, perRoom) {
   return { dashboards, rooms: byRoom.size }
 }
 
-export function generate({ replace = true, rooms: perRoom = true, dryRun = false } = {}) {
+export function generate({ replace = true, rooms: perRoom = true, dryRun = false, include = null, exclude = [] } = {}) {
   const all = db.prepare('SELECT d.* FROM devices d JOIN integrations i ON i.id = d.integration_id WHERE i.enabled = 1').all()
     .map(r => ({ ...r, capabilities: json(r.capabilities || '[]'), meta: json(r.meta), hidden: !!r.hidden, adopted: !!r.adopted }))
-  const picked = all.filter(relevant)
-  for (const d of picked) d.nice = niceName(d.name)
+  const candidates = all.filter(relevant)
+  const picked = candidates.filter(d => !exclude.includes(d.id))
+  for (const d of candidates) d.nice = niceName(d.name)
   const plan = buildPlan(picked, perRoom)
+  if (Array.isArray(include)) plan.dashboards = plan.dashboards.filter(d => include.includes(d.name))
   const summary = { devices_total: all.length, devices_used: picked.length, rooms: plan.rooms, dashboards: plan.dashboards.length, created: !!(getSetting('autogen_dashboards') ?? []).length }
-  if (dryRun) return { ...summary, plan: plan.dashboards, names: Object.fromEntries(picked.map(d => [d.id, d.nice])) }
+  if (dryRun) {
+    for (const d of candidates) if (!d.topic) { d.topic = topicOf(d); d.roomName = d.meta.area || roomFromName(`${d.name} ${d.nice}`) }
+    return {
+      ...summary, plan: plan.dashboards, names: Object.fromEntries(candidates.map(d => [d.id, d.nice])),
+      devices: candidates.map(d => ({ id: d.id, name: d.nice, topic: d.topic, room: d.roomName ?? null, type: d.type, excluded: exclude.includes(d.id) })),
+      skipped: all.length - candidates.length,
+    }
+  }
 
   db.exec('BEGIN')
   try {

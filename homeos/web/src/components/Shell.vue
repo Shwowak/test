@@ -38,8 +38,9 @@ function runAction(action) {
   else if (action === 'autogen') applySuggest()
 }
 const suggest = ref(null)
+let suggestBody = {}
 async function applySuggest() {
-  const r = await api('POST', '/dashboards/generate', { rooms: true, replace: true }).catch(() => null)
+  const r = await api('POST', '/dashboards/generate', { rooms: true, replace: true, ...suggestBody }).catch(() => null)
   if (!r) return
   await loadDashboards()
   if (r.first) select(r.first)
@@ -160,15 +161,8 @@ async function newDashboard() {
   autogen.value = await api('POST', '/dashboards/generate', { dryRun: true }).catch(() => null)
 }
 async function runAutogen() {
-  autogenBusy.value = true
-  try {
-    const r = await api('POST', '/dashboards/generate', { rooms: autogenRooms.value, replace: true })
-    autogen.value = { ...r, done: true }
-    await loadDashboards()
-    if (r.first) select(r.first)
-    dashForm.value = null
-    loadDevices().catch(() => {})
-  } finally { autogenBusy.value = false }
+  dashForm.value = null
+  suggest.value?.openPreview()
 }
 function editDashboard() {
   dashForm.value = { ...active.value }
@@ -235,7 +229,7 @@ const icons = ['⌂', '◈', '⚡', '☀', '♨', '☎', '♫', '⚙', '⛨', '�
         </div>
       </header>
 
-      <Suggest v-if="view === 'dashboard' && !editing" ref="suggest" @apply="requireAdmin('autogen', 'dashboards.edit')" />
+      <Suggest v-if="view === 'dashboard' && !editing" ref="suggest" @apply="b => { suggestBody = b; requireAdmin('autogen', 'dashboards.edit') }" />
       <DevicesView v-if="view === 'devices'" />
       <AutomationsView v-else-if="view === 'automations'" />
       <Board v-else-if="active && meta" :key="active.id" :dashboard="active" :editing="editing" :meta="meta" :sources="sources" />

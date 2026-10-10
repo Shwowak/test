@@ -49,7 +49,7 @@ export default async function dashboardsModule(app) {
   })
 
   app.post('/dashboards/generate', {
-    schema: t('Auto-create dashboards from devices and rooms', { body: { type: 'object', properties: { replace: { type: 'boolean' }, rooms: { type: 'boolean' }, dryRun: { type: 'boolean' } } } }),
+    schema: t('Auto-create dashboards from devices and rooms', { body: { type: 'object', properties: { replace: { type: 'boolean' }, rooms: { type: 'boolean' }, dryRun: { type: 'boolean' }, include: { type: 'array', items: { type: 'string' } }, exclude: { type: 'array', items: { type: 'integer' } } } } }),
     preHandler: view,
   }, async req => {
     if (!req.body?.dryRun && !(can(req.user, 'dashboards.edit') && can(req.user, 'devices.manage'))) throw new HttpError(403, 'forbidden')

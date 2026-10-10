@@ -1089,7 +1089,21 @@
     "later": "Später",
     "preview": "Vorschlag",
     "clock": "Uhrzeit",
-    "apply": "Übernehmen"
+    "apply": "Übernehmen",
+    "scan_title": "Erkannte Geräte",
+    "scan_hint": "{n} sinnvolle Geräte erkannt ({s} technische Einträge ausgeblendet). Abwählen, was nicht aufs Dashboard soll.",
+    "next": "Vorschläge anzeigen",
+    "plan_hint": "Vorschläge mit deinen echten Werten. Abwählen, was du nicht möchtest.",
+    "apply_n": "{n} Dashboards anlegen",
+    "no_room": "ohne Raum",
+    "topics": {
+      "energy": "☀ Solar & Energie",
+      "climate": "♨ Klima",
+      "security": "⛨ Sicherheit",
+      "server": "⚙ Server",
+      "control": "💡 Licht & Schalter",
+      "other": "◈ Sonstiges"
+    }
   },
   "options": {
     "off": "Aus",
