@@ -83,3 +83,15 @@ test('locale texts have no i18n syntax traps', async () => {
   for (const f of readdirSync(dir)) walk(JSON.parse(readFileSync(new URL(f, dir), 'utf8')), f + ':')
   assert.deepEqual(bad, [])
 })
+
+test('device sorting by name and topic', async () => {
+  const { roomFromName, topicOf } = await import('../src/modules/autogen.js')
+  assert.equal(roomFromName('Deckenlicht Wohnzimmer'), 'Wohnzimmer')
+  assert.equal(roomFromName('sensor.kueche_temp'), 'Küche')
+  assert.equal(roomFromName('PV Anlage'), null)
+  const m = (q, u) => ({ id: q, kind: 'measurement', quantity: q, unit: u })
+  assert.equal(topicOf({ name: 'Wechselrichter Leistung', type: 'sensor', capabilities: [m('power', 'W')], meta: {} }), 'energy')
+  assert.equal(topicOf({ name: 'Bad Temperatur', type: 'sensor', capabilities: [m('temperature', '°C')], meta: {} }), 'climate')
+  assert.equal(topicOf({ name: 'Haustür', type: 'door', capabilities: [{ id: 'contact', kind: 'binary' }], meta: {} }), 'security')
+  assert.equal(topicOf({ name: 'pve', type: 'other', capabilities: [m('cpu', '%')], meta: { proxmox: 'node' } }), 'server')
+})
