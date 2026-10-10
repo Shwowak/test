@@ -85,6 +85,10 @@ const MIGRATIONS = [
     CREATE TABLE IF NOT EXISTS cameras (
       id INTEGER PRIMARY KEY, name TEXT NOT NULL, source TEXT NOT NULL, kind TEXT NOT NULL DEFAULT 'stream',
       room_id INTEGER REFERENCES rooms(id) ON DELETE SET NULL, enabled INTEGER NOT NULL DEFAULT 1, sort INTEGER NOT NULL DEFAULT 0);`),
+  () => db.exec(`
+    CREATE TABLE IF NOT EXISTS device_history (
+      device_id INTEGER NOT NULL REFERENCES devices(id) ON DELETE CASCADE, cap TEXT NOT NULL, ts INTEGER NOT NULL, value REAL NOT NULL);
+    CREATE INDEX IF NOT EXISTS device_history_idx ON device_history (device_id, cap, ts);`),
 ]
 
 export function migrate() {

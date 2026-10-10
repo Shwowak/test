@@ -95,7 +95,8 @@
     "room_id": "Room",
     "plugin_widget": "Plugin widget",
     "camera_id": "Camera",
-    "device_value": "Value from device"
+    "device_value": "Value from device",
+    "range": "Time range"
   },
   "chartStyles": {
     "line": "Line (neon)",
@@ -1122,5 +1123,13 @@
     "pv": "Solar",
     "minpv": "Min+Solar",
     "now": "Fast"
+  },
+  "history": {
+    "r1": "1 h",
+    "r6": "6 h",
+    "r24": "24 h",
+    "r168": "7 days",
+    "r720": "30 days",
+    "empty": "No history yet – recorded every minute from now on."
   }
 }

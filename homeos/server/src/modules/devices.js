@@ -8,7 +8,7 @@ import { userFromToken, can } from '../core/auth.js'
 import { DEVICE_TYPES, CAPABILITY_KINDS } from '../devices/model.js'
 import {
   ADAPTERS, deviceRow, integrationRow, redactConfig, mergeConfigSecrets, startIntegration, stopIntegration,
-  integrationStatus, getDevice, commandDevice, testIntegration, invalidate, integrationAction,
+  integrationStatus, getDevice, commandDevice, testIntegration, invalidate, integrationAction, deviceHistorySeries,
 } from '../devices/engine.js'
 import { REST_DEVICE_FIELDS } from '../devices/adapters/rest.js'
 
@@ -134,6 +134,9 @@ export default async function devicesModule(app) {
     if (!r) throw notFound()
     return withLive(r)
   })
+
+  app.get('/devices/:id/history', { schema: tD('Value history of a capability', { querystring: { type: 'object', required: ['cap'], properties: { cap: { type: 'string' }, hours: { type: 'number', minimum: 1, maximum: 720 } } } }), preHandler: view }, async req =>
+    deviceHistorySeries(Number(req.params.id), req.query.cap, req.query.hours ?? 24))
 
   app.post('/devices', {
     schema: tD('Create manual device (REST integrations)', { body: { type: 'object', required: ['integration_id', 'name', 'meta'], properties: { integration_id: { type: 'integer' }, name: { type: 'string', maxLength: 80 }, room_id: { type: ['integer', 'null'] }, meta: { type: 'object' } } } }),

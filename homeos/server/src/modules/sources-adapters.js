@@ -89,7 +89,7 @@ export async function resolve(widget, source) {
     const c = d.capabilities.find(x => x.id === wc.capability)
     const unit = wc.unit || c?.unit || ''
     if (widget.type === 'chart') {
-      const h = deviceHistory(d.id, wc.capability)
+      const h = deviceHistory(d.id, wc.capability, Number(wc.range) || 24)
       const v = d.state[wc.capability]
       return { values: h.length > 1 ? h : typeof v === 'number' ? [v, v] : h, unit }
     }

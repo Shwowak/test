@@ -68,6 +68,7 @@ Vorhandene Adapter: homeassistant, mqtt, rest, zigbee2mqtt, zwavejs, matter, knx
 - **Dashboard-Vorschlag** (`modules/autogen.js`): baut aus erkannten Geräten eine Übersicht + je Raum ein Dashboard, übersetzt technische Namen (`niceName`), übernimmt den Stil vorhandener Dashboards. UI: `components/Suggest.vue`.
 - **Einsatzmonitor** (`modules/alarm.js`): Webhook `/api/v1/alarm/hook/<secret>` (GroupAlarm, DIVERA, alamos), Vollbild-Alarm `components/alarm/AlarmLayer.vue`.
 - **Health/Auto-Fix** (`system/health.js`): überwacht Pi, startet Kiosk neu, räumt auf.
+- **Verlauf:** Tabelle `device_history` (1 Wert/Minute je Messwert, 30 Tage), API `GET /devices/:id/history?cap=- **Live-Werte:** WebSockethours=`, Anzeige `components/devices/DeviceHistory.vue`, Diagramm-Widget mit `config.range` (Stunden).
 - **Live-Werte:** WebSocket `/api/v1/events` → `web/src/devices.js` (listeners).
 
 ## Testen vor jedem Push

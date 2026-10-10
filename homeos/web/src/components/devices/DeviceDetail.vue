@@ -5,6 +5,7 @@ import { api } from '../../api.js'
 import { store, loadDevices } from '../../devices.js'
 import { errorText } from '../../i18n.js'
 import DeviceControl from './DeviceControl.vue'
+import DeviceHistory from './DeviceHistory.vue'
 
 const props = defineProps({ device: Object })
 const emit = defineEmits(['close'])
@@ -39,6 +40,7 @@ async function remove() {
 
 <template>
   <DeviceControl :device="device" :disabled="!can('devices.control')" />
+  <DeviceHistory :device="device" />
 
   <form v-if="can('devices.manage')" class="form" @submit.prevent="save">
     <div class="field"><label>{{ t('common.name') }}</label><input v-model="form.name" required maxlength="80"></div>

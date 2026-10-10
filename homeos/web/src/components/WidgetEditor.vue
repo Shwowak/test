@@ -35,6 +35,7 @@ function pickDevice() {
 }
 const visibleFields = computed(() => typeDef.value.fields.filter(f => {
   if (f.type === 'device_value') return sourceType.value === 'static'
+  if (f.type === 'range') return !!form.value.config.device_id
   if (f.static) return sourceType.value === 'static' && !form.value.config.device_id
   if (f.for) return f.for.includes(sourceType.value)
   return true
@@ -103,6 +104,7 @@ async function remove() {
           <option v-for="c in capOptions" :key="c.id" :value="c.id">{{ t('quantities.' + (c.quantity ?? c.id), c.quantity ?? c.id) }}{{ c.unit ? ' (' + c.unit + ')' : '' }}</option>
         </select>
       </template>
+      <select v-else-if="f.type === 'range'" v-model.number="form.config.range"><option v-for="h in [1, 6, 24, 168, 720]" :key="h" :value="h">{{ t('history.r' + h) }}</option></select>
       <textarea v-else-if="f.type === 'textarea'" v-model="form.config[f.key]" />
       <select v-else-if="f.type === 'select'" v-model="form.config[f.key]">
         <option v-for="v in f.options" :key="v" :value="v">{{ t('chartStyles.' + v) }}</option>

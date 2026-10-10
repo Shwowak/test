@@ -95,7 +95,8 @@
     "room_id": "Raum",
     "plugin_widget": "Plugin-Widget",
     "camera_id": "Kamera",
-    "device_value": "Wert von Gerät"
+    "device_value": "Wert von Gerät",
+    "range": "Zeitraum"
   },
   "chartStyles": {
     "line": "Linie (Neon)",
@@ -1122,5 +1123,13 @@
     "pv": "PV",
     "minpv": "Min+PV",
     "now": "Schnell"
+  },
+  "history": {
+    "r1": "1 Std",
+    "r6": "6 Std",
+    "r24": "24 Std",
+    "r168": "7 Tage",
+    "r720": "30 Tage",
+    "empty": "Noch keine Verlaufsdaten – werden ab jetzt jede Minute gespeichert."
   }
 }

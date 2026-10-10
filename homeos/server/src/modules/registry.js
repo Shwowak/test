@@ -33,6 +33,7 @@ export const WIDGET_TYPES = {
       { key: 'values', type: 'list', static: true },
       { key: 'path', type: 'text', for: ['rest_json'] },
       { key: 'style', type: 'select', options: ['line', 'wave', 'bar', 'spectrum'] },
+      { key: 'range', type: 'range' },
       { key: 'unit', type: 'text' },
       { key: 'color', type: 'color' },
     ],

@@ -54,20 +54,34 @@ export function invalidate(id) {
   else live.delete(id)
 }
 
-const history = new Map()
+const lastSaved = new Map()
+let insertHist = null
 function remember(id, patch) {
   const now = Date.now()
+  insertHist ??= db.prepare('INSERT INTO device_history (device_id, cap, ts, value) VALUES (?, ?, ?, ?)')
   for (const [k, v] of Object.entries(patch ?? {})) {
     if (typeof v !== 'number' || Number.isNaN(v)) continue
     const key = `${id}:${k}`
-    const h = history.get(key) ?? []
-    if (h.length && now - h.at(-1)[0] < 60000) h[h.length - 1] = [h.at(-1)[0], v]
-    else h.push([now, v])
-    if (h.length > 1440) h.shift()
-    history.set(key, h)
+    if (now - (lastSaved.get(key) ?? 0) < 60000) continue
+    lastSaved.set(key, now)
+    try { insertHist.run(id, k, now, v) } catch {}
   }
 }
-export const deviceHistory = (id, cap) => (history.get(`${id}:${cap}`) ?? []).map(x => x[1])
+
+export function deviceHistory(id, cap, hours = 24) {
+  const since = Date.now() - hours * 3600000
+  const rows = db.prepare('SELECT ts, value FROM device_history WHERE device_id = ? AND cap = ? AND ts > ? ORDER BY ts').all(id, cap, since)
+  const max = 240
+  if (rows.length <= max) return rows.map(r => r.value)
+  const step = rows.length / max
+  return Array.from({ length: max }, (_, i) => rows[Math.floor(i * step)].value)
+}
+
+export function deviceHistorySeries(id, cap, hours = 24) {
+  return db.prepare('SELECT ts, value FROM device_history WHERE device_id = ? AND cap = ? AND ts > ? ORDER BY ts').all(id, cap, Date.now() - hours * 3600000).map(r => [r.ts, r.value])
+}
+
+setInterval(() => { try { db.prepare('DELETE FROM device_history WHERE ts < ?').run(Date.now() - 30 * 86400000) } catch {} }, 6 * 3600000).unref()
 
 function makeContext(integration) {
   const iid = integration.id
