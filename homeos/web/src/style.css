@@ -287,3 +287,22 @@ html .style-glass .grid-stack-item-content,
 html .style-apple .grid-stack-item-content { border: 0 !important; background: transparent !important; box-shadow: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
 html .style-tiles .grid-stack-item-content::after { display: none !important; }
 html .style-tiles .grid-stack { border: 0 !important; }
+
+.style-cards {
+  --card-bg: rgba(18, 22, 34, 0.72);
+  --card-border: rgba(255, 255, 255, 0.08);
+  --card-glow: rgba(0, 240, 255, 0.25);
+  --card-radius: 18px;
+}
+html .style-cards .grid-stack-item-content {
+  inset: 8px !important;
+  border: 1px solid var(--card-border) !important;
+  border-radius: var(--card-radius);
+  background: var(--card-bg) !important;
+  backdrop-filter: blur(28px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45) !important;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+html .style-cards .grid-stack-item-content:hover { border-color: var(--card-glow) !important; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 0 18px rgba(0, 240, 255, 0.12) !important; }
+.lite .style-cards .grid-stack-item-content { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background: #121622 !important; }

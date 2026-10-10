@@ -46,6 +46,6 @@ export const WIDGET_TYPES = {
   camera: { sources: [], fields: [{ key: 'camera_id', type: 'camera' }] },
 }
 
-export const DASHBOARD_STYLES = ['seamless', 'tiles', 'glass', 'apple']
+export const DASHBOARD_STYLES = ['seamless', 'tiles', 'glass', 'apple', 'cards']
 
 export const LOCALES = ['de', 'en', 'fr', 'es', 'it', 'nl']

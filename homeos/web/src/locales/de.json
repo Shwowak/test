@@ -46,7 +46,8 @@
     "seamless": "Nahtlos",
     "tiles": "Kacheln (HUD)",
     "glass": "Glas",
-    "apple": "Apple"
+    "apple": "Apple",
+    "cards": "Karten (HUD)"
   },
   "widget": {
     "add": "Widget hinzufügen",

@@ -46,7 +46,8 @@
     "seamless": "Seamless",
     "tiles": "Tiles (HUD)",
     "glass": "Glass",
-    "apple": "Apple"
+    "apple": "Apple",
+    "cards": "Cards (HUD)"
   },
   "widget": {
     "add": "Add widget",
