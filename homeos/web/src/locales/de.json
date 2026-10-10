@@ -508,7 +508,8 @@
     "memory": "RAM",
     "disk": "Speicher",
     "memory_used": "RAM belegt",
-    "disk_free": "Speicher frei"
+    "disk_free": "Speicher frei",
+    "load": "Last"
   },
   "binary": {
     "default": {
@@ -547,7 +548,8 @@
     "matter": "Matter / Thread",
     "knx": "KNX (KNXnet/IP)",
     "evcc": "evcc (PV-Überschussladen)",
-    "proxmox": "Proxmox VE (Server, VMs, Container)"
+    "proxmox": "Proxmox VE (Server, VMs, Container)",
+    "system": "SmartBoard System"
   },
   "integrations": {
     "add": "Integration hinzufügen",

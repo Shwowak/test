@@ -12,8 +12,9 @@ import MatterAdapter from './adapters/matter.js'
 import KnxAdapter from './adapters/knx.js'
 import EvccAdapter from './adapters/evcc.js'
 import ProxmoxAdapter from './adapters/proxmox.js'
+import SystemAdapter from './adapters/system.js'
 
-export const ADAPTERS = { home_assistant: HomeAssistantAdapter, mqtt: MqttAdapter, rest: RestAdapter, zigbee2mqtt: Zigbee2MqttAdapter, zwavejs: ZwaveJsAdapter, matter: MatterAdapter, knx: KnxAdapter, modbus: ModbusAdapter, evcc: EvccAdapter, proxmox: ProxmoxAdapter }
+export const ADAPTERS = { home_assistant: HomeAssistantAdapter, mqtt: MqttAdapter, rest: RestAdapter, zigbee2mqtt: Zigbee2MqttAdapter, zwavejs: ZwaveJsAdapter, matter: MatterAdapter, knx: KnxAdapter, modbus: ModbusAdapter, evcc: EvccAdapter, proxmox: ProxmoxAdapter, system: SystemAdapter }
 
 const SECRET_KEYS = new Set(Object.values(ADAPTERS).flatMap(A => A.fields.filter(f => f.type === 'secret').map(f => f.key)))
 export const redactConfig = c => Object.fromEntries(Object.entries(c).map(([k, v]) => [k, SECRET_KEYS.has(k) && v ? '••••••' : v]))
@@ -143,6 +144,9 @@ export async function stopIntegration(id) {
 }
 
 export async function startAll() {
+  if (!db.prepare("SELECT id FROM integrations WHERE adapter = 'system'").get()) {
+    db.prepare("INSERT INTO integrations (adapter, name, config, enabled) VALUES ('system', 'SmartBoard System', ?, 1)").run(JSON.stringify({ auto_adopt: true }))
+  }
   for (const { id } of db.prepare('SELECT id FROM integrations WHERE enabled = 1').all()) startIntegration(id)
 }
 

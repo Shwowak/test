@@ -508,7 +508,8 @@
     "memory": "RAM",
     "disk": "Storage",
     "memory_used": "RAM used",
-    "disk_free": "Storage free"
+    "disk_free": "Storage free",
+    "load": "Load"
   },
   "binary": {
     "default": {
@@ -547,7 +548,8 @@
     "matter": "Matter / Thread",
     "knx": "KNX (KNXnet/IP)",
     "evcc": "evcc (solar charging)",
-    "proxmox": "Proxmox VE (servers, VMs, containers)"
+    "proxmox": "Proxmox VE (servers, VMs, containers)",
+    "system": "SmartBoard system"
   },
   "integrations": {
     "add": "Add integration",

@@ -152,7 +152,7 @@ async function saveManual() {
     </ul>
     <div class="label sec">{{ t('integrations.add') }}</div>
     <div class="new">
-      <button v-for="(_, k) in adapters" :key="k" class="btn" @click="create(k)">＋ {{ t('adapters.' + k) }}</button>
+      <button v-for="k in Object.keys(adapters).filter(k => !adapters[k].hidden)" :key="k" class="btn" @click="create(k)">＋ {{ t('adapters.' + k) }}</button>
     </div>
   </div>
 

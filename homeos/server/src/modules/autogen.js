@@ -83,7 +83,7 @@ function valueWidget(d, c, title) {
 function deviceWidgets(d) {
   const ms = measures(d)
   if (d.capabilities.some(c => c.writable) || !ms.length) return [{ type: 'device', title: d.nice, w: 3, h: 2, config: { device_id: d.id } }]
-  if (d.meta?.proxmox === 'node') {
+  if (d.meta?.proxmox === 'node' || d.meta?.system) {
     const by = q => ms.find(c => c.quantity === q)
     return [
       ...['cpu', 'memory', 'disk'].filter(by).map(q => valueWidget(d, by(q), `${d.nice} · ${q === 'cpu' ? 'CPU' : q === 'memory' ? 'RAM' : 'Speicher'}`)),
@@ -114,7 +114,7 @@ export function roomFromName(name) {
 export function topicOf(d) {
   const n = `${d.name} ${d.nice ?? ''}`
   const qs = d.capabilities.filter(c => c.kind === 'measurement').map(c => c.quantity)
-  if (d.meta?.proxmox) return 'server'
+  if (d.meta?.proxmox || d.meta?.system) return 'server'
   if (['pv', 'battery', 'wallbox', 'energy_meter', 'vehicle'].includes(d.type) || qs.includes('power') || qs.includes('energy') || Object.values(ROLE).some(re => re.test(n) && qs.length)) return 'energy'
   if (['door', 'window', 'motion', 'smoke', 'lock'].includes(d.type)) return 'security'
   if (qs.some(q => ['temperature', 'humidity', 'co2', 'pressure', 'illuminance'].includes(q))) return 'climate'

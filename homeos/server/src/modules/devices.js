@@ -211,7 +211,7 @@ export default async function devicesModule(app) {
 
   app.get('/devices/meta/registry', { schema: tD('Device types, capability kinds, adapters') , preHandler: view }, async () => ({
     types: DEVICE_TYPES, capabilities: CAPABILITY_KINDS,
-    adapters: Object.fromEntries(Object.entries(ADAPTERS).map(([k, A]) => [k, { fields: A.fields, manualDevices: !!A.manualDevices, actions: Object.keys(A.actions ?? {}), deviceFields: A.deviceFields ?? [] }])),
+    adapters: Object.fromEntries(Object.entries(ADAPTERS).map(([k, A]) => [k, { fields: A.fields, hidden: !!A.hidden, manualDevices: !!A.manualDevices, actions: Object.keys(A.actions ?? {}), deviceFields: A.deviceFields ?? [] }])),
     restDeviceFields: REST_DEVICE_FIELDS,
   }))
 
