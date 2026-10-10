@@ -35,7 +35,7 @@ const fields = computed(() => form.value ? adapters.value[form.value.adapter]?.f
 const manualFields = computed(() => (adapters.value[manual.value?.adapter]?.deviceFields ?? []).filter(f => !f.for || f.for.includes(manual.value?.meta.kind)))
 
 function create(adapter) {
-  form.value = { adapter, name: t('adapters.' + adapter), config: adapter === 'mqtt' ? { discovery_prefix: 'homeassistant' } : adapter === 'rest' ? { interval: 30 } : {}, enabled: true }
+  form.value = { adapter, name: t('adapters.' + adapter), config: { mqtt: { discovery_prefix: 'homeassistant' }, rest: { interval: 30 }, proxmox: { insecure: 'yes', include: 'all', interval: 15, auto_adopt: true }, knx: { mode: 'tunneling' }, evcc: { interval: 5, auto_adopt: true } }[adapter] ?? {}, enabled: true }
   test.value = null
 }
 function edit(i) {

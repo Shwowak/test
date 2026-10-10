@@ -601,7 +601,7 @@
     "unit_id": "Unit-ID (Standard 1)",
     "base_topic": "Basis-Topic (zigbee2mqtt)",
     "mode": "Verbindungsart",
-    "token_id": "API-Token-ID (z. B. root@pam!smartboard)",
+    "token_id": "API-Token-ID (z. B. root{'@'}pam!smartboard)",
     "token_secret": "API-Token-Secret",
     "insecure": "Selbstsigniertes Zertifikat erlauben",
     "include": "Anzeigen"

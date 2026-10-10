@@ -74,3 +74,12 @@ test('proxmox resources', async () => {
   assert.equal(v.state.running, false)
   assert.equal(v.state.cpu, 0)
 })
+
+test('locale texts have no i18n syntax traps', async () => {
+  const { readFileSync, readdirSync } = await import('node:fs')
+  const dir = new URL('../../web/src/locales/', import.meta.url)
+  const bad = []
+  const walk = (o, p) => { for (const [k, v] of Object.entries(o)) typeof v === 'object' ? walk(v, p + k + '.') : /@(?!\.)/.test(v.replace(/\{'@'\}/g, '')) && bad.push(p + k) }
+  for (const f of readdirSync(dir)) walk(JSON.parse(readFileSync(new URL(f, dir), 'utf8')), f + ':')
+  assert.deepEqual(bad, [])
+})
