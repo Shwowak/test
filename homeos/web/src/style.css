@@ -306,3 +306,14 @@ html .style-cards .grid-stack-item-content {
 }
 html .style-cards .grid-stack-item-content:hover { border-color: var(--card-glow) !important; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 0 18px rgba(0, 240, 255, 0.12) !important; }
 .lite .style-cards .grid-stack-item-content { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background: #121622 !important; }
+
+@keyframes widget-in { from { opacity: 0; transform: translateY(14px) scale(0.98); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
+.grid-stack-item-content > * { animation: widget-in 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.grid-stack-item:nth-child(2) .grid-stack-item-content > * { animation-delay: 0.05s; }
+.grid-stack-item:nth-child(3) .grid-stack-item-content > * { animation-delay: 0.1s; }
+.grid-stack-item:nth-child(4) .grid-stack-item-content > * { animation-delay: 0.15s; }
+.grid-stack-item:nth-child(5) .grid-stack-item-content > * { animation-delay: 0.2s; }
+.grid-stack-item:nth-child(6) .grid-stack-item-content > * { animation-delay: 0.25s; }
+.grid-stack-item:nth-child(7) .grid-stack-item-content > * { animation-delay: 0.3s; }
+.grid-stack-item:nth-child(n+8) .grid-stack-item-content > * { animation-delay: 0.35s; }
+.lite .grid-stack-item-content > * { animation-duration: 0.3s; filter: none; }

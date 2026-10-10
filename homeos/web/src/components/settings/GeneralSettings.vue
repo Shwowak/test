@@ -3,7 +3,7 @@ import { ref, onMounted, inject } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { api } from '../../api.js'
 import { errorText } from '../../i18n.js'
-import { loadFeatures, applyTheme } from '../../features.js'
+import { loadFeatures, applyTheme, features } from '../../features.js'
 
 const { t, d } = useI18n()
 const user = inject('user')
@@ -31,6 +31,12 @@ async function setTheme(v) {
   s.value.theme = v
   applyTheme(v)
   await api('PUT', '/settings', { theme: v }).catch(e => { msg.value = errorText(e) })
+}
+
+async function setFx(v) {
+  s.value.fx = v
+  features.fx = v
+  await api('PUT', '/settings', { fx: v }).catch(e => { msg.value = errorText(e) })
 }
 
 async function save() {
@@ -66,6 +72,10 @@ function locate() {
       <h3>{{ t('general.theme') }}</h3>
       <div class="row">
         <button v-for="v in ['apple', 'neon']" :key="v" type="button" class="btn" :class="{ active: (s.theme ?? 'apple') === v }" @click="setTheme(v)">{{ t('general.themes.' + v) }}</button>
+      </div>
+      <h3>{{ t('general.fx') }}</h3>
+      <div class="row">
+        <button v-for="v in ['off', 'particles', 'circuit', 'both']" :key="v" type="button" class="btn" :class="{ active: (s.fx ?? 'particles') === v }" @click="setFx(v)">{{ t('general.fxs.' + v) }}</button>
       </div>
       <h3>{{ t('general.features') }}</h3>
       <p class="sun">{{ t('general.features_hint') }}</p>

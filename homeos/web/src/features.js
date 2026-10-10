@@ -1,7 +1,7 @@
 import { reactive } from 'vue'
 import { api } from './api.js'
 
-export const features = reactive({ automations: false, control: true, assistant: true, cameras: true, admin_timeout: 10, viewer: null, loaded: false })
+export const features = reactive({ automations: false, control: true, assistant: true, cameras: true, fx: 'particles', admin_timeout: 10, viewer: null, loaded: false })
 
 export function applyTheme(theme) {
   const t = theme === 'neon' ? 'neon' : 'apple'
@@ -13,7 +13,7 @@ export function applyTheme(theme) {
 export async function loadFeatures() {
   try {
     const s = await api('GET', '/settings')
-    Object.assign(features, s.features ?? {}, { admin_timeout: s.admin_timeout ?? 10, viewer: s.autologin?.user_id ?? null, loaded: true })
+    Object.assign(features, s.features ?? {}, { fx: s.fx ?? 'particles', admin_timeout: s.admin_timeout ?? 10, viewer: s.autologin?.user_id ?? null, loaded: true })
     applyTheme(s.theme)
   } catch {}
 }

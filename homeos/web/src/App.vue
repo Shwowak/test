@@ -1,4 +1,5 @@
 <script setup>
+import BgFx from './components/BgFx.vue'
 import { ref, onMounted, provide } from 'vue'
 import { api } from './api.js'
 import { setLocale } from './i18n.js'
@@ -38,6 +39,7 @@ async function logout() {
 </script>
 
 <template>
+  <BgFx />
   <template v-if="ready">
     <main v-if="netcode && !user" class="nc">
       <form @submit.prevent="sendCode">

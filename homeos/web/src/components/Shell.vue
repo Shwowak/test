@@ -292,7 +292,7 @@ const icons = ['⌂', '◈', '⚡', '☀', '♨', '☎', '♫', '⚙', '⛨', '�
 </template>
 
 <style scoped>
-.shell { display: flex; height: calc(100vh / var(--zoom, 1)); height: calc(100dvh / var(--zoom, 1)); }
+.shell { position: relative; z-index: 1; display: flex; height: calc(100vh / var(--zoom, 1)); height: calc(100dvh / var(--zoom, 1)); }
 .rail {
   width: 104px; flex: none; display: flex; flex-direction: column; gap: 8px; padding: 16px 10px;
   border-right: 1px solid var(--line); background: rgba(2, 6, 23, 0.55); backdrop-filter: blur(14px); overflow-y: auto;

@@ -693,6 +693,13 @@
     "themes": {
       "apple": "Apple (clean)",
       "neon": "Neon (sci-fi)"
+    },
+    "fx": "Background animation",
+    "fxs": {
+      "off": "Off",
+      "particles": "Particles",
+      "circuit": "Circuits",
+      "both": "Both"
     }
   },
   "notifications": {

@@ -9,6 +9,7 @@ export const DEFAULT_SETTINGS = {
   features: { automations: false, control: true, assistant: true, cameras: true },
   admin_timeout: 10,
   theme: 'apple',
+  fx: 'particles',
   ai: { provider: 'ollama', url: '', model: '', api_key: '', stt_url: '', stt_model: 'whisper-1', tts_url: '', tts_model: 'tts-1', tts_voice: '', speak: true },
   privacy: { cameras: false, microphone: false },
   go2rtc: { url: '' },
