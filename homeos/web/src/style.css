@@ -279,3 +279,11 @@ input[type='range']::-moz-range-thumb { width: 32px; height: 32px; border: 0; bo
 }
 .style-apple .grid-stack .title, .style-apple .title { text-transform: none !important; letter-spacing: 0 !important; font-weight: 600; }
 .style-apple .title::before { display: none !important; }
+
+html .grid-stack-item-content,
+html .style-seamless .grid-stack-item-content,
+html .style-tiles .grid-stack-item-content,
+html .style-glass .grid-stack-item-content,
+html .style-apple .grid-stack-item-content { border: 0 !important; background: transparent !important; box-shadow: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+html .style-tiles .grid-stack-item-content::after { display: none !important; }
+html .style-tiles .grid-stack { border: 0 !important; }

@@ -86,7 +86,7 @@ async function saved() {
 
 <style scoped>
 .grid-stack { min-height: 200px; }
-.style-tiles .grid-stack { border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+.style-tiles .grid-stack { border: 0; }
 .edit { outline: 1px dashed rgba(34, 211, 238, 0.35); outline-offset: -1px; cursor: grab; }
 .cfg { position: absolute; top: 8px; right: 8px; z-index: 5; min-height: 48px; min-width: 48px; font-size: 20px; }
 .add { margin: 18px 0; width: 100%; border-radius: 0; min-height: 72px; font-size: 20px; border-style: dashed; }
