@@ -18,18 +18,20 @@ const emit = defineEmits(['saved'])
 
 const form = ref({
   ...props.widget,
-  config: { ...props.widget.config, values: props.widget.config.values?.join(', ') },
+  config: { device_id: null, ...props.widget.config, values: props.widget.config.values?.join(', ') },
 })
 const error = ref('')
 
 const typeDef = computed(() => props.meta.widgetTypes[form.value.type])
 const allowedSources = computed(() => props.sources.filter(s => typeDef.value.sources.includes(s.type)))
 const sourceType = computed(() => props.sources.find(s => s.id === form.value.source_id)?.type ?? 'static')
-const devOptions = computed(() => Object.values(store.devices).filter(d => d.adopted && d.capabilities.some(c => c.kind === 'measurement' || c.value === 'number')).sort((a, b) => a.name.localeCompare(b.name)))
+const devOptions = computed(() => Object.values(store.devices).filter(d => !d.hidden && d.capabilities.some(c => c.kind === 'measurement' || c.value === 'number')).sort((a, b) => a.name.localeCompare(b.name)))
 const capOptions = computed(() => store.devices[form.value.config.device_id]?.capabilities.filter(c => c.kind === 'measurement' || c.value === 'number') ?? [])
 function pickDevice() {
   const c = capOptions.value
   if (!c.some(x => x.id === form.value.config.capability)) form.value.config.capability = c[0]?.id ?? null
+  form.value.config.color ||= '#0A84FF'
+  if (form.value.type === 'gauge' && form.value.config.max == null && c.find(x => x.id === form.value.config.capability)?.unit === '%') form.value.config.max = 100
 }
 const visibleFields = computed(() => typeDef.value.fields.filter(f => {
   if (f.type === 'device_value') return sourceType.value === 'static'
@@ -45,6 +47,7 @@ function onTypeChange() {
 async function save() {
   error.value = ''
   const config = { ...form.value.config }
+  if (!config.device_id) { delete config.device_id; delete config.capability }
   if (typeof config.values === 'string') config.values = config.values.split(',').map(v => Number(v.trim())).filter(v => !isNaN(v))
   for (const f of typeDef.value.fields) if (f.type === 'number' && config[f.key] !== undefined && config[f.key] !== '') config[f.key] = Number(config[f.key])
   const body = { ...form.value, config }
