@@ -1,7 +1,7 @@
 # SmartBoard OS – Leitfaden für KI-Assistenten
 
 Dieses Dokument ist der Kontext für jede KI, die an diesem Projekt arbeitet (lokal in LM Studio/Bionic oder in der Cloud).
-Vor jeder Aufgabe lesen. Antworten auf Deutsch, kurz.
+Vor jeder Aufgabe lesen. Antworten auf Deutsch, kurz. Details zu Dashboards: `docs/dashboard-technik.md`.
 
 ## Was ist SmartBoard?
 - Ein **Dashboard** (kein Steuerungs-Board) für Zuhause/Technikraum: zeigt Werte aus Home Assistant, evcc, Proxmox, Zigbee, KNX usw.
