@@ -54,10 +54,14 @@ await app.register(swaggerUi, { routePrefix: '/api/docs' })
 
 app.addHook('onResponse', async (req, reply) => trackRequest(req.url, reply.elapsedTime))
 
+const sourceErrors = new Map()
 app.setErrorHandler((err, req, reply) => {
   if (err.validation) return reply.code(422).send({ error: 'validation', details: err.message })
   const status = err.statusCode ?? 500
-  if (status >= 500) log('errors', 'error', 'http.error', { url: req.url, message: err.message }, req.user?.id)
+  if (status === 502 && err.message === 'source.failed') {
+    const key = req.url.split('?')[0]
+    if (Date.now() - (sourceErrors.get(key) ?? 0) > 600000) { sourceErrors.set(key, Date.now()); log('sources', 'warning', 'source.failed', { url: key, error: err.details?.message }, req.user?.id) }
+  } else if (status >= 500) log('errors', 'error', 'http.error', { url: req.url, message: err.message }, req.user?.id)
   reply.code(status).send({ error: err.code && typeof err.code === 'string' ? err.code : 'internal', details: err.details })
 })
 
