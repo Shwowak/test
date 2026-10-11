@@ -89,6 +89,26 @@ export default async function dashboardsModule(app) {
     return getWidget(id)
   })
 
+  app.post('/widgets/:id/duplicate', { schema: t('Duplicate widget'), preHandler: edit }, async req => {
+    const w = getWidget(req.params.id)
+    if (!w) throw notFound()
+    const y = db.prepare('SELECT COALESCE(MAX(y + h), 0) m FROM widgets WHERE dashboard_id = ?').get(w.dashboard_id).m
+    const id = db.prepare(`INSERT INTO widgets (dashboard_id, type, title, x, y, w, h, source_id, config) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+      .run(w.dashboard_id, w.type, w.title, w.x, y, w.w, w.h, w.source_id, JSON.stringify(w.config)).lastInsertRowid
+    recordChange(req.user, 'widget', id, 'create', w.title || w.type)
+    return getWidget(id)
+  })
+
+  app.post('/dashboards/:id/duplicate', { schema: t('Duplicate dashboard with widgets'), preHandler: edit }, async req => {
+    const d = getDashboard(req.params.id)
+    if (!d) throw notFound()
+    const pos = db.prepare('SELECT COALESCE(MAX(position), -1) + 1 p FROM dashboards').get().p
+    const id = db.prepare('INSERT INTO dashboards (name, icon, position, style) VALUES (?, ?, ?, ?)').run(`${d.name} (2)`, d.icon, pos, d.style).lastInsertRowid
+    db.prepare('INSERT INTO widgets (dashboard_id, type, title, x, y, w, h, source_id, config) SELECT ?, type, title, x, y, w, h, source_id, config FROM widgets WHERE dashboard_id = ?').run(id, d.id)
+    recordChange(req.user, 'dashboard', id, 'create', `${d.name} (2)`)
+    return getDashboard(id)
+  })
+
   app.put('/widgets/:id', { schema: t('Update widget', { body: widgetBody }), preHandler: edit }, async req => {
     const w = getWidget(req.params.id)
     if (!w) throw notFound()

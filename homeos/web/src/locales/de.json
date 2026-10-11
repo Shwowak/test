@@ -40,7 +40,8 @@
     "icon": "Symbol",
     "name_placeholder": "z. B. Küche, Energie, Netzwerk",
     "empty": "Noch kein Dashboard. Tippe auf „Bearbeiten“ und dann „＋ Neu“.",
-    "confirm_delete": "Dashboard „{name}“ mit allen Widgets löschen?"
+    "confirm_delete": "Dashboard „{name}“ mit allen Widgets löschen?",
+    "duplicate": "Duplizieren"
   },
   "styles": {
     "seamless": "Nahtlos",
@@ -61,7 +62,8 @@
     "need_source": "Erst unter „Quellen“ eine passende Datenquelle anlegen: {types}",
     "confirm_delete": "Widget löschen?",
     "no_url": "Keine URL",
-    "manual_value": "Eigener Wert"
+    "manual_value": "Eigener Wert",
+    "duplicate": "Duplizieren"
   },
   "widgetTypes": {
     "clock": "Uhr & Datum",

@@ -182,6 +182,13 @@ async function cycleStyle() {
   active.value.style = next
 }
 
+async function duplicateDashboard() {
+  const d = await api('POST', `/dashboards/${dashForm.value.id}/duplicate`)
+  dashForm.value = null
+  await loadDashboards()
+  select(d.id)
+}
+
 async function deleteDashboard() {
   if (!confirm(t('dashboard.confirm_delete', { name: dashForm.value.name }))) return
   await api('DELETE', `/dashboards/${dashForm.value.id}`)
@@ -274,6 +281,7 @@ const icons = ['⌂', '◈', '⚡', '☀', '♨', '☎', '♫', '⚙', '⛨', '�
         </div>
         <div class="row">
           <button v-if="dashForm.id" type="button" class="btn danger" @click="deleteDashboard">{{ t('common.delete') }}</button>
+          <button v-if="dashForm.id" type="button" class="btn" @click="duplicateDashboard">⧉ {{ t('dashboard.duplicate') }}</button>
           <span class="grow" />
           <button class="btn primary">{{ t('common.save') }}</button>
         </div>
