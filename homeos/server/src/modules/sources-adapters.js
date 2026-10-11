@@ -113,8 +113,8 @@ export async function resolve(widget, source) {
   }
   if (source.type === 'ical') {
     const text = await fetchCached(`ical:${source.id}`, 5 * 60 * 1000, async () => {
-      const res = await fetch(sc.url, { signal: AbortSignal.timeout(10000) })
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      const res = await fetch(String(sc.url).trim().replace(/^webcals?:\/\//i, 'https://'), { signal: AbortSignal.timeout(10000), headers: { 'user-agent': 'SmartBoard/1.0' } })
+      if (!res.ok) throw new Error(res.status === 404 || res.status === 403 ? `HTTP ${res.status} – Kalender-Adresse ungültig oder nicht freigegeben (geheime iCal-Adresse verwenden)` : `HTTP ${res.status}`)
       return res.text()
     })
     const now = Date.now() - 60 * 60 * 1000
