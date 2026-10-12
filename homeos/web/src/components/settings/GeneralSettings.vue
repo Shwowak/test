@@ -79,7 +79,7 @@ function locate() {
     <template v-if="canEdit()">
       <h3>{{ t('general.theme') }}</h3>
       <div class="row">
-        <button v-for="v in ['apple', 'neon']" :key="v" type="button" class="btn" :class="{ active: (s.theme ?? 'apple') === v }" @click="setTheme(v)">{{ t('general.themes.' + v) }}</button>
+        <button v-for="v in ['apple', 'cyber', 'neon']" :key="v" type="button" class="btn" :class="{ active: (s.theme ?? 'apple') === v }" @click="setTheme(v)">{{ t('general.themes.' + v) }}</button>
       </div>
       <h3>{{ t('general.fx') }}</h3>
       <div class="row">

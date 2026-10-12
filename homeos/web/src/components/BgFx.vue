@@ -12,7 +12,9 @@ let parts = []
 let traces = []
 let last = 0
 
-const COLORS = ['#00f0ff', '#0a84ff', '#ff007a', '#30d158', '#ff9f0a', '#af52de']
+const COLORS_DEFAULT = ['#00f0ff', '#0a84ff', '#ff007a', '#30d158', '#ff9f0a', '#af52de']
+const COLORS_CYBER = ['#5ce1e6', '#5ce1e6', '#e0525a', '#5ce1e6', '#e0525a', '#c43c45']
+let COLORS = COLORS_DEFAULT
 const lite = () => document.documentElement.classList.contains('lite')
 const mode = () => (fxState.off ? 'off' : features.fx ?? 'particles')
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -31,6 +33,7 @@ function resize() {
 }
 
 function seed() {
+  COLORS = document.documentElement.classList.contains('theme-cyber') ? COLORS_CYBER : COLORS_DEFAULT
   const n = Math.round((w * h) / (lite() ? 38000 : 18000))
   parts = Array.from({ length: Math.min(n, lite() ? 40 : 110) }, () => ({
     x: Math.random() * w, y: Math.random() * h,

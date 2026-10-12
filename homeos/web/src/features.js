@@ -4,9 +4,10 @@ import { api } from './api.js'
 export const features = reactive({ automations: false, control: true, assistant: true, cameras: true, fx: 'particles', admin_timeout: 10, viewer: null, loaded: false })
 
 export function applyTheme(theme) {
-  const t = theme === 'neon' ? 'neon' : 'apple'
+  const t = ['neon', 'cyber'].includes(theme) ? theme : 'apple'
   document.documentElement.classList.toggle('theme-apple', t === 'apple')
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', t === 'apple' ? '#000000' : '#05070d')
+  document.documentElement.classList.toggle('theme-cyber', t === 'cyber')
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', { apple: '#000000', cyber: '#1a0b0e', neon: '#05070d' }[t])
   try { localStorage.setItem('homeos_theme', t) } catch {}
 }
 

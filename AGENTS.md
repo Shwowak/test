@@ -36,7 +36,7 @@ docs/                 Architektur- und Planungsdokumente
 - **Rechte:** Server-Routen mit `requirePerm('…')` schützen. Gast darf nur ansehen.
 - **Einstellungen:** neue Werte in `DEFAULT_SETTINGS` (settings.js) + Validierung in der PUT-Route.
 - **Datenbank:** Schemaänderungen nur als neue Migration am Ende des Arrays in `core/db.js`.
-- **Design:** Standard ist das Apple-Design (`.theme-apple`), Neon optional. Widgets sind **transparent** (kein Hintergrund, keine Kanten). Dashboard-Ansichten: seamless, tiles, glass, apple (alle randlos) und `cards` (einzige Ansicht mit Karten-Rand/Glas, nur wenn gewählt).
+- **Design:** Standard ist das Apple-Design (`.theme-apple`), dazu Neon und Cyberdeck (`.theme-cyber`, rot/cyan, abgeschrägte Rahmen – einziges Design mit Widget-Rahmen). Widgets sind **transparent** (kein Hintergrund, keine Kanten). Dashboard-Ansichten: seamless, tiles, glass, apple (alle randlos) und `cards` (einzige Ansicht mit Karten-Rand/Glas, nur wenn gewählt).
 - **Animationen:** Hintergrund `components/BgFx.vue` (Canvas: Partikel/Leiterbahnen, Einstellung `fx`), Widget-Einblendung per CSS `widget-in` in style.css. Im Pi-Modus (`.lite`) automatisch reduziert.
 - **Kein Code-Splitting per `manualChunks`** in vite.config.js – hat die App beim Start zerschossen.
 

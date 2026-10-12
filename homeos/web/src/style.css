@@ -317,3 +317,71 @@ html .style-cards .grid-stack-item-content:hover { border-color: var(--card-glow
 .grid-stack-item:nth-child(7) .grid-stack-item-content > * { animation-delay: 0.3s; }
 .grid-stack-item:nth-child(n+8) .grid-stack-item-content > * { animation-delay: 0.35s; }
 .lite .grid-stack-item-content > * { animation-duration: 0.3s; filter: none; }
+
+/* ── Cyberdeck-Design ─────────────────────────────────────── */
+.theme-cyber {
+  --bg: #170a0d;
+  --bg2: #22100f;
+  --glass: rgba(40, 14, 18, 0.72);
+  --glass-strong: rgba(30, 10, 13, 0.95);
+  --line: rgba(224, 82, 90, 0.35);
+  --line-strong: rgba(224, 82, 90, 0.8);
+  --text: #f2e9e9;
+  --dim: #c9787d;
+  --cyan: #5ce1e6;
+  --blue: #5ce1e6;
+  --magenta: #e0525a;
+  --violet: #e0525a;
+  --gold: #f2b36b;
+  --ok: #5ce1e6;
+  --warn: #f2b36b;
+  --err: #ff4d5a;
+  --radius: 0px;
+  --font: 'Rajdhani', 'Oxanium', 'Barlow Condensed', 'Arial Narrow', 'Roboto Condensed', system-ui, sans-serif;
+  --mono: 'Share Tech Mono', 'JetBrains Mono', ui-monospace, monospace;
+  --cut: 14px;
+}
+.theme-cyber body, .theme-cyber {
+  background: radial-gradient(900px 600px at 20% 0%, rgba(160, 40, 50, 0.35), transparent 60%), linear-gradient(180deg, #2a1013 0%, #1a0b0e 45%, #0c0f17 100%);
+  background-attachment: fixed;
+  letter-spacing: 0.04em;
+}
+.theme-cyber body::before { display: block; opacity: 1; background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 3px); mask-image: none; }
+.theme-cyber body::after { display: none; }
+.theme-cyber h1, .theme-cyber h2, .theme-cyber h3, .theme-cyber .label, .theme-cyber .field label, .theme-cyber .tab .nm, .theme-cyber .btn { text-transform: uppercase; letter-spacing: 0.08em; }
+.theme-cyber .btn {
+  border-radius: 0; border: 1px solid var(--line); background: rgba(92, 225, 230, 0.06); color: var(--cyan);
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  box-shadow: none; font-weight: 600;
+}
+.theme-cyber .btn.primary, .theme-cyber .btn.active { background: var(--cyan); color: #1a0b0e; border-color: var(--cyan); }
+.theme-cyber .btn.danger { background: rgba(224, 82, 90, 0.85); color: #1a0b0e; border-color: #e0525a; }
+.theme-cyber .field input, .theme-cyber .field select, .theme-cyber .field textarea { border-radius: 0; border: 1px solid var(--line); background: rgba(20, 8, 10, 0.8); font-family: var(--mono); }
+.theme-cyber .field input:focus, .theme-cyber .field select:focus { border-color: var(--cyan); box-shadow: 0 0 0 2px rgba(92, 225, 230, 0.25); }
+.theme-cyber .rail { background: linear-gradient(180deg, rgba(42, 16, 19, 0.9), rgba(12, 15, 23, 0.9)) !important; border-right: 2px solid var(--magenta) !important; }
+.theme-cyber .tab.on { background: var(--cyan) !important; color: #1a0b0e !important; border-radius: 0 !important; clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%); }
+.theme-cyber .main > .top { border-bottom: 2px solid var(--magenta); padding-bottom: 10px; }
+.theme-cyber .main > .top h1, .theme-cyber .main > .top .title { color: var(--cyan); font-family: var(--font); font-weight: 700; }
+.theme-cyber .sheet { border-radius: 0 !important; border-left: 2px solid var(--magenta) !important; background: rgba(26, 11, 14, 0.97) !important; }
+
+html.theme-cyber .grid-stack-item-content {
+  inset: 6px !important;
+  border: 1px solid rgba(224, 82, 90, 0.7) !important;
+  border-radius: 0 !important;
+  background: linear-gradient(180deg, rgba(40, 12, 16, 0.55), rgba(16, 10, 14, 0.55)) !important;
+  clip-path: polygon(0 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% 100%, var(--cut) 100%, 0 calc(100% - var(--cut)));
+  box-shadow: inset 0 0 0 1px rgba(92, 225, 230, 0.05) !important;
+}
+html.theme-cyber .grid-stack-item-content::before {
+  content: ''; position: absolute; left: 0; top: 0; width: 34%; height: 3px; background: var(--magenta); z-index: 2;
+}
+html.theme-cyber .grid-stack-item-content::after {
+  content: ''; position: absolute; right: 10px; bottom: 8px; width: 46px; height: 6px; z-index: 2; display: block !important;
+  background: repeating-linear-gradient(90deg, var(--cyan) 0 2px, transparent 2px 4px, var(--cyan) 4px 7px, transparent 7px 9px); opacity: 0.55;
+}
+.theme-cyber .grid-stack .title { color: var(--cyan) !important; text-transform: uppercase !important; letter-spacing: 0.12em !important; font-size: 13px !important; font-weight: 700 !important; }
+.theme-cyber .grid-stack .title::before { display: block !important; width: 10px !important; height: 10px !important; background: var(--magenta) !important; box-shadow: none !important; clip-path: polygon(0 0, 100% 50%, 0 100%); }
+.theme-cyber .grid-stack .v, .theme-cyber .grid-stack .t { font-family: var(--font) !important; font-weight: 700; color: var(--cyan) !important; text-shadow: 0 0 18px rgba(92, 225, 230, 0.35) !important; }
+.theme-cyber .grid-stack .bar { background: var(--magenta) !important; box-shadow: none !important; height: 3px !important; }
+.theme-cyber .keynav :focus, .theme-cyber :focus-visible { outline: 2px solid var(--cyan) !important; outline-offset: 2px; }
+.lite.theme-cyber body::before { display: none; }

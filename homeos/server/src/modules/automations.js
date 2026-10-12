@@ -99,7 +99,7 @@ export default async function automationsModule(app) {
       timezone: { type: 'string', maxLength: 64 },
       features: { type: 'object', properties: { automations: { type: 'boolean' }, control: { type: 'boolean' }, assistant: { type: 'boolean' }, cameras: { type: 'boolean' } } },
       admin_timeout: { type: 'integer', minimum: 0, maximum: 1440 },
-      theme: { type: 'string', enum: ['apple', 'neon'] },
+      theme: { type: 'string', enum: ['apple', 'neon', 'cyber'] },
       fx: { type: 'string', enum: ['off', 'particles', 'circuit', 'both'] },
       network_code: { type: 'string', maxLength: 64 },
       autologin: { type: ['object', 'null'], properties: { user_id: { type: 'integer' }, scope: { type: 'string', enum: ['device', 'lan'] } } },

@@ -7,7 +7,8 @@ import { startSpatialNav } from './spatial.js'
 
 let theme = 'apple'
 try { theme = localStorage.getItem('homeos_theme') || 'apple' } catch {}
-document.documentElement.classList.toggle('theme-apple', theme !== 'neon')
+document.documentElement.classList.toggle('theme-apple', !['neon', 'cyber'].includes(theme))
+document.documentElement.classList.toggle('theme-cyber', theme === 'cyber')
 document.documentElement.lang = i18n.global.locale.value
 createApp(App).use(i18n).mount('#app')
 startSpatialNav()

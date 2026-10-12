@@ -699,7 +699,8 @@
     "theme": "Design",
     "themes": {
       "apple": "Apple (klar, ruhig)",
-      "neon": "Neon (Sci-Fi)"
+      "neon": "Neon (Sci-Fi)",
+      "cyber": "Cyberdeck (Rot/Cyan, HUD)"
     },
     "fx": "Hintergrund-Animation",
     "fxs": {
