@@ -76,9 +76,56 @@ export function parseIcal(text) {
       if (key === 'LOCATION') ev.location = val.replace(/\\,/g, ',')
       if (key === 'DTSTART') { const p = parseIcalDate(val); if (p) { ev.start = p.date.toISOString(); ev.allDay = p.allDay } }
       if (key === 'DTEND') { const p = parseIcalDate(val); if (p) ev.end = p.date.toISOString() }
+      if (key === 'RRULE') ev.rrule = Object.fromEntries(val.split(';').map(x => x.split('=')))
+      if (key === 'EXDATE') for (const d of val.split(',')) { const p = parseIcalDate(d); if (p) (ev.exdates ??= []).push(p.date.getTime()) }
+      if (key === 'RECURRENCE-ID') ev.recurrence = true
     }
   }
   return events
+}
+
+const DAYS = { SU: 0, MO: 1, TU: 2, WE: 3, TH: 4, FR: 5, SA: 6 }
+
+export function expandEvents(events, from, to) {
+  const out = []
+  for (const e of events) {
+    const start = Date.parse(e.start)
+    const dur = e.end ? Date.parse(e.end) - start : 0
+    if (!e.rrule) { if (start + dur >= from && start <= to) out.push(e); continue }
+    const r = e.rrule
+    const interval = Number(r.INTERVAL) || 1
+    const until = r.UNTIL ? parseIcalDate(r.UNTIL)?.date.getTime() ?? to : to
+    const count = Number(r.COUNT) || Infinity
+    const byday = r.BYDAY ? r.BYDAY.split(',').map(d => DAYS[d.slice(-2)]) : null
+    const ex = new Set(e.exdates ?? [])
+    let n = 0
+    const push = t => {
+      n++
+      if (t + dur >= from && t <= to && !ex.has(t)) out.push({ ...e, rrule: undefined, exdates: undefined, start: new Date(t).toISOString(), end: e.end ? new Date(t + dur).toISOString() : undefined })
+    }
+    const d = new Date(start)
+    for (let i = 0; i < 5000 && n < count; i++) {
+      const t = d.getTime()
+      if (t > until || t > to) break
+      if (r.FREQ === 'WEEKLY' && byday) {
+        const weekStart = new Date(d); weekStart.setDate(d.getDate() - d.getDay())
+        for (const wd of byday.sort()) {
+          const x = new Date(weekStart); x.setDate(weekStart.getDate() + wd)
+          const xt = x.getTime()
+          if (xt >= start && xt <= until && n < count) push(xt)
+        }
+        d.setDate(d.getDate() + 7 * interval)
+        continue
+      }
+      push(t)
+      if (r.FREQ === 'DAILY') d.setDate(d.getDate() + interval)
+      else if (r.FREQ === 'WEEKLY') d.setDate(d.getDate() + 7 * interval)
+      else if (r.FREQ === 'MONTHLY') d.setMonth(d.getMonth() + interval)
+      else if (r.FREQ === 'YEARLY') d.setFullYear(d.getFullYear() + interval)
+      else break
+    }
+  }
+  return out
 }
 
 export async function resolve(widget, source) {
@@ -118,7 +165,7 @@ export async function resolve(widget, source) {
       return res.text()
     })
     const now = Date.now() - 60 * 60 * 1000
-    const events = parseIcal(text).filter(e => Date.parse(e.end ?? e.start) >= now)
+    const events = expandEvents(parseIcal(text), now, Date.now() + 90 * 86400000)
       .sort((a, b) => a.start.localeCompare(b.start)).slice(0, wc.limit ?? 8)
     return { events }
   }

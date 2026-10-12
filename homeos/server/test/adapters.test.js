@@ -108,3 +108,16 @@ test('fritzbox AHA parsing and login', async () => {
   assert.equal(loginResponse('1234567z', 'äbc'), '1234567z-9e224a41eeefa284df7bb0f26c2913e2')
   assert.equal(loginResponse('2$10000$5A1711$2000$5A1722', '1example!'), '5A1722$1798a1672bca7c6463d6b245f82b53703b0f50813401b03e4045a5861e689adb')
 })
+
+test('ical recurring events', async () => {
+  const { parseIcal, expandEvents } = await import('../src/modules/sources-adapters.js')
+  const ics = ['BEGIN:VCALENDAR', 'BEGIN:VEVENT', 'SUMMARY:Geburtstag Oma', 'DTSTART;VALUE=DATE:20200315', 'DTEND;VALUE=DATE:20200316', 'RRULE:FREQ=YEARLY', 'END:VEVENT',
+    'BEGIN:VEVENT', 'SUMMARY:Training', 'DTSTART:20260105T180000Z', 'DTEND:20260105T193000Z', 'RRULE:FREQ=WEEKLY;BYDAY=MO,TH', 'END:VEVENT',
+    'BEGIN:VEVENT', 'SUMMARY:Einmalig', 'DTSTART:20261020T100000Z', 'END:VEVENT', 'END:VCALENDAR'].join('\r\n')
+  const from = Date.parse('2026-10-12T00:00:00Z'), to = Date.parse('2027-04-01T00:00:00Z')
+  const ev = expandEvents(parseIcal(ics), from, to)
+  assert.ok(ev.some(e => e.title === 'Geburtstag Oma' && e.start.startsWith('2027-03-1')))
+  assert.ok(ev.filter(e => e.title === 'Training').length > 40)
+  assert.ok(ev.some(e => e.title === 'Einmalig'))
+  assert.ok(ev.every(e => Date.parse(e.start) <= to))
+})
