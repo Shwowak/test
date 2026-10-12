@@ -552,7 +552,8 @@
     "knx": "KNX (KNXnet/IP)",
     "evcc": "evcc (PV-Überschussladen)",
     "proxmox": "Proxmox VE (Server, VMs, Container)",
-    "system": "SmartBoard System"
+    "system": "SmartBoard System",
+    "fritzbox": "FRITZ!Box Smart Home (DECT-Steckdosen, Thermostate)"
   },
   "integrations": {
     "add": "Integration hinzufügen",
@@ -583,7 +584,8 @@
       "knx": "IP-Adresse der KNX-IP-Schnittstelle. Leer lassen für Routing per Multicast.",
       "modbus": "IP-Adresse des Geräts (Wechselrichter, Zähler, Wallbox). Register dann als manuelle Geräte anlegen.",
       "evcc": "Adresse von evcc, z. B. http://192.168.1.20:7070. Passwort nur nötig, um den Lademodus zu ändern.",
-      "proxmox": "Adresse wie https://192.168.1.5:8006. In Proxmox unter Datacenter → Permissions → API Tokens einen Token anlegen (Rolle PVEAuditor reicht, Privilege Separation aus). Zeigt CPU, RAM und Speicher von Servern, VMs und Containern."
+      "proxmox": "Adresse wie https://192.168.1.5:8006. In Proxmox unter Datacenter → Permissions → API Tokens einen Token anlegen (Rolle PVEAuditor reicht, Privilege Separation aus). Zeigt CPU, RAM und Speicher von Servern, VMs und Containern.",
+      "fritzbox": "Adresse der FRITZ!Box (meist http://fritz.box). Benutzer und Passwort eines FRITZ!Box-Kontos mit Recht „Smart Home“ (System → FRITZ!Box-Benutzer). Liest Steckdosen mit Leistung, Energie, Spannung und Temperatur, Heizkörperregler, Sensoren und Lampen."
     },
     "permit_join": "Anlernen",
     "commission": "Matter-Gerät koppeln",

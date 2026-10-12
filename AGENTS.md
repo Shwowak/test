@@ -62,7 +62,7 @@ export default class XyzAdapter {
 3. Texte: `adapters.<name>`, `integrationFields.<feld>`, `integrations.help.<name>` in de/en.json.
 4. Reine Umrechnungsfunktionen exportieren und in `server/test/adapters.test.js` testen.
 
-Vorhandene Adapter: homeassistant, mqtt, rest, zigbee2mqtt, zwavejs, matter, knx, modbus, evcc, proxmox.
+Vorhandene Adapter: homeassistant, mqtt, rest, zigbee2mqtt, zwavejs, matter, knx, modbus, evcc, proxmox, fritzbox, system (eingebaut).
 
 ## Wichtige Funktionen
 - **Dashboard-Vorschlag** (`modules/autogen.js`): baut aus erkannten Geräten eine Übersicht + je Raum ein Dashboard, übersetzt technische Namen (`niceName`), übernimmt den Stil vorhandener Dashboards. UI: `components/Suggest.vue`.

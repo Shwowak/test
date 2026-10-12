@@ -95,3 +95,16 @@ test('device sorting by name and topic', async () => {
   assert.equal(topicOf({ name: 'Haustür', type: 'door', capabilities: [{ id: 'contact', kind: 'binary' }], meta: {} }), 'security')
   assert.equal(topicOf({ name: 'pve', type: 'other', capabilities: [m('cpu', '%')], meta: { proxmox: 'node' } }), 'server')
 })
+
+test('fritzbox AHA parsing and login', async () => {
+  const { parseDevices, loginResponse } = await import('../src/devices/adapters/fritzbox.js')
+  const xml = `<devicelist version="1"><device identifier="08761 0000434" id="17" functionbitmask="35712" fwversion="04.16" manufacturer="AVM" productname="FRITZ!DECT 200"><present>1</present><name>Waschmaschine</name><switch><state>1</state><mode>manuell</mode><lock>0</lock></switch><powermeter><voltage>229744</voltage><power>1250000</power><energy>75519</energy></powermeter><temperature><celsius>235</celsius><offset>0</offset></temperature></device><device identifier="09995 0335100" id="20" functionbitmask="320" manufacturer="AVM" productname="FRITZ!DECT 301"><present>1</present><name>Bad Heizung</name><temperature><celsius>210</celsius></temperature><hkr><tist>42</tist><tsoll>44</tsoll><battery>80</battery><windowopenactiv>0</windowopenactiv></hkr></device></devicelist>`
+  const [plug, hkr] = parseDevices(xml)
+  assert.equal(plug.ain, '087610000434')
+  assert.deepEqual([plug.state.onoff, plug.state.power, plug.state.energy, plug.state.voltage, plug.state.temperature], [true, 1250, 75.519, 229.7, 23.5])
+  assert.equal(hkr.type, 'thermostat')
+  assert.equal(hkr.state.target_temperature, 22)
+  assert.equal(hkr.state.battery, 80)
+  assert.equal(loginResponse('1234567z', 'äbc'), '1234567z-9e224a41eeefa284df7bb0f26c2913e2')
+  assert.equal(loginResponse('2$10000$5A1711$2000$5A1722', '1example!'), '5A1722$1798a1672bca7c6463d6b245f82b53703b0f50813401b03e4045a5861e689adb')
+})
