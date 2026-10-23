@@ -121,3 +121,18 @@ test('ical recurring events', async () => {
   assert.ok(ev.some(e => e.title === 'Einmalig'))
   assert.ok(ev.every(e => Date.parse(e.start) <= to))
 })
+
+test('proxmox datacenter manager resources', async () => {
+  const { flattenPdm, mapResource } = await import('../src/devices/adapters/proxmox.js')
+  const list = flattenPdm([{ remote: 'lichtheck', resources: [
+    { type: 'pve-node', id: 'remote/lichtheck/node/pve1', node: 'pve1', cpu: 0.2, maxcpu: 8, mem: 4, maxmem: 16, uptime: 3600, status: 'online' },
+    { type: 'pve-qemu', id: 'x', vmid: 101, name: 'web', node: 'pve1', status: 'running', cpu: 0.1, mem: 1, maxmem: 2 },
+    { type: 'pve-storage', storage: 'local', node: 'pve1', disk: 50, maxdisk: 100, status: 'available' },
+    { type: 'pve-sdn-zone', name: 'z' },
+  ] }])
+  assert.equal(list.length, 3)
+  const n = mapResource(list[0])
+  assert.equal(n.id, 'node/lichtheck/pve1')
+  assert.equal(n.state.memory, 25)
+  assert.equal(mapResource(list[2]).state.disk, 50)
+})

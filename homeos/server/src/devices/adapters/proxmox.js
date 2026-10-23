@@ -17,7 +17,7 @@ export function mapResource(r) {
   }
   if (r.type === 'qemu' || r.type === 'lxc') {
     return {
-      id: `${r.type}/${r.vmid}`, name: r.name || `${r.type === 'lxc' ? 'CT' : 'VM'} ${r.vmid}`, type: 'other',
+      id: r.remote ? `${r.type}/${r.remote}/${r.vmid}` : `${r.type}/${r.vmid}`, name: r.name || `${r.type === 'lxc' ? 'CT' : 'VM'} ${r.vmid}`, type: 'other',
       capabilities: [measurement('cpu', '%'), measurement('memory', '%'), measurement('memory_used', 'GB'), cap('running', 'binary')],
       state: { cpu: running && r.cpu != null ? Math.round(r.cpu * 1000) / 10 : 0, memory: running ? pct(r.mem, r.maxmem) : 0, memory_used: running ? gb(r.mem) : 0, running },
       online: true, model: `${r.type === 'lxc' ? 'LXC' : 'VM'} ${r.vmid} · ${r.node}`,
@@ -34,8 +34,23 @@ export function mapResource(r) {
   return null
 }
 
+export function flattenPdm(remotes) {
+  const out = []
+  for (const r of remotes ?? []) {
+    for (const x of r.resources ?? []) {
+      const type = String(x.type ?? '').replace(/^(pve|pbs)-/, '')
+      const t = type === 'datastore' ? 'storage' : type
+      if (!['node', 'qemu', 'lxc', 'storage'].includes(t)) continue
+      const node = x.node ?? x.name ?? r.remote
+      out.push({ ...x, type: t, node: `${r.remote}/${node}`, storage: x.storage ?? x.name, name: x.name, remote: r.remote })
+    }
+  }
+  return out
+}
+
 export default class ProxmoxAdapter {
   static fields = [
+    { key: 'kind', type: 'select', options: ['pve', 'pdm'] },
     { key: 'url', type: 'url', required: true },
     { key: 'token_id', type: 'text', required: true },
     { key: 'token_secret', type: 'secret', required: true },
@@ -55,7 +70,7 @@ export default class ProxmoxAdapter {
     const lib = u.protocol === 'http:' ? http : https
     return new Promise((resolve, reject) => {
       const req = lib.request(u, {
-        headers: { Authorization: `PVEAPIToken=${this.cfg.token_id}=${this.cfg.token_secret}` },
+        headers: { Authorization: this.cfg.kind === 'pdm' ? `PDMAPIToken=${this.cfg.token_id}:${this.cfg.token_secret}` : `PVEAPIToken=${this.cfg.token_id}=${this.cfg.token_secret}` },
         rejectUnauthorized: this.cfg.insecure === 'no', timeout: 10000,
       }, res => {
         let body = ''
@@ -73,7 +88,7 @@ export default class ProxmoxAdapter {
 
   async poll() {
     try {
-      const list = await this.get('api2/json/cluster/resources')
+      const list = this.cfg.kind === 'pdm' ? flattenPdm(await this.get('api2/json/resources/list')) : await this.get('api2/json/cluster/resources')
       const include = this.cfg.include || 'all'
       let n = 0
       for (const r of list) {

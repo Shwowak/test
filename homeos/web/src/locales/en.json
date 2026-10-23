@@ -584,7 +584,7 @@
       "knx": "IP address of the KNX IP interface. Leave empty for multicast routing.",
       "modbus": "IP address of the device (inverter, meter, wallbox). Then add registers as manual devices.",
       "evcc": "evcc address, e.g. http://192.168.1.20:7070. Password only needed to change the charge mode.",
-      "proxmox": "Address like https://192.168.1.5:8006. Create a token under Datacenter → Permissions → API Tokens (role PVEAuditor, privilege separation off). Shows CPU, RAM and storage of servers, VMs and containers.",
+      "proxmox": "Proxmox VE or Datacenter Manager. Address e.g. https://192.168.1.5:8006 (VE) or https://10.10.20.22:8443 (Datacenter Manager). Token ID e.g. root{'@'}pam!smartboard. Auditor role is enough.",
       "fritzbox": "FRITZ!Box address (usually http://fritz.box). User and password of a FRITZ!Box account with “Smart Home” permission. Reads plugs with power, energy, voltage and temperature, radiator controls, sensors and lamps."
     },
     "permit_join": "Pair devices",
@@ -612,7 +612,8 @@
     "token_id": "API token ID (e.g. root{'@'}pam!smartboard)",
     "token_secret": "API token secret",
     "insecure": "Allow self-signed certificate",
-    "include": "Show"
+    "include": "Show",
+    "kind": "Type"
   },
   "integrationPlaceholders": {
     "home_assistant": {
@@ -667,7 +668,9 @@
     "no": "No",
     "all": "Everything",
     "nodes": "Servers and storage only",
-    "running": "Running VMs/containers only"
+    "running": "Running VMs/containers only",
+    "pve": "Proxmox VE (single server/cluster, port 8006)",
+    "pdm": "Proxmox Datacenter Manager (all remotes, port 8443)"
   },
   "general": {
     "place": "Place",
