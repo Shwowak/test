@@ -70,3 +70,44 @@ export async function setHostname(name) {
   if (!/^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$/i.test(name)) throw new Error('invalid hostname')
   await run('hostnamectl', ['set-hostname', name])
 }
+
+const WG = 'sbwg0'
+
+export async function wgStatus() {
+  if (!has('nmcli')) return { available: false }
+  const conns = terse(await run('nmcli', ['-t', '-f', 'NAME,TYPE,DEVICE', 'connection', 'show']), ['name', 'type', 'device'])
+  const c = conns.find(x => x.name === WG)
+  if (!c) return { available: true, configured: false }
+  let ip = null
+  try { ip = (await run('nmcli', ['-g', 'IP4.ADDRESS', 'connection', 'show', WG])).trim() || null } catch {}
+  return { available: true, configured: true, active: !!c.device, ip }
+}
+
+export async function wgImport(conf) {
+  const text = String(conf ?? '')
+  if (!/\[Interface\]/i.test(text) || !/\[Peer\]/i.test(text) || !/PrivateKey\s*=/i.test(text)) throw new Error('invalid wireguard config')
+  if (text.length > 20000) throw new Error('config too large')
+  const { mkdtempSync, writeFileSync, rmSync } = await import('node:fs')
+  const { tmpdir } = await import('node:os')
+  const { join } = await import('node:path')
+  const dir = mkdtempSync(join(tmpdir(), 'sbwg-'))
+  const file = join(dir, `${WG}.conf`)
+  try {
+    writeFileSync(file, text, { mode: 0o600 })
+    try { await run('nmcli', ['connection', 'delete', WG]) } catch {}
+    await run('nmcli', ['connection', 'import', 'type', 'wireguard', 'file', file])
+    await run('nmcli', ['connection', 'modify', WG, 'connection.autoconnect', 'yes'])
+    try { await run('nmcli', ['connection', 'up', WG]) } catch {}
+  } finally { rmSync(dir, { recursive: true, force: true }) }
+  return wgStatus()
+}
+
+export async function wgSet(on) {
+  await run('nmcli', ['connection', on ? 'up' : 'down', WG])
+  return wgStatus()
+}
+
+export async function wgRemove() {
+  try { await run('nmcli', ['connection', 'delete', WG]) } catch {}
+  return wgStatus()
+}

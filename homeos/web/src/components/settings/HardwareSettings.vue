@@ -39,12 +39,17 @@ async function load() {
   const path = { display: '/hardware/display', network: '/hardware/network', bluetooth: '/hardware/bluetooth', audio: '/hardware/audio', update: '/hardware/update' }[props.section]
   if (!hw.info?.device && props.section === 'display') return
   data.value = await call('load', () => api('GET', path))
-  if (props.section === 'network') hostname.value = data.value?.hostname ?? ''
+  if (props.section === 'network') { hostname.value = data.value?.hostname ?? ''; loadWg() }
 }
 onMounted(load)
 watch(() => props.section, () => { data.value = null; wifi.value = null; load() })
 
 const post = (path, body) => api('POST', path, body)
+const wg = ref(null)
+const wgConf = ref('')
+const loadWg = async () => { wg.value = await api('GET', '/hardware/network/wireguard').catch(() => ({ available: false })) }
+const wgRemove = () => { if (window.confirm(t('wg.remove_confirm'))) wgCall(() => api('DELETE', '/hardware/network/wireguard')) }
+const wgCall = fn => call('', async () => { wg.value = await fn() }, t('plugins.saved'))
 const scanWifi = () => call('scan', async () => { wifi.value = await api('GET', '/hardware/network/wifi') })
 async function connectWifi() {
   const j = join.value
@@ -180,6 +185,19 @@ const saveUpdate = () => call('updset', () => api('PUT', '/hardware/update', dat
           <input v-model="hostname" class="grow" pattern="[A-Za-z0-9-]{1,63}"><button class="btn">{{ t('common.save') }}</button>
         </form>
         <small class="hint">{{ t('hw.hostname_hint', { name: hostname }) }}</small>
+        <h3>WireGuard VPN</h3>
+        <template v-if="wg?.available">
+          <div v-if="wg.configured" class="row card">
+            <span class="ico">🔐</span>
+            <div class="grow"><b>{{ wg.active ? t('wg.active') : t('wg.inactive') }}</b><small>{{ wg.ip || '—' }}</small></div>
+            <button class="btn" @click="wgCall(() => post('/hardware/network/wireguard/state', { on: !wg.active }))">{{ wg.active ? t('wg.off') : t('wg.on') }}</button>
+            <button class="btn danger" @click="wgRemove">{{ t('common.delete') }}</button>
+          </div>
+          <p class="hint">{{ t('wg.hint') }}</p>
+          <div class="field"><textarea v-model="wgConf" rows="8" spellcheck="false" placeholder="[Interface]&#10;PrivateKey = …&#10;Address = 10.10.20.50/32&#10;&#10;[Peer]&#10;PublicKey = …&#10;Endpoint = vpn.example.de:51820&#10;AllowedIPs = 10.10.20.0/24" /></div>
+          <div class="row"><span class="grow" /><button class="btn primary" :disabled="!wgConf.trim()" @click="wgCall(() => post('/hardware/network/wireguard', { conf: wgConf })).then(() => { wgConf = '' })">{{ wg.configured ? t('wg.replace') : t('wg.import') }}</button></div>
+        </template>
+        <p v-else class="hint">{{ t('wg.unavailable') }}</p>
       </template>
     </template>
 

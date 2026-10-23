@@ -1139,5 +1139,16 @@
     "r168": "7 days",
     "r720": "30 days",
     "empty": "No history yet – recorded every minute from now on."
+  },
+  "wg": {
+    "active": "Connected",
+    "inactive": "Disconnected",
+    "on": "Connect",
+    "off": "Disconnect",
+    "import": "Apply configuration",
+    "replace": "Replace configuration",
+    "remove_confirm": "Delete WireGuard connection?",
+    "hint": "Paste the content of the .conf file of your WireGuard peer for this SmartBoard. The connection starts automatically, also after a reboot.",
+    "unavailable": "Only available on the SmartBoard device."
   }
 }

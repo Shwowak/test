@@ -1139,5 +1139,16 @@
     "r168": "7 Tage",
     "r720": "30 Tage",
     "empty": "Noch keine Verlaufsdaten – werden ab jetzt jede Minute gespeichert."
+  },
+  "wg": {
+    "active": "Verbunden",
+    "inactive": "Getrennt",
+    "on": "Verbinden",
+    "off": "Trennen",
+    "import": "Konfiguration übernehmen",
+    "replace": "Konfiguration ersetzen",
+    "remove_confirm": "WireGuard-Verbindung löschen?",
+    "hint": "Inhalt der .conf-Datei deines WireGuard-Zugangs (Peer für das SmartBoard) einfügen. Die Verbindung startet automatisch, auch nach einem Neustart.",
+    "unavailable": "Nur auf dem SmartBoard-Gerät verfügbar."
   }
 }

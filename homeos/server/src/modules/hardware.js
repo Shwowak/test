@@ -5,7 +5,7 @@ import { log } from '../core/logger.js'
 import { getSetting, setSetting, isLocalIp } from '../core/settings.js'
 import { run, has, canIsolateNetwork } from '../system/exec.js'
 import { displayStatus, setBrightness, setPower, setOutput } from '../system/display.js'
-import { networkStatus, wifiScan, wifiConnect, wifiRadio, forget, setHostname } from '../system/network.js'
+import { networkStatus, wifiScan, wifiConnect, wifiRadio, forget, setHostname, wgStatus, wgImport, wgSet, wgRemove } from '../system/network.js'
 import * as bt from '../system/bluetooth.js'
 import { btAuto } from '../system/btauto.js'
 import { health, applyFix, diagnosticBundle, sample, analyse } from '../system/health.js'
@@ -131,6 +131,10 @@ export default async function hardwareModule(app) {
     wrap('network', async req => { await wifiConnect(req.body.ssid, req.body.password, req.body.hidden); log('network', 'info', 'wifi.connected', { ssid: req.body.ssid }, req.user.id) }))
   app.post('/hardware/network/radio', { schema: s('WiFi on/off', body({ on: { type: 'boolean' } }, ['on'])), preHandler: manage }, wrap('network', req => wifiRadio(req.body.on)))
   app.delete('/hardware/network/connections/:uuid', { schema: s('Forget connection'), preHandler: manage }, wrap('network', req => forget(req.params.uuid)))
+  app.get('/hardware/network/wireguard', { schema: s('WireGuard status'), preHandler: requirePerm('system.view') }, wrap('network', () => wgStatus()))
+  app.post('/hardware/network/wireguard', { schema: s('Import WireGuard config', body({ conf: { type: 'string', maxLength: 20000 } }, ['conf'])), preHandler: manage }, wrap('network', req => wgImport(req.body.conf)))
+  app.post('/hardware/network/wireguard/state', { schema: s('WireGuard on/off', body({ on: { type: 'boolean' } }, ['on'])), preHandler: manage }, wrap('network', req => wgSet(req.body.on)))
+  app.delete('/hardware/network/wireguard', { schema: s('Remove WireGuard'), preHandler: manage }, wrap('network', () => wgRemove()))
   app.post('/hardware/network/hostname', { schema: s('Set hostname', body({ name: { type: 'string' } }, ['name'])), preHandler: manage }, wrap('network', req => setHostname(req.body.name)))
 
   app.get('/hardware/bluetooth', { schema: s('Bluetooth status'), preHandler: requirePerm('system.view') }, wrap('bluetooth', () => bt.bluetoothStatus()))
