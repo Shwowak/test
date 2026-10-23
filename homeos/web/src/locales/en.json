@@ -1150,5 +1150,17 @@
     "remove_confirm": "Delete WireGuard connection?",
     "hint": "Paste the content of the .conf file of your WireGuard peer for this SmartBoard. The connection starts automatically, also after a reboot.",
     "unavailable": "Only available on the SmartBoard device."
+  },
+  "tokens": {
+    "title": "API tokens",
+    "hint": "For Home Assistant, Node-RED or scripts: header Authorization: Bearer TOKEN. Docs at /api/docs.",
+    "name": "Label",
+    "user": "Permissions of user",
+    "create": "Create token",
+    "copy": "Copy now – shown only once.",
+    "last_used": "Last used",
+    "never": "never",
+    "none": "No tokens",
+    "confirm_delete": "Really revoke token?"
   }
 }

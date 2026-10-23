@@ -3,6 +3,7 @@ import { ref, onMounted, inject } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { api } from '../../api.js'
 import { errorText, LOCALE_NAMES } from '../../i18n.js'
+import ApiTokens from './ApiTokens.vue'
 
 const props = defineProps({ meta: Object })
 const { t } = useI18n()
@@ -65,6 +66,7 @@ async function remove() {
       </tbody>
     </table>
     <button class="btn primary add" @click="create">＋ {{ t('users.new') }}</button>
+    <ApiTokens :users="users" />
   </div>
 
   <form v-else @submit.prevent="save">

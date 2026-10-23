@@ -89,6 +89,10 @@ const MIGRATIONS = [
     CREATE TABLE IF NOT EXISTS device_history (
       device_id INTEGER NOT NULL REFERENCES devices(id) ON DELETE CASCADE, cap TEXT NOT NULL, ts INTEGER NOT NULL, value REAL NOT NULL);
     CREATE INDEX IF NOT EXISTS device_history_idx ON device_history (device_id, cap, ts);`),
+  () => db.exec(`
+    CREATE TABLE IF NOT EXISTS api_tokens (
+      id INTEGER PRIMARY KEY, name TEXT NOT NULL, hash TEXT NOT NULL UNIQUE, user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      created_at INTEGER NOT NULL, last_used INTEGER);`),
 ]
 
 export function migrate() {

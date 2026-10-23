@@ -1,4 +1,4 @@
-import { randomBytes, scryptSync, timingSafeEqual } from 'node:crypto'
+import { randomBytes, scryptSync, timingSafeEqual, createHash } from 'node:crypto'
 import { db } from './db.js'
 import { log } from './logger.js'
 
@@ -59,6 +59,21 @@ export function userFromToken(token) {
   if (!token) return null
   return db.prepare(`SELECT u.* FROM sessions s JOIN users u ON u.id = s.user_id
     WHERE s.token = ? AND s.expires_at > ? AND u.disabled = 0`).get(token, Date.now()) ?? null
+}
+
+const tokenHash = t => createHash('sha256').update(String(t)).digest('hex')
+
+export function createApiToken(name, userId) {
+  const token = `sb_${randomBytes(24).toString('hex')}`
+  db.prepare('INSERT INTO api_tokens (name, hash, user_id, created_at) VALUES (?, ?, ?, ?)').run(name, tokenHash(token), userId, Date.now())
+  return token
+}
+
+export function userFromApiToken(token) {
+  if (!token?.startsWith('sb_')) return null
+  const row = db.prepare(`SELECT u.*, t.id token_id FROM api_tokens t JOIN users u ON u.id = t.user_id WHERE t.hash = ? AND u.disabled = 0`).get(tokenHash(token))
+  if (row) db.prepare('UPDATE api_tokens SET last_used = ? WHERE id = ?').run(Date.now(), row.token_id)
+  return row ?? null
 }
 
 const attempts = new Map()

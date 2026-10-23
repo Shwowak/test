@@ -7,7 +7,7 @@ import websocket from '@fastify/websocket'
 import { existsSync, readFileSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { seedAdmin, userFromToken, ensureViewer } from './src/core/auth.js'
+import { seedAdmin, userFromToken, userFromApiToken, ensureViewer } from './src/core/auth.js'
 import { getSetting as gs, setSetting as ss } from './src/core/settings.js'
 import { seedDemo } from './src/core/seed.js'
 import { log } from './src/core/logger.js'
@@ -46,7 +46,7 @@ await app.register(websocket)
 await app.register(swagger, {
   openapi: {
     info: { title: 'SmartBoard OS API', version: 'v1' },
-    components: { securitySchemes: { session: { type: 'apiKey', in: 'cookie', name: 'homeos_session' } } },
+    components: { securitySchemes: { session: { type: 'apiKey', in: 'cookie', name: 'homeos_session' }, bearer: { type: 'http', scheme: 'bearer' } } },
     security: [{ session: [] }],
   },
 })
@@ -68,7 +68,8 @@ app.setErrorHandler((err, req, reply) => {
 app.register(async api => {
   api.addHook('preHandler', async (req, reply) => {
     if (req.routeOptions.config?.public) return
-    const user = userFromToken(req.cookies.homeos_session)
+    const bearer = /^Bearer\s+(\S+)$/i.exec(req.headers.authorization ?? '')?.[1]
+    const user = bearer ? userFromApiToken(bearer) : userFromToken(req.cookies.homeos_session)
     if (!user) return reply.code(401).send({ error: 'unauthorized' })
     req.user = user
   })

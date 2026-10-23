@@ -1,7 +1,7 @@
 import { db } from '../core/db.js'
 import {
   verifySecret, hashSecret, createSession, publicUser, loginBlocked, loginFailed, loginSucceeded,
-  passwordProblem, pinProblem, SESSION_DAYS, can, userFromToken, ensureViewer,
+  passwordProblem, pinProblem, SESSION_DAYS, can, userFromToken, ensureViewer, createApiToken,
 } from '../core/auth.js'
 import { getSetting, setSetting, isLanIp, isLocalIp } from '../core/settings.js'
 import { setupAllowed, headless } from '../system/setupnet.js'
@@ -129,6 +129,25 @@ export default async function authModule(app) {
     db.prepare('UPDATE users SET display_name = COALESCE(?, display_name), locale = COALESCE(?, locale) WHERE id = ?')
       .run(b.display_name ?? null, b.locale ?? null, u.id)
     return publicUser(db.prepare('SELECT * FROM users WHERE id = ?').get(u.id))
+  })
+
+  app.get('/auth/tokens', { schema: { tags: ['auth'], summary: 'List API tokens' }, preHandler: requirePerm('users.manage') },
+    async () => db.prepare('SELECT t.id, t.name, t.user_id, u.name user_name, t.created_at, t.last_used FROM api_tokens t JOIN users u ON u.id = t.user_id ORDER BY t.id').all())
+
+  app.post('/auth/tokens', {
+    schema: { tags: ['auth'], summary: 'Create API token', body: { type: 'object', required: ['name', 'user_id'], properties: { name: { type: 'string', minLength: 1, maxLength: 60 }, user_id: { type: 'integer' } } } },
+    preHandler: requirePerm('users.manage'),
+  }, async req => {
+    if (!db.prepare('SELECT id FROM users WHERE id = ?').get(req.body.user_id)) throw badRequest('user.not_found')
+    const token = createApiToken(req.body.name, req.body.user_id)
+    log('security', 'info', 'token.created', { name: req.body.name, user_id: req.body.user_id }, req.user.id)
+    return { token }
+  })
+
+  app.delete('/auth/tokens/:id', { schema: { tags: ['auth'], summary: 'Revoke API token' }, preHandler: requirePerm('users.manage') }, async req => {
+    db.prepare('DELETE FROM api_tokens WHERE id = ?').run(Number(req.params.id))
+    log('security', 'info', 'token.deleted', { id: Number(req.params.id) }, req.user.id)
+    return { ok: true }
   })
 
   app.decorate('can', can)
