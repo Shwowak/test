@@ -41,7 +41,7 @@ jobs:
           context: homeos
           platforms: linux/${{ matrix.arch }}
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/homeos:${{ matrix.arch }}
+          tags: ghcr.io/shwowak/homeos:${{ matrix.arch }}
           cache-from: type=gha,scope=${{ matrix.arch }}
           cache-to: type=gha,mode=max,scope=${{ matrix.arch }}
 
@@ -60,5 +60,5 @@ jobs:
 
       - name: Multi-Arch-Manifest fuer latest
         run: |
-          IMG=ghcr.io/${{ github.repository_owner }}/homeos
+          IMG=ghcr.io/shwowak/homeos
           docker buildx imagetools create -t $IMG:latest -t $IMG:sha-${GITHUB_SHA::7} $IMG:amd64 $IMG:arm64
