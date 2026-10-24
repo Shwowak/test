@@ -111,3 +111,19 @@ export async function wgRemove() {
   try { await run('nmcli', ['connection', 'delete', WG]) } catch {}
   return wgStatus()
 }
+
+export async function sshStatus() {
+  if (!has('systemctl')) return { available: false }
+  let active = false
+  try { active = (await run('systemctl', ['is-active', 'ssh.service'])).trim() === 'active' } catch {}
+  return { available: true, active }
+}
+
+export async function sshSet(on) {
+  if (on) await run('systemctl', ['start', 'ssh.service'])
+  else {
+    try { await run('systemctl', ['stop', 'ssh.socket']) } catch {}
+    await run('systemctl', ['stop', 'ssh.service'])
+  }
+  return sshStatus()
+}

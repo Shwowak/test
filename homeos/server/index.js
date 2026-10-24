@@ -28,6 +28,7 @@ import alarmModule from './src/modules/alarm.js'
 import { keepOutputs } from './src/system/display.js'
 import { startBtAuto } from './src/system/btauto.js'
 import { startSetupNet } from './src/system/setupnet.js'
+import { sshSet } from './src/system/network.js'
 import { startHealth, registerFixes, trackRequest } from './src/system/health.js'
 import { startPlugin } from './src/plugins/host.js'
 import { db as database } from './src/core/db.js'
@@ -91,6 +92,6 @@ startPlugins()
 syncCameras().catch(() => {})
 registerFixes({ async restart_plugins() { const ids = database.prepare('SELECT id FROM plugins WHERE enabled = 1').all().map(r => r.id); ids.forEach(startPlugin); return `${ids.length} plugins restarted` } })
 startHealth()
-if (isDevice()) { keepOutputs(); startBtAuto(); startSetupNet() }
+if (isDevice()) { keepOutputs(); startBtAuto(); startSetupNet(); if (gs('ssh') === true) sshSet(true).catch(() => {}) }
 for (const sig of ['SIGTERM', 'SIGINT']) process.once(sig, () => { stopPlugins(); process.exit(0) })
 log('system', 'info', 'system.started', { version: process.env.npm_package_version })

@@ -1162,5 +1162,12 @@
     "never": "nie",
     "none": "Keine Tokens",
     "confirm_delete": "Token wirklich widerrufen?"
+  },
+  "ssh": {
+    "on": "SSH ist aktiv",
+    "off": "SSH ist aus",
+    "hint": "Zugang vom Mac: ssh benutzer{'@'}{host}.local",
+    "enable": "Einschalten",
+    "disable": "Ausschalten"
   }
 }

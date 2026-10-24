@@ -39,7 +39,7 @@ async function load() {
   const path = { display: '/hardware/display', network: '/hardware/network', bluetooth: '/hardware/bluetooth', audio: '/hardware/audio', update: '/hardware/update' }[props.section]
   if (!hw.info?.device && props.section === 'display') return
   data.value = await call('load', () => api('GET', path))
-  if (props.section === 'network') { hostname.value = data.value?.hostname ?? ''; loadWg() }
+  if (props.section === 'network') { hostname.value = data.value?.hostname ?? ''; loadWg(); loadSsh() }
 }
 onMounted(load)
 watch(() => props.section, () => { data.value = null; wifi.value = null; load() })
@@ -47,6 +47,9 @@ watch(() => props.section, () => { data.value = null; wifi.value = null; load() 
 const post = (path, body) => api('POST', path, body)
 const wg = ref(null)
 const wgConf = ref('')
+const ssh = ref(null)
+const loadSsh = async () => { ssh.value = await api('GET', '/hardware/network/ssh').catch(() => ({ available: false })) }
+const sshToggle = () => call('', async () => { ssh.value = await post('/hardware/network/ssh', { on: !ssh.value.active }) }, t('plugins.saved'))
 const loadWg = async () => { wg.value = await api('GET', '/hardware/network/wireguard').catch(() => ({ available: false })) }
 const wgRemove = () => { if (window.confirm(t('wg.remove_confirm'))) wgCall(() => api('DELETE', '/hardware/network/wireguard')) }
 const wgCall = fn => call('', async () => { wg.value = await fn() }, t('plugins.saved'))
@@ -185,6 +188,13 @@ const saveUpdate = () => call('updset', () => api('PUT', '/hardware/update', dat
           <input v-model="hostname" class="grow" pattern="[A-Za-z0-9-]{1,63}"><button class="btn">{{ t('common.save') }}</button>
         </form>
         <small class="hint">{{ t('hw.hostname_hint', { name: hostname }) }}</small>
+        <h3>SSH</h3>
+        <div v-if="ssh?.available" class="row card">
+          <span class="ico">⌨️</span>
+          <div class="grow"><b>{{ ssh.active ? t('ssh.on') : t('ssh.off') }}</b><small>{{ t('ssh.hint', { host: hostname || 'smartboard' }) }}</small></div>
+          <button class="btn" @click="sshToggle">{{ ssh.active ? t('ssh.disable') : t('ssh.enable') }}</button>
+        </div>
+        <p v-else class="hint">{{ t('wg.unavailable') }}</p>
         <h3>WireGuard VPN</h3>
         <template v-if="wg?.available">
           <div v-if="wg.configured" class="row card">

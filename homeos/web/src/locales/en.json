@@ -1162,5 +1162,12 @@
     "never": "never",
     "none": "No tokens",
     "confirm_delete": "Really revoke token?"
+  },
+  "ssh": {
+    "on": "SSH is active",
+    "off": "SSH is off",
+    "hint": "Access from Mac: ssh user{'@'}{host}.local",
+    "enable": "Enable",
+    "disable": "Disable"
   }
 }
