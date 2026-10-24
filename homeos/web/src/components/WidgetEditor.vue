@@ -26,6 +26,19 @@ const typeDef = computed(() => props.meta.widgetTypes[form.value.type])
 const allowedSources = computed(() => props.sources.filter(s => typeDef.value.sources.includes(s.type)))
 const sourceType = computed(() => props.sources.find(s => s.id === form.value.source_id)?.type ?? 'static')
 const devOptions = computed(() => Object.values(store.devices).filter(d => !d.hidden && d.capabilities.some(c => c.kind === 'measurement' || c.value === 'number')).sort((a, b) => a.name.localeCompare(b.name)))
+function grouped(list) {
+  const integ = id => store.integrations.find(i => i.id === id)?.name ?? '—'
+  const sub = d => store.rooms.find(r => r.id === d.room_id)?.name ?? d.meta?.area ?? t('deviceTypes.' + d.type)
+  const map = new Map()
+  for (const d of list) {
+    const k = `${integ(d.integration_id)} · ${sub(d)}`
+    if (!map.has(k)) map.set(k, [])
+    map.get(k).push(d)
+  }
+  return [...map].sort((a, b) => a[0].localeCompare(b[0])).map(([label, items]) => ({ label, items: items.sort((a, b) => a.name.localeCompare(b.name)) }))
+}
+const devGroups = computed(() => grouped(devOptions.value))
+const allGroups = computed(() => grouped(Object.values(store.devices).filter(x => x.adopted)))
 const capOptions = computed(() => store.devices[form.value.config.device_id]?.capabilities.filter(c => c.kind === 'measurement' || c.value === 'number') ?? [])
 function pickDevice() {
   const c = capOptions.value
@@ -98,7 +111,7 @@ async function remove() {
       <template v-if="f.type === 'device_value'">
         <select v-model.number="form.config.device_id" @change="pickDevice">
           <option :value="null">{{ t('widget.manual_value') }}</option>
-          <option v-for="d in devOptions" :key="d.id" :value="d.id">{{ d.name }}</option>
+          <optgroup v-for="g in devGroups" :key="g.label" :label="g.label"><option v-for="d in g.items" :key="d.id" :value="d.id">{{ d.name }}</option></optgroup>
         </select>
         <select v-if="form.config.device_id" v-model="form.config.capability">
           <option v-for="c in capOptions" :key="c.id" :value="c.id">{{ t('quantities.' + (c.quantity ?? c.id), c.quantity ?? c.id) }}{{ c.unit ? ' (' + c.unit + ')' : '' }}</option>
@@ -110,7 +123,7 @@ async function remove() {
         <option v-for="v in f.options" :key="v" :value="v">{{ t('chartStyles.' + v) }}</option>
       </select>
       <select v-else-if="f.type === 'device'" v-model.number="form.config[f.key]">
-        <option v-for="d in Object.values(store.devices).filter(x => x.adopted).sort((a, b) => a.name.localeCompare(b.name))" :key="d.id" :value="d.id">{{ d.name }}</option>
+        <optgroup v-for="g in allGroups" :key="g.label" :label="g.label"><option v-for="d in g.items" :key="d.id" :value="d.id">{{ d.name }}</option></optgroup>
       </select>
       <select v-else-if="f.type === 'room'" v-model.number="form.config[f.key]">
         <option v-for="r in store.rooms" :key="r.id" :value="r.id">{{ r.name }}</option>
