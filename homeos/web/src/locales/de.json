@@ -154,7 +154,8 @@
       "update": "Update",
       "assistant": "Assistent",
       "cameras": "Kameras",
-      "alarm": "Einsatzmonitor"
+      "alarm": "Einsatzmonitor",
+      "api": "API-Zugang"
     }
   },
   "profile": {

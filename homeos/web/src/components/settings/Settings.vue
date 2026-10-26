@@ -3,6 +3,7 @@ import { ref, computed, inject } from 'vue'
 import { useI18n } from 'vue-i18n'
 import ProfileSettings from './ProfileSettings.vue'
 import UsersSettings from './UsersSettings.vue'
+import ApiTokens from './ApiTokens.vue'
 import LogsSettings from './LogsSettings.vue'
 import VersionsSettings from './VersionsSettings.vue'
 import SystemSettings from './SystemSettings.vue'
@@ -36,6 +37,7 @@ const tabs = computed(() => [
   { id: 'alarm', icon: '🚨', show: can('users.manage') },
   { id: 'plugins', icon: '⧉', show: can('plugins.view') },
   { id: 'users', icon: '⚇', show: can('users.manage') },
+  { id: 'api', icon: '🔑', show: can('users.manage') },
   { id: 'versions', icon: '⟲', show: can('versions.view') },
   { id: 'logs', icon: '☰', show: can('logs.view') },
   { id: 'system', icon: '◉', show: can('system.view') },
@@ -70,6 +72,7 @@ loadSources()
       <AlarmSettings v-else-if="tab === 'alarm'" />
       <PluginsSettings v-else-if="tab === 'plugins'" />
       <UsersSettings v-else-if="tab === 'users'" :meta="meta" />
+      <ApiTokens v-else-if="tab === 'api'" />
       <VersionsSettings v-else-if="tab === 'versions'" @restored="emit('changed')" />
       <LogsSettings v-else-if="tab === 'logs'" :meta="meta" />
       <SystemSettings v-else-if="tab === 'system'" />
