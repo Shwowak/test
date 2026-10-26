@@ -1168,6 +1168,9 @@
     "off": "SSH ist aus",
     "hint": "Zugang vom Mac: ssh benutzer{'@'}{host}.local",
     "enable": "Einschalten",
-    "disable": "Ausschalten"
+    "disable": "Ausschalten",
+    "new_pw": "Neues SSH-Passwort (mind. 8 Zeichen)",
+    "change_pw": "Passwort ändern",
+    "pw_saved": "SSH-Passwort geändert"
   }
 }

@@ -1,0 +1,6 @@
+[Unit]
+Description=SmartBoard SSH password change
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/lib/smartboard/set-passwd

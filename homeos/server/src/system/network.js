@@ -1,4 +1,5 @@
 import { networkInterfaces, hostname } from 'node:os'
+import { readFileSync as readF, writeFileSync as writeF, rmSync as rmF } from 'node:fs'
 import { run, has } from './exec.js'
 
 function splitTerse(line) {
@@ -116,7 +117,27 @@ export async function sshStatus() {
   if (!has('systemctl')) return { available: false }
   let active = false
   try { active = (await run('systemctl', ['is-active', 'ssh.service'])).trim() === 'active' } catch {}
-  return { available: true, active }
+  return { available: true, active, users: loginUsers() }
+}
+
+function loginUsers() {
+  try {
+    return readF('/etc/passwd', 'utf8').split('\n').map(l => l.split(':'))
+      .filter(f => Number(f[2]) >= 1000 && Number(f[2]) < 65534 && f[0] !== 'smartboard' && !/nologin|false$/.test(f[6] ?? '')).map(f => f[0])
+  } catch { return [] }
+}
+
+export async function sshPassword(user, password) {
+  if (!loginUsers().includes(user)) throw new Error('unknown user')
+  if (typeof password !== 'string' || password.length < 8 || /[\n\r]/.test(password)) throw new Error('password.too_short')
+  const dir = '/var/lib/smartboard'
+  rmF(`${dir}/passwd.res`, { force: true })
+  writeF(`${dir}/passwd.req`, `${user}\n${password}\n`, { mode: 0o600 })
+  try { await run('systemctl', ['start', 'smartboard-passwd.service']) } finally { rmF(`${dir}/passwd.req`, { force: true }) }
+  const res = readF(`${dir}/passwd.res`, 'utf8').trim()
+  rmF(`${dir}/passwd.res`, { force: true })
+  if (res !== 'ok') throw new Error(res)
+  return { ok: true }
 }
 
 export async function sshSet(on) {

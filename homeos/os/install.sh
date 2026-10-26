@@ -135,6 +135,8 @@ fetch_file smartboard-update /usr/local/sbin/smartboard-update && chmod 755 /usr
 fetch_file go2rtc.service /etc/systemd/system/smartboard-go2rtc.service
 fetch_file go2rtc.yaml /etc/smartboard/go2rtc.yaml
 fetch_file wait-core /usr/local/lib/smartboard/wait-core && chmod 755 /usr/local/lib/smartboard/wait-core
+fetch_file set-passwd /usr/local/lib/smartboard/set-passwd && chmod 755 /usr/local/lib/smartboard/set-passwd
+fetch_file smartboard-passwd.service /etc/systemd/system/smartboard-passwd.service
 fetch_file 50-smartboard.rules /etc/polkit-1/rules.d/50-smartboard.rules
 fetch_file 90-smartboard.rules /etc/udev/rules.d/90-smartboard.rules
 fetch_file nftables.conf /etc/nftables.conf

@@ -1,0 +1,13 @@
+#!/bin/bash
+set -u
+REQ=/var/lib/smartboard/passwd.req
+RES=/var/lib/smartboard/passwd.res
+[ -f "$REQ" ] || exit 0
+user=$(sed -n 1p "$REQ")
+pw=$(sed -n 2p "$REQ")
+rm -f "$REQ"
+result() { echo "$1" > "$RES"; chown smartboard: "$RES"; exit 0; }
+uid=$(id -u "$user" 2>/dev/null) || result unknown
+{ [ "$uid" -lt 1000 ] || [ "$uid" -ge 65534 ] || [ "$user" = smartboard ] || [ ${#pw} -lt 8 ]; } && result invalid
+printf '%s:%s\n' "$user" "$pw" | chpasswd && result ok
+result failed

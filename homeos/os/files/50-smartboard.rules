@@ -11,6 +11,7 @@ polkit.addRule(function (action, subject) {
     var unit = action.lookup("unit"), verb = action.lookup("verb");
     if (unit == "smartboard-kiosk.service" && verb == "restart") return polkit.Result.YES;
     if (unit == "smartboard-update.service" && verb == "start") return polkit.Result.YES;
+    if (unit == "smartboard-passwd.service" && verb == "start") return polkit.Result.YES;
     if ((unit == "ssh.service" || unit == "ssh.socket") && (verb == "start" || verb == "stop")) return polkit.Result.YES;
   }
   return polkit.Result.NOT_HANDLED;

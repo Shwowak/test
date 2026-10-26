@@ -25,6 +25,8 @@ put smartboard-update-timer.service /etc/systemd/system/smartboard-update-timer.
 put smartboard-update.timer /etc/systemd/system/smartboard-update.timer
 put smartboard-update /usr/local/sbin/smartboard-update 755
 put wait-core /usr/local/lib/smartboard/wait-core 755
+put set-passwd /usr/local/lib/smartboard/set-passwd 755
+put smartboard-passwd.service /etc/systemd/system/smartboard-passwd.service
 put 50-smartboard.rules /etc/polkit-1/rules.d/50-smartboard.rules
 put 90-smartboard.rules /etc/udev/rules.d/90-smartboard.rules
 [ -f /etc/systemd/system/smartboard-kiosk.service ] && put smartboard-kiosk.service /etc/systemd/system/smartboard-kiosk.service

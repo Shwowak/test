@@ -5,7 +5,7 @@ import { log } from '../core/logger.js'
 import { getSetting, setSetting, isLocalIp } from '../core/settings.js'
 import { run, has, canIsolateNetwork } from '../system/exec.js'
 import { displayStatus, setBrightness, setPower, setOutput } from '../system/display.js'
-import { networkStatus, wifiScan, wifiConnect, wifiRadio, forget, setHostname, wgStatus, wgImport, wgSet, wgRemove, sshStatus, sshSet } from '../system/network.js'
+import { networkStatus, wifiScan, wifiConnect, wifiRadio, forget, setHostname, wgStatus, wgImport, wgSet, wgRemove, sshStatus, sshSet, sshPassword } from '../system/network.js'
 import * as bt from '../system/bluetooth.js'
 import { btAuto } from '../system/btauto.js'
 import { health, applyFix, diagnosticBundle, sample, analyse } from '../system/health.js'
@@ -140,6 +140,11 @@ export default async function hardwareModule(app) {
     setSetting('ssh', req.body.on)
     log('security', 'info', req.body.on ? 'ssh.enabled' : 'ssh.disabled', null, req.user.id)
     return sshSet(req.body.on)
+  }))
+  app.post('/hardware/network/ssh/password', { schema: s('Change SSH login password', body({ user: { type: 'string' }, password: { type: 'string', minLength: 8, maxLength: 128 } }, ['user', 'password'])), preHandler: manage }, wrap('network', async req => {
+    const r = await sshPassword(req.body.user, req.body.password)
+    log('security', 'info', 'ssh.password_changed', { user: req.body.user }, req.user.id)
+    return r
   }))
   app.post('/hardware/network/hostname', { schema: s('Set hostname', body({ name: { type: 'string' } }, ['name'])), preHandler: manage }, wrap('network', req => setHostname(req.body.name)))
 

@@ -50,6 +50,8 @@ const wgConf = ref('')
 const ssh = ref(null)
 const loadSsh = async () => { ssh.value = await api('GET', '/hardware/network/ssh').catch(() => ({ available: false })) }
 const sshToggle = () => call('', async () => { ssh.value = await post('/hardware/network/ssh', { on: !ssh.value.active }) }, t('plugins.saved'))
+const sshPw = ref({ user: '', password: '' })
+const sshPwSave = () => call('', async () => { await post('/hardware/network/ssh/password', { user: sshPw.value.user || ssh.value.users[0], password: sshPw.value.password }); sshPw.value.password = '' }, t('ssh.pw_saved'))
 const loadWg = async () => { wg.value = await api('GET', '/hardware/network/wireguard').catch(() => ({ available: false })) }
 const wgRemove = () => { if (window.confirm(t('wg.remove_confirm'))) wgCall(() => api('DELETE', '/hardware/network/wireguard')) }
 const wgCall = fn => call('', async () => { wg.value = await fn() }, t('plugins.saved'))
@@ -194,7 +196,12 @@ const saveUpdate = () => call('updset', () => api('PUT', '/hardware/update', dat
           <div class="grow"><b>{{ ssh.active ? t('ssh.on') : t('ssh.off') }}</b><small>{{ t('ssh.hint', { host: hostname || 'smartboard' }) }}</small></div>
           <button class="btn" @click="sshToggle">{{ ssh.active ? t('ssh.disable') : t('ssh.enable') }}</button>
         </div>
-        <p v-else class="hint">{{ t('wg.unavailable') }}</p>
+        <form v-if="ssh?.users?.length" class="row" @submit.prevent="sshPwSave">
+          <select v-model="sshPw.user"><option value="">{{ ssh.users[0] }}</option><option v-for="u in ssh.users.slice(1)" :key="u" :value="u">{{ u }}</option></select>
+          <input v-model="sshPw.password" type="password" minlength="8" class="grow" :placeholder="t('ssh.new_pw')" autocomplete="new-password" required>
+          <button class="btn">{{ t('ssh.change_pw') }}</button>
+        </form>
+        <p v-if="!ssh?.available" class="hint">{{ t('wg.unavailable') }}</p>
         <h3>WireGuard VPN</h3>
         <template v-if="wg?.available">
           <div v-if="wg.configured" class="row card">
