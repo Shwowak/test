@@ -33,7 +33,6 @@ const META = {
 }
 const CATS = ['smart', 'energy', 'server', 'protocol']
 const icon = a => META[a]?.[0] ?? '⌁'
-const tint = a => ({ '--tint': META[a]?.[2] ?? '#64748b' })
 const title = a => t('adapters.' + a).split(' (')[0]
 const subtitle = a => t('adapters.' + a).match(/\((.*)\)/)?.[1] ?? t('integrations.ui.cat.' + (META[a]?.[1] ?? 'protocol'))
 const catalog = computed(() => {
@@ -67,7 +66,7 @@ function create(adapter) {
   adding.value = false
   step.value = 1
   reveal.value = {}
-  form.value = { adapter, name: t('adapters.' + adapter), config: { mqtt: { discovery_prefix: 'homeassistant' }, rest: { interval: 30 }, proxmox: { kind: 'pve', insecure: 'yes', include: 'all', interval: 15, auto_adopt: true }, knx: { mode: 'tunneling' }, evcc: { interval: 5, auto_adopt: true }, fritzbox: { url: 'http://fritz.box', interval: 30, auto_adopt: true } }[adapter] ?? {}, enabled: true }
+  form.value = { adapter, name: title(adapter), config: { mqtt: { discovery_prefix: 'homeassistant' }, rest: { interval: 30 }, proxmox: { kind: 'pve', insecure: 'yes', include: 'all', interval: 15, auto_adopt: true }, knx: { mode: 'tunneling' }, evcc: { interval: 5, auto_adopt: true }, fritzbox: { url: 'http://fritz.box', interval: 30, auto_adopt: true } }[adapter] ?? {}, enabled: true }
   test.value = null
 }
 function edit(i) {
@@ -137,98 +136,99 @@ async function saveManual() {
 
 <template>
   <div class="integ">
-    <div v-if="manual" class="panel">
-      <header class="phead"><button type="button" class="back" @click="manual = null">‹</button><h3>{{ t('integrations.manual_device') }}</h3></header>
+    <div v-if="manual">
+      <button type="button" class="back" @click="manual = null">‹ {{ t('settings.tabs.integrations') }}</button>
+      <h2>{{ t('integrations.manual_device') }}</h2>
       <form @submit.prevent="saveManual">
-        <div class="grid2">
-          <div class="field"><label>{{ t('common.name') }}</label><input v-model="manual.name" required maxlength="80"></div>
-          <div class="field">
-            <label>{{ t('rooms.room') }}</label>
+        <div class="group">
+          <label class="row"><span class="k">{{ t('common.name') }}</span><input v-model="manual.name" required maxlength="80"></label>
+          <label class="row"><span class="k">{{ t('rooms.room') }}</span>
             <select v-model="manual.room_id"><option :value="null">{{ t('rooms.none') }}</option><option v-for="r in store.rooms" :key="r.id" :value="r.id">{{ r.name }}</option></select>
-          </div>
-          <div v-for="f in manualFields" :key="f.key" class="field">
-            <label>{{ t('restFields.' + f.key) }}</label>
+          </label>
+          <label v-for="f in manualFields" :key="f.key" class="row"><span class="k">{{ t('restFields.' + f.key) }}</span>
             <select v-if="f.type === 'select'" v-model="manual.meta[f.key]"><option v-for="o in f.options" :key="o" :value="o">{{ t('restOptions.' + o, o) }}</option></select>
             <input v-else v-model="manual.meta[f.key]" :type="f.type === 'url' ? 'url' : f.type === 'number' ? 'number' : 'text'" step="any" :required="f.required">
-          </div>
+          </label>
         </div>
         <p v-if="error" class="error">{{ error }}</p>
-        <div class="actions"><span class="grow" /><button class="btn primary">{{ t('common.save') }}</button></div>
+        <div class="foot"><span class="grow" /><button class="btn primary">{{ t('common.save') }}</button></div>
       </form>
     </div>
 
-    <form v-else-if="pair" class="panel" @submit.prevent="action(pair.i, 'commission', pair.code.trim())">
-      <header class="phead"><button type="button" class="back" @click="pair = null">‹</button><h3>{{ t('integrations.commission') }}</h3></header>
-      <p class="hint">{{ t('integrations.commission_help') }}</p>
-      <div class="field"><input v-model="pair.code" required placeholder="MT:… / 3497-011-2332"></div>
-      <div class="actions"><span class="grow" /><button class="btn primary" :disabled="busy">{{ t('integrations.commission') }}</button></div>
+    <form v-else-if="pair" @submit.prevent="action(pair.i, 'commission', pair.code.trim())">
+      <button type="button" class="back" @click="pair = null">‹ {{ t('settings.tabs.integrations') }}</button>
+      <h2>{{ t('integrations.commission') }}</h2>
+      <div class="group"><label class="row"><span class="k">Code</span><input v-model="pair.code" required placeholder="MT:… / 3497-011-2332"></label></div>
+      <p class="note">{{ t('integrations.commission_help') }}</p>
+      <div class="foot"><span class="grow" /><button class="btn primary" :disabled="busy">{{ t('integrations.commission') }}</button></div>
     </form>
 
-    <div v-else-if="adding" class="panel">
-      <header class="phead">
-        <button type="button" class="back" @click="adding = false">‹</button>
-        <h3>{{ t('integrations.add') }}</h3>
-        <span class="grow" />
-        <input v-model="query" class="search" type="search" :placeholder="t('integrations.ui.search')" autofocus>
-      </header>
-      <section v-for="g in catalog" :key="g.c" class="cat">
-        <div class="cat-t">{{ t('integrations.ui.cat.' + g.c) }}</div>
-        <div class="tiles">
-          <button v-for="k in g.items" :key="k" class="tile" :style="tint(k)" @click="create(k)">
-            <span class="logo">{{ icon(k) }}</span>
+    <div v-else-if="adding">
+      <div class="top">
+        <button type="button" class="back" @click="adding = false">‹ {{ t('settings.tabs.integrations') }}</button>
+        <input v-model="query" class="search" type="search" :placeholder="t('integrations.ui.search')">
+      </div>
+      <h2>{{ t('integrations.add') }}</h2>
+      <template v-for="g in catalog" :key="g.c">
+        <div class="gh">{{ t('integrations.ui.cat.' + g.c) }}</div>
+        <div class="group">
+          <button v-for="k in g.items" :key="k" class="row link" @click="create(k)">
+            <span class="ic" :style="{ background: META[k]?.[2] }">{{ icon(k) }}</span>
             <span class="tt"><b>{{ title(k) }}</b><small>{{ subtitle(k) }}</small></span>
-            <span class="plus">＋</span>
+            <span class="add">{{ t('integrations.ui.add_short') }}</span>
           </button>
         </div>
-      </section>
-      <p v-if="!catalog.length" class="hint">{{ t('integrations.ui.no_match') }}</p>
+      </template>
+      <p v-if="!catalog.length" class="note">{{ t('integrations.ui.no_match') }}</p>
     </div>
 
-    <form v-else-if="form" class="panel" @submit.prevent="save">
-      <header class="phead">
-        <button type="button" class="back" @click="form = null">‹</button>
-        <span class="logo sm" :style="tint(form.adapter)">{{ icon(form.adapter) }}</span>
-        <div class="ht"><h3>{{ form.id ? form.name : title(form.adapter) }}</h3><small>{{ form.id ? title(form.adapter) : t('integrations.ui.new') }}</small></div>
-        <span v-if="form.id" class="pill" :class="form.status?.status">{{ t('integrations.status.' + (form.status?.status ?? 'stopped')) }}</span>
-      </header>
+    <form v-else-if="form" @submit.prevent="save">
+      <button type="button" class="back" @click="form = null">‹ {{ t('settings.tabs.integrations') }}</button>
+      <div class="hero">
+        <span class="ic lg" :style="{ background: META[form.adapter]?.[2] }">{{ icon(form.adapter) }}</span>
+        <div><h2>{{ form.id ? form.name : title(form.adapter) }}</h2><small>{{ form.id ? title(form.adapter) : t('integrations.ui.new') }}</small></div>
+        <span v-if="form.id" class="st" :class="form.status?.status">{{ t('integrations.status.' + (form.status?.status ?? 'stopped')) }}</span>
+      </div>
 
-      <ol v-if="!form.id" class="steps">
-        <li :class="{ on: step === 1, done: step > 1 }"><span>1</span>{{ t('integrations.ui.step_connect') }}</li>
-        <li :class="{ on: step === 2 }"><span>2</span>{{ t('integrations.ui.step_finish') }}</li>
-      </ol>
+      <div v-if="!form.id" class="seg">
+        <span :class="{ on: step === 1 }">1 · {{ t('integrations.ui.step_connect') }}</span>
+        <span :class="{ on: step === 2 }">2 · {{ t('integrations.ui.step_finish') }}</span>
+      </div>
 
-      <p v-if="form.id && form.status?.error" class="alert">{{ form.status.error }}</p>
+      <p v-if="form.id && form.status?.error" class="banner err">{{ form.status.error }}</p>
 
       <template v-if="step !== 2">
-        <p class="help">{{ t('integrations.help.' + form.adapter) }}</p>
-        <div class="grid2">
-          <div class="field wide"><label>{{ t('common.name') }}</label><input v-model="form.name" required maxlength="80"></div>
-          <div v-for="f in fields" :key="f.key" class="field" :class="{ wide: !['number', 'select'].includes(f.type) }">
-            <label>{{ t('integrationFields.' + f.key) }}<i v-if="f.required">*</i></label>
+        <div class="gh">{{ t('integrations.ui.step_connect') }}</div>
+        <div class="group">
+          <label class="row"><span class="k">{{ t('common.name') }}</span><input v-model="form.name" required maxlength="80"></label>
+          <label v-for="f in fields" :key="f.key" class="row" :class="{ tall: f.type === 'json' }">
+            <span class="k">{{ t('integrationFields.' + f.key) }}</span>
             <select v-if="f.type === 'select'" v-model="form.config[f.key]"><option v-for="o in f.options" :key="o" :value="o">{{ t('restOptions.' + o, o) }}</option></select>
             <textarea v-else-if="f.type === 'json'" v-model="form.config[f.key]" placeholder='{"Authorization": "Bearer …"}' />
-            <div v-else-if="f.type === 'secret'" class="secret">
-              <input v-model="form.config[f.key]" :type="reveal[f.key] ? 'text' : 'password'" :required="f.required" autocomplete="off" :placeholder="ph(form.adapter, f.key)">
-              <button type="button" class="eye" @click="reveal[f.key] = !reveal[f.key]">{{ reveal[f.key] ? '🙈' : '👁' }}</button>
-            </div>
-            <input v-else v-model="form.config[f.key]" :type="f.type === 'number' ? 'number' : 'text'" :required="f.required" autocomplete="off" :placeholder="ph(form.adapter, f.key)">
-          </div>
+            <span v-else-if="f.type === 'secret'" class="sec">
+              <input v-model="form.config[f.key]" :type="reveal[f.key] ? 'text' : 'password'" :required="f.required" autocomplete="off" :placeholder="ph(form.adapter, f.key) || t('integrations.ui.required')">
+              <button type="button" class="eye" @click.prevent="reveal[f.key] = !reveal[f.key]">{{ reveal[f.key] ? t('integrations.ui.hide') : t('integrations.ui.show') }}</button>
+            </span>
+            <input v-else v-model="form.config[f.key]" :type="f.type === 'number' ? 'number' : 'text'" :required="f.required" autocomplete="off" :placeholder="ph(form.adapter, f.key) || (f.required ? t('integrations.ui.required') : t('integrations.ui.optional'))">
+          </label>
         </div>
+        <p class="note">{{ t('integrations.help.' + form.adapter) }}</p>
       </template>
 
-      <div v-if="test" class="result" :class="{ ok: test.ok }">
-        <span class="ri">{{ test.ok ? '✓' : '!' }}</span>
-        <span>{{ test.ok ? t('integrations.test_ok', test.found) : t('integrations.test_failed', { error: test.error }) }}</span>
+      <div v-if="test" class="banner" :class="test.ok ? 'ok' : 'err'">
+        {{ test.ok ? '✓ ' + t('integrations.test_ok', test.found) : t('integrations.test_failed', { error: test.error }) }}
       </div>
 
-      <div v-if="step !== 1" class="opts">
-        <label class="switch"><input v-model="form.config.auto_adopt" type="checkbox"><span />{{ t('integrations.auto_adopt') }}</label>
-        <label class="switch"><input v-model="form.enabled" type="checkbox"><span />{{ t('integrations.enabled') }}</label>
-      </div>
+      <template v-if="step !== 1">
+        <div class="gh">{{ t('integrations.ui.options') }}</div>
+        <div class="group">
+          <label class="row"><span class="k">{{ t('integrations.auto_adopt') }}</span><span class="tog"><input v-model="form.config.auto_adopt" type="checkbox"><i /></span></label>
+          <label class="row"><span class="k">{{ t('integrations.enabled') }}</span><span class="tog"><input v-model="form.enabled" type="checkbox"><i /></span></label>
+        </div>
+      </template>
       <p v-if="error" class="error">{{ error }}</p>
 
-      <div class="actions">
-        <button v-if="form.id" type="button" class="btn danger ghost" @click="remove">{{ t('common.delete') }}</button>
+      <div class="foot">
         <button v-if="step === 2" type="button" class="btn" @click="step = 1; test = null">{{ t('common.back') }}</button>
         <span class="grow" />
         <template v-if="step === 1">
@@ -240,38 +240,33 @@ async function saveManual() {
           <button class="btn primary">{{ form.id ? t('common.save') : t('integrations.ui.finish') }}</button>
         </template>
       </div>
+      <div v-if="form.id" class="group danger"><button type="button" class="row link" @click="remove">{{ t('integrations.ui.remove') }}</button></div>
     </form>
 
     <div v-else>
-      <div class="kpis">
-        <div><b>{{ stats.total }}</b><small>{{ t('integrations.ui.k_total') }}</small></div>
-        <div><b class="g">{{ stats.ok }}</b><small>{{ t('integrations.ui.k_ok') }}</small></div>
-        <div><b :class="{ r: stats.err }">{{ stats.err }}</b><small>{{ t('integrations.ui.k_err') }}</small></div>
-        <div><b>{{ stats.devices }}</b><small>{{ t('integrations.ui.k_devices') }}</small></div>
+      <div class="summary">
+        <span><b>{{ stats.total }}</b> {{ t('integrations.ui.k_total') }}</span>
+        <span><b class="g">{{ stats.ok }}</b> {{ t('integrations.ui.k_ok') }}</span>
+        <span v-if="stats.err"><b class="r">{{ stats.err }}</b> {{ t('integrations.ui.k_err') }}</span>
+        <span><b>{{ stats.devices }}</b> {{ t('integrations.ui.k_devices') }}</span>
         <span class="grow" />
-        <button class="btn primary" @click="adding = true; query = ''">＋ {{ t('integrations.add') }}</button>
+        <button class="btn primary" @click="adding = true; query = ''">＋ {{ t('integrations.ui.add_short') }}</button>
       </div>
-      <p v-if="actionMsg" class="toast">{{ actionMsg }}</p>
-      <div v-if="store.integrations.length" class="cards">
-        <article v-for="i in store.integrations" :key="i.id" class="card" :style="tint(i.adapter)" @click="edit(i)">
-          <div class="ctop">
-            <span class="logo">{{ icon(i.adapter) }}</span>
-            <div class="ht"><b>{{ i.name }}</b><small>{{ title(i.adapter) }}</small></div>
-            <span class="pill" :class="i.status?.status">{{ t('integrations.status.' + (i.status?.status ?? 'stopped')) }}</span>
-          </div>
-          <p v-if="i.status?.error" class="cerr">{{ i.status.error }}</p>
-          <div class="cbot">
-            <span class="cnt">{{ t('integrations.devices', i.devices) }}</span>
-            <span class="grow" />
-            <button v-if="adapters[i.adapter]?.actions?.includes('permit_join')" class="chip" @click.stop="action(i, 'permit_join')">{{ t('integrations.permit_join') }}</button>
-            <button v-if="adapters[i.adapter]?.actions?.includes('commission')" class="chip" @click.stop="pair = { i, code: '' }">{{ t('integrations.commission') }}</button>
-            <button v-if="adapters[i.adapter]?.manualDevices" class="chip" @click.stop="addManual(i)">＋ {{ t('integrations.manual_device') }}</button>
-            <span class="chev">›</span>
-          </div>
-        </article>
+      <p v-if="actionMsg" class="banner ok">{{ actionMsg }}</p>
+      <div v-if="store.integrations.length" class="group">
+        <div v-for="i in store.integrations" :key="i.id" class="row link" @click="edit(i)">
+          <span class="ic" :style="{ background: META[i.adapter]?.[2] }">{{ icon(i.adapter) }}</span>
+          <span class="tt"><b>{{ i.name }}</b><small :class="{ e: i.status?.error }">{{ i.status?.error || title(i.adapter) + ' · ' + t('integrations.devices', i.devices) }}</small></span>
+          <span class="acts">
+            <button v-if="adapters[i.adapter]?.actions?.includes('permit_join')" class="mini" @click.stop="action(i, 'permit_join')">{{ t('integrations.permit_join') }}</button>
+            <button v-if="adapters[i.adapter]?.actions?.includes('commission')" class="mini" @click.stop="pair = { i, code: '' }">{{ t('integrations.commission') }}</button>
+            <button v-if="adapters[i.adapter]?.manualDevices" class="mini" @click.stop="addManual(i)">＋ {{ t('integrations.manual_device') }}</button>
+          </span>
+          <span class="st" :class="i.status?.status">{{ t('integrations.status.' + (i.status?.status ?? 'stopped')) }}</span>
+          <span class="chev">›</span>
+        </div>
       </div>
-      <div v-else class="empty">
-        <div class="big">⌁</div>
+      <div v-else class="emptyst">
         <p>{{ t('integrations.empty') }}</p>
         <button class="btn primary" @click="adding = true">＋ {{ t('integrations.add') }}</button>
       </div>
@@ -280,78 +275,71 @@ async function saveManual() {
 </template>
 
 <style scoped>
-.integ { --card: rgba(148, 163, 184, 0.06); --card-h: rgba(148, 163, 184, 0.11); --r: 16px; }
-h3 { margin: 0; font-weight: 600; font-size: 20px; }
-.hint, .help { color: var(--dim); }
-.help { font-size: 14px; line-height: 1.5; padding: 12px 14px; border-radius: 12px; background: var(--card); margin: 0 0 18px; }
+.integ { --grp: rgba(118, 118, 128, 0.12); --sep: rgba(84, 84, 88, 0.45); max-width: 760px; }
+h2 { margin: 0; font-size: 22px; font-weight: 700; }
 .grow { flex: 1; }
-.kpis { display: flex; align-items: center; gap: 28px; flex-wrap: wrap; margin-bottom: 20px; }
-.kpis div { display: flex; flex-direction: column; }
-.kpis b { font-size: 26px; font-weight: 600; line-height: 1.1; }
-.kpis b.g { color: var(--ok); }
-.kpis b.r { color: var(--err); }
-.kpis small { color: var(--dim); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; }
-.toast { padding: 10px 14px; border-radius: 12px; background: var(--card); color: var(--text); }
-.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
-.card { background: var(--card); border-radius: var(--r); padding: 16px; cursor: pointer; display: flex; flex-direction: column; gap: 12px; transition: background 0.15s, transform 0.15s; position: relative; overflow: hidden; }
-.card::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 3px; background: var(--tint); opacity: 0.9; }
-.card:hover { background: var(--card-h); transform: translateY(-1px); }
-.ctop { display: flex; align-items: center; gap: 12px; }
-.ht { display: flex; flex-direction: column; min-width: 0; flex: 1; }
-.ht b, .ht h3 { overflow-wrap: break-word; line-height: 1.25; }
-.ht small { color: var(--dim); font-size: 13px; }
-.logo { width: 44px; height: 44px; flex: none; border-radius: 12px; display: grid; place-items: center; font-size: 22px; background: color-mix(in srgb, var(--tint, #64748b) 22%, transparent); }
-.logo.sm { width: 38px; height: 38px; font-size: 19px; }
-.pill { font-size: 12px; padding: 4px 10px; border-radius: 999px; background: rgba(100, 116, 139, 0.2); color: var(--dim); white-space: nowrap; }
-.pill::before { content: '●'; margin-right: 6px; }
-.pill.connected { background: rgba(48, 209, 88, 0.14); color: var(--ok); }
-.pill.connecting, .pill.disconnected { background: rgba(255, 159, 10, 0.14); color: var(--warn); }
-.pill.error { background: rgba(255, 69, 58, 0.14); color: var(--err); }
-.cerr { margin: 0; font-size: 13px; color: var(--err); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.cbot { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.cnt { color: var(--dim); font-size: 14px; }
-.chip { font-size: 13px; padding: 6px 12px; border-radius: 999px; border: 0; background: var(--card-h); color: var(--text); cursor: pointer; }
-.chip:hover { background: rgba(148, 163, 184, 0.2); }
-.chev { color: var(--dim); font-size: 22px; }
-.empty { text-align: center; padding: 48px 16px; color: var(--dim); }
-.empty .big { font-size: 48px; opacity: 0.5; }
-.panel { max-width: 860px; }
-.phead { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
-.back { width: 38px; height: 38px; border-radius: 50%; border: 0; background: var(--card); color: var(--text); font-size: 24px; line-height: 1; cursor: pointer; }
-.back:hover { background: var(--card-h); }
-.search { min-width: 220px; max-width: 100%; border-radius: 999px; padding: 10px 16px; }
-.cat { margin-bottom: 22px; }
-.cat-t { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); margin-bottom: 10px; }
-.tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; }
-.tile { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 14px; border: 0; background: var(--card); color: var(--text); text-align: left; cursor: pointer; transition: background 0.15s; }
-.tile:hover { background: var(--card-h); }
-.tt { flex: 1; display: flex; flex-direction: column; min-width: 0; }
-.tt small { color: var(--dim); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.plus { color: var(--dim); font-size: 18px; }
-.steps { display: flex; gap: 8px; list-style: none; padding: 0; margin: 0 0 18px; }
-.steps li { flex: 1; display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 12px; background: var(--card); color: var(--dim); font-size: 14px; }
-.steps li span { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; background: rgba(148, 163, 184, 0.18); font-size: 13px; }
-.steps li.on { color: var(--text); }
-.steps li.on span { background: var(--cyan); color: #000; }
-.steps li.done span { background: var(--ok); color: #000; }
-.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0 18px; }
-.field.wide { grid-column: 1 / -1; }
-.field label i { color: var(--err); font-style: normal; margin-left: 2px; }
-.secret { display: flex; gap: 6px; width: 100%; }
-.secret input { flex: 1; width: 100%; min-width: 0; }
-.eye { border: 0; background: var(--card); border-radius: 10px; width: 46px; cursor: pointer; }
-.alert { padding: 12px 14px; border-radius: 12px; background: rgba(255, 69, 58, 0.12); color: var(--err); font-size: 14px; }
-.result { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 12px; margin: 12px 0; background: rgba(255, 69, 58, 0.12); color: var(--err); }
-.result.ok { background: rgba(48, 209, 88, 0.12); color: var(--ok); }
-.ri { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; border: 2px solid currentColor; font-weight: 700; flex: none; }
-.opts { display: flex; flex-direction: column; gap: 4px; margin: 8px 0; }
-.switch { display: flex; align-items: center; gap: 12px; min-height: 48px; font-size: 16px; cursor: pointer; }
-.switch input { display: none; }
-.switch span { width: 46px; height: 28px; border-radius: 999px; background: rgba(148, 163, 184, 0.3); position: relative; transition: background 0.2s; flex: none; }
-.switch span::after { content: ''; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: #fff; transition: transform 0.2s; }
-.switch input:checked + span { background: var(--ok); }
-.switch input:checked + span::after { transform: translateX(18px); }
-.actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
-.ghost { background: transparent; }
-@media (max-width: 600px) { .kpis { gap: 18px; } .cards, .tiles { grid-template-columns: 1fr; } }
+.back { border: 0; background: none; color: #0a84ff; font-size: 15px; padding: 0; margin-bottom: 12px; cursor: pointer; }
+.top { display: flex; align-items: center; gap: 12px; }
+.top .back { margin: 0; }
+.search { margin-left: auto; width: 240px; border: 0; border-radius: 10px; padding: 8px 12px; background: rgba(118, 118, 128, 0.2); color: var(--text); font-size: 14px; }
+.top + h2 { margin: 14px 0 6px; }
+.gh { font-size: 13px; color: var(--dim); padding: 22px 16px 7px; text-transform: uppercase; letter-spacing: 0.02em; }
+.note { font-size: 13px; color: var(--dim); padding: 7px 16px 0; margin: 0; line-height: 1.45; }
+.group { background: var(--grp); border-radius: 12px; overflow: hidden; }
+.row { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 6px 16px; position: relative; width: 100%; border: 0; background: transparent; color: var(--text); font-size: 15px; text-align: left; }
+.row + .row::before { content: ''; position: absolute; top: 0; left: 16px; right: 0; height: 0.5px; background: var(--sep); }
+.row:has(.ic) + .row::before { left: 58px; }
+.link { cursor: pointer; }
+.link:hover { background: rgba(118, 118, 128, 0.1); }
+.link:active { background: rgba(118, 118, 128, 0.2); }
+.k { flex: 0 0 auto; min-width: 140px; color: var(--text); }
+.row input, .row select, .row textarea { flex: 1; min-width: 0; border: 0 !important; background: transparent !important; box-shadow: none !important; color: var(--text); font-size: 15px; text-align: right; padding: 8px 0 !important; border-radius: 0 !important; }
+.row select { direction: rtl; cursor: pointer; }
+.row select option { direction: ltr; }
+.row input::placeholder { color: rgba(235, 235, 245, 0.3); }
+.row input:focus, .row select:focus, .row textarea:focus { outline: none; }
+.row.tall { align-items: flex-start; padding-top: 12px; }
+.row textarea { min-height: 90px; text-align: left; font-family: var(--mono); font-size: 13px; }
+.sec { flex: 1; display: flex; align-items: center; gap: 10px; min-width: 0; }
+.eye { border: 0; background: none; color: #0a84ff; font-size: 14px; cursor: pointer; padding: 0; }
+.ic { width: 30px; height: 30px; border-radius: 7px; display: grid; place-items: center; font-size: 16px; color: #fff; flex: none; box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, 0.18); }
+.ic.lg { width: 56px; height: 56px; border-radius: 13px; font-size: 28px; }
+.tt { flex: 1; display: flex; flex-direction: column; min-width: 0; padding: 4px 0; }
+.tt b { font-weight: 500; }
+.tt small { color: var(--dim); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tt small.e { color: #ff453a; }
+.add { color: #0a84ff; font-size: 15px; }
+.chev { color: rgba(235, 235, 245, 0.3); font-size: 20px; margin-left: 2px; }
+.st { font-size: 14px; color: var(--dim); white-space: nowrap; display: flex; align-items: center; gap: 6px; }
+.st::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #8e8e93; }
+.st.connected::before { background: #30d158; }
+.st.connecting::before, .st.disconnected::before { background: #ff9f0a; }
+.st.error { color: #ff453a; }
+.st.error::before { background: #ff453a; }
+.acts { display: flex; gap: 6px; }
+.mini { border: 0; border-radius: 999px; padding: 5px 11px; background: rgba(10, 132, 255, 0.16); color: #0a84ff; font-size: 13px; cursor: pointer; white-space: nowrap; }
+.summary { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; color: var(--dim); font-size: 14px; margin-bottom: 16px; }
+.summary b { color: var(--text); font-size: 17px; font-weight: 600; margin-right: 2px; }
+.summary b.g { color: #30d158; }
+.summary b.r { color: #ff453a; }
+.hero { display: flex; align-items: center; gap: 14px; margin: 4px 0 16px; }
+.hero small { color: var(--dim); font-size: 14px; }
+.hero .st { margin-left: auto; }
+.seg { display: inline-flex; padding: 2px; border-radius: 9px; background: rgba(118, 118, 128, 0.24); margin-bottom: 4px; }
+.seg span { padding: 6px 16px; border-radius: 7px; font-size: 13px; color: var(--dim); }
+.seg span.on { background: #636366; color: #fff; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12); }
+.banner { margin: 16px 0 0; padding: 12px 16px; border-radius: 12px; font-size: 14px; }
+.banner.ok { background: rgba(48, 209, 88, 0.14); color: #30d158; }
+.banner.err { background: rgba(255, 69, 58, 0.14); color: #ff6961; }
+.tog { margin-left: auto; position: relative; display: inline-flex; }
+.tog input { position: absolute; opacity: 0; pointer-events: none; }
+.tog i { width: 51px; height: 31px; border-radius: 999px; background: rgba(120, 120, 128, 0.32); position: relative; transition: background 0.2s; cursor: pointer; }
+.tog i::after { content: ''; position: absolute; top: 2px; left: 2px; width: 27px; height: 27px; border-radius: 50%; background: #fff; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15); transition: transform 0.2s; }
+.tog input:checked + i { background: #30d158; }
+.tog input:checked + i::after { transform: translateX(20px); }
+.foot { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
+.danger { margin-top: 28px; }
+.danger .row { justify-content: center; color: #ff453a; }
+.emptyst { text-align: center; padding: 40px 0; color: var(--dim); }
+@media (max-width: 600px) { .k { min-width: 0; max-width: 45%; } .acts { display: none; } .search { width: 100%; } .top { flex-wrap: wrap; } }
 </style>

@@ -454,7 +454,9 @@
     "capabilities": "Funktionen",
     "confirm_delete": "Gerät „{name}“ entfernen? Es erscheint bei erneuter Erkennung wieder als neues Gerät.",
     "not_found": "Gerät nicht gefunden",
-    "room_empty": "Keine Geräte in diesem Raum"
+    "room_empty": "Keine Geräte in diesem Raum",
+    "search": "Gerät suchen …",
+    "filtered": "Keine Geräte – Filter oder Suche anpassen."
   },
   "rooms": {
     "title": "Räume",
@@ -632,7 +634,14 @@
         "energy": "Energie",
         "server": "Server und Netzwerk",
         "protocol": "Protokolle und Schnittstellen"
-      }
+      },
+      "add_short": "Hinzufügen",
+      "options": "Optionen",
+      "required": "erforderlich",
+      "optional": "optional",
+      "show": "Anzeigen",
+      "hide": "Ausblenden",
+      "remove": "Integration entfernen …"
     }
   },
   "integrationFields": {

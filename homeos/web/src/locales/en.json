@@ -454,7 +454,9 @@
     "capabilities": "Capabilities",
     "confirm_delete": "Remove device “{name}”? It will reappear as new if discovered again.",
     "not_found": "Device not found",
-    "room_empty": "No devices in this room"
+    "room_empty": "No devices in this room",
+    "search": "Search device …",
+    "filtered": "No devices – adjust filter or search."
   },
   "rooms": {
     "title": "Rooms",
@@ -632,7 +634,14 @@
         "energy": "Energy",
         "server": "Server and network",
         "protocol": "Protocols and interfaces"
-      }
+      },
+      "add_short": "Add",
+      "options": "Options",
+      "required": "required",
+      "optional": "optional",
+      "show": "Show",
+      "hide": "Hide",
+      "remove": "Remove integration …"
     }
   },
   "integrationFields": {

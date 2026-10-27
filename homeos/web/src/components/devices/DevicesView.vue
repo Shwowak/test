@@ -21,8 +21,19 @@ const error = ref('')
 
 onMounted(() => loadDevices().catch(e => (error.value = errorText(e))))
 
-const adopted = computed(() => Object.values(store.devices).filter(d => d.adopted))
-const discovered = computed(() => Object.values(store.devices).filter(d => !d.adopted).sort((a, b) => a.name.localeCompare(b.name)))
+const readOff = () => { try { return new Set(JSON.parse(localStorage.getItem('sb.integrationsOff') ?? '[]')) } catch { return new Set() } }
+const off = ref(readOff())
+const search = ref('')
+function toggleInteg(id) {
+  const s = new Set(off.value)
+  s.has(id) ? s.delete(id) : s.add(id)
+  off.value = s
+  try { localStorage.setItem('sb.integrationsOff', JSON.stringify([...s])) } catch {}
+}
+const integs = computed(() => store.integrations.map(i => ({ ...i, n: Object.values(store.devices).filter(d => d.adopted && d.integration_id === i.id).length })).filter(i => i.n))
+const shown = d => !off.value.has(d.integration_id) && (!search.value || d.name.toLowerCase().includes(search.value.toLowerCase()))
+const adopted = computed(() => Object.values(store.devices).filter(d => d.adopted && shown(d)))
+const discovered = computed(() => Object.values(store.devices).filter(d => !d.adopted && shown(d)).sort((a, b) => a.name.localeCompare(b.name)))
 const visible = computed(() => adopted.value.filter(d => room.value === 'all' || (room.value === 'none' ? d.room_id == null : d.room_id === room.value)))
 const grouped = computed(() => {
   const groups = new Map()
@@ -77,6 +88,13 @@ async function hide(d) {
       </div>
     </header>
 
+    <div class="filter">
+      <input v-model="search" type="search" class="q" :placeholder="t('devices.search')">
+      <button v-for="i in integs" :key="i.id" class="ftog" :class="{ on: !off.has(i.id) }" @click="toggleInteg(i.id)">
+        <span class="sw" />{{ i.name }}<small>{{ i.n }}</small>
+      </button>
+    </div>
+
     <button v-if="discovered.length && can('devices.manage')" class="found" @click="showDiscovered = true">
       <span class="pulse" />{{ t('devices.found', discovered.length) }} <b>→</b>
     </button>
@@ -98,7 +116,7 @@ async function hide(d) {
       </div>
     </section>
 
-    <p v-if="store.loaded && !adopted.length" class="empty">{{ t('devices.empty') }}</p>
+    <p v-if="store.loaded && !adopted.length" class="empty">{{ off.size || search ? t('devices.filtered') : t('devices.empty') }}</p>
 
     <Sheet v-if="showDiscovered" :title="t('devices.discovered_title')" @close="showDiscovered = false">
       <p class="hint">{{ t('devices.discovered_hint') }}</p>
@@ -144,6 +162,16 @@ async function hide(d) {
 .found b { margin-left: auto; }
 .pulse { width: 12px; height: 12px; border-radius: 50%; background: var(--magenta); box-shadow: 0 0 12px var(--magenta); animation: pulse 1.4s infinite; }
 @keyframes pulse { 50% { opacity: 0.3; } }
+.filter { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 18px; }
+.q { min-width: 200px; flex: 0 1 260px; border: 0; border-radius: 10px; padding: 10px 14px; background: rgba(118, 118, 128, 0.2); color: var(--text); font-size: 15px; }
+.q:focus { outline: none; box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.5); }
+.ftog { display: flex; align-items: center; gap: 8px; padding: 8px 14px; border: 0; border-radius: 999px; background: rgba(118, 118, 128, 0.14); color: var(--dim); font-size: 14px; cursor: pointer; }
+.ftog small { opacity: 0.7; font-variant-numeric: tabular-nums; }
+.ftog .sw { width: 28px; height: 16px; border-radius: 999px; background: rgba(118, 118, 128, 0.4); position: relative; transition: background 0.2s; }
+.ftog .sw::after { content: ''; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: #fff; transition: transform 0.2s; }
+.ftog.on { color: var(--text); }
+.ftog.on .sw { background: #30d158; }
+.ftog.on .sw::after { transform: translateX(12px); }
 .room { margin-bottom: 26px; }
 .room h2 { margin: 0 0 10px; }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
