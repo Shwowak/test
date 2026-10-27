@@ -29,6 +29,9 @@ put set-passwd /usr/local/lib/smartboard/set-passwd 755
 put smartboard-passwd.service /etc/systemd/system/smartboard-passwd.service
 put 50-smartboard.rules /etc/polkit-1/rules.d/50-smartboard.rules
 put 90-smartboard.rules /etc/udev/rules.d/90-smartboard.rules
+if [ -f /etc/nftables.conf ] && ! cmp -s "$F/nftables.conf" /etc/nftables.conf && nft -c -f "$F/nftables.conf"; then
+  install -m 644 "$F/nftables.conf" /etc/nftables.conf && nft -f /etc/nftables.conf && echo "apply: /etc/nftables.conf"
+fi
 [ -f /etc/systemd/system/smartboard-kiosk.service ] && put smartboard-kiosk.service /etc/systemd/system/smartboard-kiosk.service
 [ -f /etc/systemd/system/smartboard-kiosk.service ] && put kiosk-browser /usr/local/lib/smartboard/kiosk-browser 755
 [ -x /opt/smartboard/go2rtc ] && put go2rtc.service /etc/systemd/system/smartboard-go2rtc.service

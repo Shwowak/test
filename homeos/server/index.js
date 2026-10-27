@@ -66,6 +66,13 @@ app.setErrorHandler((err, req, reply) => {
   reply.code(status).send({ error: err.code && typeof err.code === 'string' ? err.code : 'internal', details: err.details })
 })
 
+app.addHook('onSend', async (req, reply) => {
+  reply.header('X-Content-Type-Options', 'nosniff')
+  reply.header('X-Frame-Options', 'SAMEORIGIN')
+  reply.header('Referrer-Policy', 'no-referrer')
+  reply.header('Content-Security-Policy', "frame-ancestors 'self'; object-src 'none'; base-uri 'self'")
+})
+
 app.register(async api => {
   api.addHook('preHandler', async (req, reply) => {
     if (req.routeOptions.config?.public) return
