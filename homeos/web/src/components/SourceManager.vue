@@ -15,7 +15,7 @@ const typeDef = computed(() => form.value && props.meta.sourceTypes[form.value.t
 const creatable = computed(() => Object.keys(props.meta.sourceTypes).filter(k => k !== 'static'))
 
 function start(type) {
-  form.value = { name: '', type, config: {} }
+  form.value = { name: '', type, config: type === 'imap' ? { tls: 'yes', folder: 'INBOX' } : {} }
 }
 function edit(s) {
   form.value = { ...s, config: { ...s.config, headers: s.config.headers ? JSON.stringify(s.config.headers) : '' } }
@@ -68,6 +68,7 @@ async function remove() {
     <div v-for="f in typeDef.fields" :key="f.key" class="field">
       <label>{{ t('sourceFields.' + f.key) }}</label>
       <textarea v-if="f.type === 'json'" v-model="form.config[f.key]" placeholder='{"Authorization": "Bearer …"}' />
+      <select v-else-if="f.type === 'select'" v-model="form.config[f.key]"><option v-for="o in f.options" :key="o" :value="o">{{ t('restOptions.' + o, o) }}</option></select>
       <input v-else v-model="form.config[f.key]" :type="f.type === 'secret' ? 'password' : f.type === 'url' ? 'url' : 'text'" :required="f.required" autocomplete="off">
     </div>
     <p v-if="error" class="error">{{ error }}</p>

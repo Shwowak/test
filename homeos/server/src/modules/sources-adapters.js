@@ -1,4 +1,5 @@
 import { getDevice, deviceHistory } from '../devices/engine.js'
+import { fetchMail } from './imap.js'
 export const SOURCE_TYPES = {
   static: { fields: [] },
   rest_json: {
@@ -15,6 +16,16 @@ export const SOURCE_TYPES = {
   },
   ical: {
     fields: [{ key: 'url', type: 'url', required: true }],
+  },
+  imap: {
+    fields: [
+      { key: 'host', type: 'text', required: true },
+      { key: 'port', type: 'text' },
+      { key: 'user', type: 'text', required: true },
+      { key: 'password', type: 'secret', required: true },
+      { key: 'tls', type: 'select', options: ['yes', 'no'] },
+      { key: 'folder', type: 'text' },
+    ],
   },
 }
 
@@ -168,6 +179,9 @@ export async function resolve(widget, source) {
     const events = expandEvents(parseIcal(text), now, Date.now() + 90 * 86400000)
       .sort((a, b) => a.start.localeCompare(b.start)).slice(0, wc.limit ?? 8)
     return { events }
+  }
+  if (source.type === 'imap') {
+    return fetchCached(`imap:${source.id}:${wc.limit ?? 6}`, 2 * 60 * 1000, () => fetchMail(sc, Number(wc.limit) || 6))
   }
   throw new Error(`unknown source type ${source.type}`)
 }

@@ -9,6 +9,7 @@ import KpiWidget from '../widgets/KpiWidget.vue'
 const GaugeWidget = defineAsyncComponent(() => import('../widgets/GaugeWidget.vue'))
 const ChartWidget = defineAsyncComponent(() => import('../widgets/ChartWidget.vue'))
 const CalendarWidget = defineAsyncComponent(() => import('../widgets/CalendarWidget.vue'))
+const MailWidget = defineAsyncComponent(() => import('../widgets/MailWidget.vue'))
 import SwitchWidget from '../widgets/SwitchWidget.vue'
 const IframeWidget = defineAsyncComponent(() => import('../widgets/IframeWidget.vue'))
 import DeviceWidget from '../widgets/DeviceWidget.vue'
@@ -20,10 +21,10 @@ const props = defineProps({ widget: Object, editing: Boolean })
 
 const components = {
   clock: ClockWidget, text: TextWidget, kpi: KpiWidget, gauge: GaugeWidget,
-  chart: ChartWidget, calendar: CalendarWidget, switch: SwitchWidget, iframe: IframeWidget,
+  chart: ChartWidget, calendar: CalendarWidget, mail: MailWidget, switch: SwitchWidget, iframe: IframeWidget,
   device: DeviceWidget, room: RoomWidget, plugin: PluginWidget, camera: CameraWidget,
 }
-const needsData = ['kpi', 'gauge', 'chart', 'calendar', 'switch']
+const needsData = ['kpi', 'gauge', 'chart', 'calendar', 'mail', 'switch']
 
 const data = ref(null)
 const error = ref('')

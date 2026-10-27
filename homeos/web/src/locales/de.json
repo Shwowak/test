@@ -77,7 +77,8 @@
     "device": "Gerät",
     "room": "Raum",
     "plugin": "Plugin",
-    "camera": "Kamera"
+    "camera": "Kamera",
+    "mail": "E-Mail"
   },
   "fields": {
     "value": "Wert",
@@ -110,12 +111,19 @@
     "static": "Fester Wert",
     "rest_json": "REST / JSON",
     "home_assistant": "Home Assistant",
-    "ical": "Kalender (iCal)"
+    "ical": "Kalender (iCal)",
+    "imap": "E-Mail (IMAP)"
   },
   "sourceFields": {
     "url": "URL",
     "headers": "Header (JSON)",
-    "token": "Long-Lived Access Token"
+    "token": "Long-Lived Access Token",
+    "host": "IMAP-Server (z. B. imap.gmail.com)",
+    "port": "Port (leer = 993)",
+    "user": "Benutzer / E-Mail-Adresse",
+    "password": "Passwort / App-Passwort",
+    "tls": "Verschlüsselt (SSL/TLS)",
+    "folder": "Ordner"
   },
   "sources": {
     "title": "Datenquellen",
@@ -1173,5 +1181,9 @@
     "new_pw": "Neues SSH-Passwort (mind. 8 Zeichen)",
     "change_pw": "Passwort ändern",
     "pw_saved": "SSH-Passwort geändert"
+  },
+  "mail": {
+    "unread": "ungelesen",
+    "none": "Keine E-Mails"
   }
 }
