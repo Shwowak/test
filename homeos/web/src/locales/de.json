@@ -603,7 +603,28 @@
       "permit_join": "Anlernmodus aktiv – Gerät jetzt in den Kopplungsmodus versetzen.",
       "commission": "Gerät gekoppelt."
     },
-    "action_failed": "Fehlgeschlagen:"
+    "action_failed": "Fehlgeschlagen:",
+    "ui": {
+      "search": "Suchen …",
+      "no_match": "Keine passende Integration",
+      "new": "Neue Integration",
+      "step_connect": "Verbindung",
+      "step_finish": "Fertigstellen",
+      "test_next": "Testen und weiter",
+      "testing": "Teste …",
+      "skip_test": "Ohne Test weiter",
+      "finish": "Fertigstellen",
+      "k_total": "Integrationen",
+      "k_ok": "Verbunden",
+      "k_err": "Fehler",
+      "k_devices": "Geräte",
+      "cat": {
+        "smart": "Smart Home",
+        "energy": "Energie",
+        "server": "Server und Netzwerk",
+        "protocol": "Protokolle und Schnittstellen"
+      }
+    }
   },
   "integrationFields": {
     "url": "URL",

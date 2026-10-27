@@ -603,7 +603,28 @@
       "permit_join": "Pairing mode active – put the device into pairing mode now.",
       "commission": "Device paired."
     },
-    "action_failed": "Failed:"
+    "action_failed": "Failed:",
+    "ui": {
+      "search": "Search …",
+      "no_match": "No matching integration",
+      "new": "New integration",
+      "step_connect": "Connection",
+      "step_finish": "Finish",
+      "test_next": "Test and continue",
+      "testing": "Testing …",
+      "skip_test": "Continue without test",
+      "finish": "Finish",
+      "k_total": "Integrations",
+      "k_ok": "Connected",
+      "k_err": "Errors",
+      "k_devices": "Devices",
+      "cat": {
+        "smart": "Smart home",
+        "energy": "Energy",
+        "server": "Server and network",
+        "protocol": "Protocols and interfaces"
+      }
+    }
   },
   "integrationFields": {
     "url": "URL",
