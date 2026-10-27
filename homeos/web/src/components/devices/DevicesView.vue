@@ -2,14 +2,13 @@
 import { ref, computed, inject, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { api } from '../../api.js'
-import { store, loadDevices, connected, TYPE_ICONS } from '../../devices.js'
+import { store, loadDevices, connected, TYPE_ICONS, command } from '../../devices.js'
 import { errorText } from '../../i18n.js'
 import Sheet from '../Sheet.vue'
-import DeviceControl from './DeviceControl.vue'
 import DeviceDetail from './DeviceDetail.vue'
 import RoomsEditor from './RoomsEditor.vue'
 
-const { t } = useI18n()
+const { t, n } = useI18n()
 const user = inject('user')
 const can = p => user.value?.permissions?.includes(p)
 const room = ref('all')
@@ -68,6 +67,30 @@ async function adopt() {
     error.value = errorText(e)
   }
 }
+const PRIO = ['power', 'temperature', 'humidity', 'cpu', 'soc', 'battery', 'energy']
+const num = (v, c) => typeof v === 'number' ? `${n(v, { maximumFractionDigits: Math.abs(v) >= 100 ? 0 : 1 })}${c?.unit ? ' ' + c.unit : ''}` : null
+function status(d) {
+  if (d.connection === 'offline') return t('devices.no_response')
+  const st = d.state ?? {}
+  const cap = id => d.capabilities.find(c => c.id === id)
+  const parts = []
+  if (cap('onoff')) parts.push(st.onoff ? t('switch.on') : t('switch.off'))
+  if (st.onoff && cap('brightness') && st.brightness != null) parts.push(`${st.brightness} %`)
+  if (cap('position') && st.position != null) parts.push(`${st.position} %`)
+  const ms = d.capabilities.filter(c => c.kind === 'measurement' && typeof st[c.id] === 'number')
+    .sort((a, b) => (PRIO.indexOf(a.quantity ?? a.id) + 1 || 99) - (PRIO.indexOf(b.quantity ?? b.id) + 1 || 99))
+  for (const c of ms.slice(0, parts.length ? 1 : 2)) parts.push(num(st[c.id], c))
+  if (cap('target_temperature') && st.target_temperature != null) parts.push(`${t('devices.target')} ${num(st.target_temperature, { unit: '°C' })}`)
+  const bin = d.capabilities.find(c => c.kind === 'binary')
+  if (!parts.length && bin) parts.push(t(`binary.${bin.id}.${st[bin.id] ? 'on' : 'off'}`, t(`binary.default.${st[bin.id] ? 'on' : 'off'}`)))
+  const txt = d.capabilities.find(c => c.kind === 'text' || c.kind === 'select')
+  if (!parts.length && txt && st[txt.id] != null) parts.push(String(st[txt.id]))
+  return parts.join(' · ') || '—'
+}
+const isOn = d => d.connection !== 'offline' && (d.state?.onoff === true || (d.state?.onoff === undefined && d.capabilities.some(c => c.kind === 'binary' && c.id !== 'online' && d.state?.[c.id] === true)))
+const canToggle = d => d.capabilities.some(c => c.id === 'onoff') && can('devices.control') && d.connection !== 'offline'
+const tapIcon = d => { if (canToggle(d)) command(d.id, 'onoff', !d.state?.onoff).catch(e => (error.value = errorText(e))); else detail.value = d }
+
 async function hide(d) {
   await api('PUT', `/devices/${d.id}`, { hidden: true })
   await loadDevices()
@@ -102,16 +125,15 @@ async function hide(d) {
     <p v-if="error" class="error">{{ error }}</p>
 
     <section v-for="g in grouped" :key="g.id" class="room">
-      <h2 class="label">{{ g.name }}</h2>
+      <h2>{{ g.name }} <small>{{ g.devices.length }}</small></h2>
       <div class="grid">
-        <article v-for="d in g.devices" :key="d.id" class="dev" :class="{ off: d.connection === 'offline' }">
-          <header @click="detail = d">
-            <span class="ico">{{ TYPE_ICONS[d.type] ?? '◈' }}</span>
-            <span class="name">{{ d.name }}</span>
-            <span v-if="d.battery != null" class="bat" :class="{ low: d.battery < 20 }">{{ Math.round(d.battery) }}%</span>
-            <span class="conn" :class="d.connection" />
-          </header>
-          <DeviceControl :device="d" compact :disabled="!can('devices.control')" />
+        <article v-for="d in g.devices" :key="d.id" class="tile" :class="{ on: isOn(d), off: d.connection === 'offline' }" @click="detail = d">
+          <div class="tt">
+            <button class="ico" :class="{ tog: canToggle(d) }" @click.stop="tapIcon(d)">{{ TYPE_ICONS[d.type] ?? '◈' }}</button>
+            <span v-if="d.battery != null && d.battery < 20" class="bat">🪫 {{ Math.round(d.battery) }} %</span>
+          </div>
+          <div class="nm">{{ d.name }}</div>
+          <div class="sv">{{ status(d) }}</div>
         </article>
       </div>
     </section>
@@ -150,48 +172,57 @@ async function hide(d) {
 </template>
 
 <style scoped>
-.devices { padding: 0 20px 40px; }
+.devices { padding: 0 24px 48px; }
 .bar { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-bottom: 14px; }
-.chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
-.chip { min-height: 48px; padding: 0 18px; border: 1px solid var(--line); background: transparent; white-space: nowrap; font-size: 16px; cursor: pointer; }
-.chip.on { border-color: var(--cyan); color: #fff; box-shadow: 0 0 14px rgba(34, 211, 238, 0.25); }
+.chips { display: inline-flex; gap: 2px; padding: 3px; border-radius: 11px; background: rgba(118, 118, 128, 0.2); overflow-x: auto; max-width: 100%; }
+.chip { padding: 7px 16px; border: 0; border-radius: 8px; background: transparent; color: var(--text); white-space: nowrap; font-size: 14px; cursor: pointer; }
+.chip.on { background: #636366; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.16); }
 .actions { display: flex; gap: 10px; align-items: center; }
-.live { width: 10px; height: 10px; border-radius: 50%; background: var(--err); }
-.live.ok { background: var(--ok); box-shadow: 0 0 10px var(--ok); }
-.found { width: 100%; min-height: 64px; margin-bottom: 18px; border: 1px solid var(--magenta); background: rgba(236, 72, 153, 0.08); display: flex; align-items: center; gap: 14px; padding: 0 20px; font-size: 18px; cursor: pointer; }
-.found b { margin-left: auto; }
-.pulse { width: 12px; height: 12px; border-radius: 50%; background: var(--magenta); box-shadow: 0 0 12px var(--magenta); animation: pulse 1.4s infinite; }
+.live { width: 8px; height: 8px; border-radius: 50%; background: #ff453a; }
+.live.ok { background: #30d158; }
+.found { width: 100%; margin-bottom: 20px; border: 0; border-radius: 14px; background: rgba(10, 132, 255, 0.16); color: var(--text); display: flex; align-items: center; gap: 12px; padding: 14px 18px; font-size: 15px; cursor: pointer; text-align: left; }
+.found b { margin-left: auto; color: #0a84ff; }
+.pulse { width: 10px; height: 10px; border-radius: 50%; background: #0a84ff; animation: pulse 1.4s infinite; }
 @keyframes pulse { 50% { opacity: 0.3; } }
-.filter { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 18px; }
-.q { min-width: 200px; flex: 0 1 260px; border: 0; border-radius: 10px; padding: 10px 14px; background: rgba(118, 118, 128, 0.2); color: var(--text); font-size: 15px; }
+.filter { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 22px; }
+.q { min-width: 200px; flex: 0 1 260px; border: 0; border-radius: 10px; padding: 9px 14px; background: rgba(118, 118, 128, 0.2); color: var(--text); font-size: 15px; }
 .q:focus { outline: none; box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.5); }
-.ftog { display: flex; align-items: center; gap: 8px; padding: 8px 14px; border: 0; border-radius: 999px; background: rgba(118, 118, 128, 0.14); color: var(--dim); font-size: 14px; cursor: pointer; }
+.ftog { display: flex; align-items: center; gap: 8px; padding: 7px 13px; border: 0; border-radius: 999px; background: rgba(118, 118, 128, 0.14); color: var(--dim); font-size: 13px; cursor: pointer; }
 .ftog small { opacity: 0.7; font-variant-numeric: tabular-nums; }
-.ftog .sw { width: 28px; height: 16px; border-radius: 999px; background: rgba(118, 118, 128, 0.4); position: relative; transition: background 0.2s; }
+.ftog .sw { width: 26px; height: 16px; border-radius: 999px; background: rgba(118, 118, 128, 0.4); position: relative; transition: background 0.2s; }
 .ftog .sw::after { content: ''; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: #fff; transition: transform 0.2s; }
 .ftog.on { color: var(--text); }
 .ftog.on .sw { background: #30d158; }
-.ftog.on .sw::after { transform: translateX(12px); }
-.room { margin-bottom: 26px; }
-.room h2 { margin: 0 0 10px; }
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
-.dev { border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: rgba(8, 13, 26, 0.6); padding: 16px; display: flex; flex-direction: column; gap: 12px; min-height: 150px; }
-.dev header { display: flex; align-items: center; gap: 10px; cursor: pointer; min-height: 32px; }
-.dev .ico { font-size: 22px; }
-.dev .name { flex: 1; font-size: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.bat { font-size: 12px; color: var(--dim); font-family: var(--mono); }
-.bat.low { color: var(--err); }
-.conn { width: 8px; height: 8px; border-radius: 50%; background: #475569; }
-.conn.online { background: var(--ok); }
-.conn.offline { background: var(--err); }
+.ftog.on .sw::after { transform: translateX(10px); }
+.room { margin-bottom: 30px; }
+.room h2 { margin: 0 0 12px; font-size: 22px; font-weight: 700; letter-spacing: -0.01em; }
+.room h2 small { font-size: 15px; font-weight: 400; color: var(--dim); margin-left: 6px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
+.tile { aspect-ratio: 1.35; min-height: 118px; border-radius: 18px; padding: 14px; display: flex; flex-direction: column; cursor: pointer; background: rgba(118, 118, 128, 0.18); backdrop-filter: blur(24px) saturate(160%); -webkit-backdrop-filter: blur(24px) saturate(160%); transition: transform 0.15s, background 0.25s; user-select: none; }
+.tile:hover { background: rgba(118, 118, 128, 0.26); }
+.tile:active { transform: scale(0.97); }
+.tile.on { background: rgba(255, 255, 255, 0.92); color: #1c1c1e; }
+.tile.off { opacity: 0.55; }
+.tt { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.ico { width: 40px; height: 40px; border-radius: 50%; border: 0; display: grid; place-items: center; font-size: 20px; background: rgba(118, 118, 128, 0.28); cursor: pointer; padding: 0; }
+.tile.on .ico { background: #ffcc00; }
+.ico.tog:hover { box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.5); }
+.bat { font-size: 12px; color: #ff453a; }
+.nm { margin-top: auto; font-size: 15px; font-weight: 600; line-height: 1.2; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.sv { font-size: 13px; color: var(--dim); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.tile.on .sv { color: #636366; }
+.tile.off .sv { color: #ff453a; }
 .empty, .hint { color: var(--dim); }
 .row { display: flex; gap: 10px; margin: 12px 0; }
 .grow { flex: 1; }
-.disc { list-style: none; padding: 0; margin: 0; }
-.disc li { display: flex; align-items: center; gap: 12px; padding: 12px 6px; border-top: 1px solid var(--line); cursor: pointer; min-height: 64px; }
-.disc li.on { background: rgba(34, 211, 238, 0.06); }
-.check { width: 28px; height: 28px; border: 1px solid var(--line-strong); display: grid; place-items: center; color: var(--cyan); flex: none; }
+.disc { list-style: none; padding: 0; margin: 0; border-radius: 12px; overflow: hidden; background: rgba(118, 118, 128, 0.12); }
+.disc li { display: flex; align-items: center; gap: 12px; padding: 10px 14px; cursor: pointer; min-height: 56px; position: relative; }
+.disc li + li::before { content: ''; position: absolute; top: 0; left: 54px; right: 0; height: 0.5px; background: rgba(84, 84, 88, 0.45); }
+.disc li.on { background: rgba(10, 132, 255, 0.12); }
+.check { width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid rgba(235, 235, 245, 0.3); display: grid; place-items: center; color: #fff; flex: none; font-size: 13px; }
+.disc li.on .check { background: #0a84ff; border-color: #0a84ff; }
+.disc .ico { width: 30px; height: 30px; font-size: 16px; }
 .disc .txt { flex: 1; display: flex; flex-direction: column; min-width: 0; }
 .disc small { color: var(--dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-@media (max-width: 700px) { .devices { padding: 0 10px 30px; } .bar { flex-direction: column; align-items: stretch; } }
+@media (max-width: 700px) { .devices { padding: 0 12px 30px; } .bar { flex-direction: column; align-items: stretch; } .grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } }
 </style>

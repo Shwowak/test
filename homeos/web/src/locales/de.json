@@ -456,7 +456,9 @@
     "not_found": "Gerät nicht gefunden",
     "room_empty": "Keine Geräte in diesem Raum",
     "search": "Gerät suchen …",
-    "filtered": "Keine Geräte – Filter oder Suche anpassen."
+    "filtered": "Keine Geräte – Filter oder Suche anpassen.",
+    "no_response": "Keine Antwort",
+    "target": "Ziel"
   },
   "rooms": {
     "title": "Räume",

@@ -456,7 +456,9 @@
     "not_found": "Device not found",
     "room_empty": "No devices in this room",
     "search": "Search device …",
-    "filtered": "No devices – adjust filter or search."
+    "filtered": "No devices – adjust filter or search.",
+    "no_response": "No response",
+    "target": "Target"
   },
   "rooms": {
     "title": "Rooms",
