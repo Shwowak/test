@@ -260,7 +260,7 @@ const icons = ['⌂', '◈', '⚡', '☀', '♨', '☎', '♫', '⚙', '⛨', '�
       <SourceManager :meta="meta" :sources="sources" @changed="loadSources" />
     </Sheet>
 
-    <Sheet v-if="showSettings" :title="t('settings.title')" wide @close="showSettings = false">
+    <Sheet v-if="showSettings" :title="t('settings.title')" window @close="showSettings = false">
       <Settings :meta="meta" @changed="loadDashboards" />
     </Sheet>
 

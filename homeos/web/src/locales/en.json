@@ -163,7 +163,16 @@
       "assistant": "Assistant",
       "cameras": "Cameras",
       "alarm": "Incident monitor",
-      "api": "API access"
+      "api": "API access",
+      "sources": "Data sources"
+    },
+    "search": "Search",
+    "account": "Profile and sign-in",
+    "groups": {
+      "basics": "Device",
+      "services": "Devices and services",
+      "security": "Users and security",
+      "maintenance": "Maintenance"
     }
   },
   "profile": {
