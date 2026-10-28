@@ -87,7 +87,7 @@ function status(d) {
   if (!parts.length && txt && st[txt.id] != null) parts.push(String(st[txt.id]))
   return parts.join(' · ') || '—'
 }
-const isOn = d => d.connection !== 'offline' && (d.state?.onoff === true || (d.state?.onoff === undefined && d.capabilities.some(c => c.kind === 'binary' && c.id !== 'online' && d.state?.[c.id] === true)))
+const isOn = d => d.connection !== 'offline' && d.capabilities.some(c => c.id === 'onoff') && d.state?.onoff === true
 const canToggle = d => d.capabilities.some(c => c.id === 'onoff') && can('devices.control') && d.connection !== 'offline'
 const tapIcon = d => { if (canToggle(d)) command(d.id, 'onoff', !d.state?.onoff).catch(e => (error.value = errorText(e))); else detail.value = d }
 
@@ -198,10 +198,11 @@ async function hide(d) {
 .room h2 { margin: 0 0 12px; font-size: 22px; font-weight: 700; letter-spacing: -0.01em; }
 .room h2 small { font-size: 15px; font-weight: 400; color: var(--dim); margin-left: 6px; }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
-.tile { aspect-ratio: 1.35; min-height: 118px; border-radius: 18px; padding: 14px; display: flex; flex-direction: column; cursor: pointer; background: rgba(118, 118, 128, 0.18); backdrop-filter: blur(24px) saturate(160%); -webkit-backdrop-filter: blur(24px) saturate(160%); transition: transform 0.15s, background 0.25s; user-select: none; }
+.tile { color: var(--text); aspect-ratio: 1.35; min-height: 118px; border-radius: 18px; padding: 14px; display: flex; flex-direction: column; cursor: pointer; background: rgba(118, 118, 128, 0.18); backdrop-filter: blur(24px) saturate(160%); -webkit-backdrop-filter: blur(24px) saturate(160%); transition: transform 0.15s, background 0.25s; user-select: none; }
 .tile:hover { background: rgba(118, 118, 128, 0.26); }
 .tile:active { transform: scale(0.97); }
-.tile.on { background: rgba(255, 255, 255, 0.92); color: #1c1c1e; }
+.tile.on { background: rgba(255, 255, 255, 0.92); }
+.tile.on .nm { color: #1c1c1e !important; }
 .tile.off { opacity: 0.55; }
 .tt { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
 .ico { width: 40px; height: 40px; border-radius: 50%; border: 0; display: grid; place-items: center; font-size: 20px; background: rgba(118, 118, 128, 0.28); cursor: pointer; padding: 0; }
@@ -210,7 +211,7 @@ async function hide(d) {
 .bat { font-size: 12px; color: #ff453a; }
 .nm { margin-top: auto; font-size: 15px; font-weight: 600; line-height: 1.2; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 .sv { font-size: 13px; color: var(--dim); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.tile.on .sv { color: #636366; }
+.tile.on .sv { color: #48484a !important; }
 .tile.off .sv { color: #ff453a; }
 .empty, .hint { color: var(--dim); }
 .row { display: flex; gap: 10px; margin: 12px 0; }
