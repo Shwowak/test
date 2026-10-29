@@ -136,3 +136,14 @@ test('proxmox datacenter manager resources', async () => {
   assert.equal(n.state.memory, 25)
   assert.equal(mapResource(list[2]).state.disk, 50)
 })
+
+test('cloudflare summarize', async () => {
+  const { summarize, tunnelState } = await import('../src/devices/adapters/cloudflare.js')
+  const s = summarize([
+    { sum: { requests: 900, cachedRequests: 450, bytes: 1073741824, threats: 3, pageViews: 100, responseStatusMap: [{ edgeResponseStatus: 200, requests: 880 }, { edgeResponseStatus: 404, requests: 15 }, { edgeResponseStatus: 502, requests: 5 }] }, uniq: { uniques: 40 } },
+    { sum: { requests: 100, cachedRequests: 50, bytes: 0, threats: 0, pageViews: 10, responseStatusMap: [] }, uniq: { uniques: 10 } },
+  ])
+  assert.deepEqual(s, { requests: 1000, visitors: 50, page_views: 110, threats: 3, traffic: 1, cached: 50, errors_4xx: 15, errors_5xx: 5, error_rate: 2 })
+  assert.equal(tunnelState('healthy'), 'online')
+  assert.equal(tunnelState('down'), 'offline')
+})

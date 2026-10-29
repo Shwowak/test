@@ -28,7 +28,7 @@ const query = ref('')
 const reveal = ref({})
 const META = {
   home_assistant: ['🏠', 'smart', '#18bcf2'], zigbee2mqtt: ['🐝', 'smart', '#f5b301'], zwavejs: ['〰', 'smart', '#2fb37a'], matter: ['◈', 'smart', '#7b61ff'],
-  fritzbox: ['📶', 'smart', '#e2001a'], evcc: ['🔌', 'energy', '#0fdd42'], modbus: ['⚙', 'energy', '#f97316'], proxmox: ['🖥', 'server', '#e57000'],
+  fritzbox: ['📶', 'smart', '#e2001a'], evcc: ['🔌', 'energy', '#0fdd42'], modbus: ['⚙', 'energy', '#f97316'], proxmox: ['🖥', 'server', '#e57000'], cloudflare: ['☁', 'server', '#f38020'],
   mqtt: ['📡', 'protocol', '#660066'], knx: ['🏢', 'protocol', '#00a651'], rest: ['🔗', 'protocol', '#64748b'], system: ['📊', 'server', '#0a84ff'],
 }
 const CATS = ['smart', 'energy', 'server', 'protocol']
@@ -66,7 +66,7 @@ function create(adapter) {
   adding.value = false
   step.value = 1
   reveal.value = {}
-  form.value = { adapter, name: title(adapter), config: { mqtt: { discovery_prefix: 'homeassistant' }, rest: { interval: 30 }, proxmox: { kind: 'pve', insecure: 'yes', include: 'all', interval: 15, auto_adopt: true }, knx: { mode: 'tunneling' }, evcc: { interval: 5, auto_adopt: true }, fritzbox: { url: 'http://fritz.box', interval: 30, auto_adopt: true } }[adapter] ?? {}, enabled: true }
+  form.value = { adapter, name: title(adapter), config: { mqtt: { discovery_prefix: 'homeassistant' }, rest: { interval: 30 }, proxmox: { kind: 'pve', insecure: 'yes', include: 'all', interval: 15, auto_adopt: true }, knx: { mode: 'tunneling' }, evcc: { interval: 5, auto_adopt: true }, fritzbox: { url: 'http://fritz.box', interval: 30, auto_adopt: true }, cloudflare: { interval: 300, auto_adopt: true } }[adapter] ?? {}, enabled: true }
   test.value = null
 }
 function edit(i) {

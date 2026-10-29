@@ -14,8 +14,9 @@ import EvccAdapter from './adapters/evcc.js'
 import ProxmoxAdapter from './adapters/proxmox.js'
 import SystemAdapter from './adapters/system.js'
 import FritzboxAdapter from './adapters/fritzbox.js'
+import CloudflareAdapter from './adapters/cloudflare.js'
 
-export const ADAPTERS = { home_assistant: HomeAssistantAdapter, mqtt: MqttAdapter, rest: RestAdapter, zigbee2mqtt: Zigbee2MqttAdapter, zwavejs: ZwaveJsAdapter, matter: MatterAdapter, knx: KnxAdapter, modbus: ModbusAdapter, evcc: EvccAdapter, proxmox: ProxmoxAdapter, system: SystemAdapter, fritzbox: FritzboxAdapter }
+export const ADAPTERS = { home_assistant: HomeAssistantAdapter, mqtt: MqttAdapter, rest: RestAdapter, zigbee2mqtt: Zigbee2MqttAdapter, zwavejs: ZwaveJsAdapter, matter: MatterAdapter, knx: KnxAdapter, modbus: ModbusAdapter, evcc: EvccAdapter, proxmox: ProxmoxAdapter, system: SystemAdapter, fritzbox: FritzboxAdapter, cloudflare: CloudflareAdapter }
 
 const SECRET_KEYS = new Set(Object.values(ADAPTERS).flatMap(A => A.fields.filter(f => f.type === 'secret').map(f => f.key)))
 export const redactConfig = c => Object.fromEntries(Object.entries(c).map(([k, v]) => [k, SECRET_KEYS.has(k) && v ? '••••••' : v]))

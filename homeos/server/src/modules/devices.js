@@ -3,7 +3,7 @@ import { db, json } from '../core/db.js'
 import { bus } from '../core/events.js'
 import { notFound, badRequest, requirePerm, HttpError } from '../core/http.js'
 import { recordChange } from '../core/versions.js'
-import { log } from '../core/logger.js'
+import { log, queryLogs } from '../core/logger.js'
 import { userFromToken, can } from '../core/auth.js'
 import { DEVICE_TYPES, CAPABILITY_KINDS } from '../devices/model.js'
 import {
@@ -68,6 +68,14 @@ export default async function devicesModule(app) {
       ...i, config: redactConfig(i.config), status: integrationStatus(i.id),
       devices: db.prepare('SELECT COUNT(*) c FROM devices WHERE integration_id = ?').get(i.id).c,
     })))
+
+  app.get('/issues', { schema: tI('Current problems: integration errors, offline devices, recent error logs'), preHandler: view }, async () => ({
+    integrations: db.prepare('SELECT id, name, adapter FROM integrations WHERE enabled = 1 ORDER BY name').all()
+      .map(i => ({ ...i, ...integrationStatus(i.id) })).filter(i => i.status === 'error').map(i => ({ id: i.id, name: i.name, adapter: i.adapter, error: i.error })),
+    devices: db.prepare("SELECT id, name, last_seen FROM devices WHERE adopted = 1 AND hidden = 0 AND connection = 'offline' ORDER BY name LIMIT 50").all(),
+    logs: queryLogs({ level: 'warning', from: new Date(Date.now() - 864e5).toISOString(), limit: 30 })
+      .filter(l => !['security', 'users'].includes(l.category)).map(l => ({ ts: l.ts, level: l.level, category: l.category, message: l.message })),
+  }))
 
   const intBody = { type: 'object', properties: { name: { type: 'string', maxLength: 80 }, adapter: { type: 'string' }, config: { type: 'object' }, enabled: { type: 'boolean' } } }
 

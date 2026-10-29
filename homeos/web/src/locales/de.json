@@ -78,7 +78,8 @@
     "room": "Raum",
     "plugin": "Plugin",
     "camera": "Kamera",
-    "mail": "E-Mail"
+    "mail": "E-Mail",
+    "issues": "Störungen"
   },
   "fields": {
     "value": "Wert",
@@ -534,7 +535,17 @@
     "disk": "Speicher",
     "memory_used": "RAM belegt",
     "disk_free": "Speicher frei",
-    "load": "Last"
+    "load": "Last",
+    "requests": "Anfragen",
+    "visitors": "Besucher",
+    "page_views": "Seitenaufrufe",
+    "traffic": "Datenverkehr",
+    "cached": "Cache-Quote",
+    "threats": "Bedrohungen",
+    "errors_4xx": "4xx-Fehler",
+    "errors_5xx": "5xx-Fehler",
+    "error_rate": "Fehlerquote",
+    "connections": "Verbindungen"
   },
   "binary": {
     "default": {
@@ -575,7 +586,8 @@
     "evcc": "evcc (PV-Überschussladen)",
     "proxmox": "Proxmox VE (Server, VMs, Container)",
     "system": "SmartBoard System",
-    "fritzbox": "FRITZ!Box Smart Home (DECT-Steckdosen, Thermostate)"
+    "fritzbox": "FRITZ!Box Smart Home (DECT-Steckdosen, Thermostate)",
+    "cloudflare": "Cloudflare (Zonen, Datenverkehr, Tunnel)"
   },
   "integrations": {
     "add": "Integration hinzufügen",
@@ -607,7 +619,8 @@
       "modbus": "IP-Adresse des Geräts (Wechselrichter, Zähler, Wallbox). Register dann als manuelle Geräte anlegen.",
       "evcc": "Adresse von evcc, z. B. http://192.168.1.20:7070. Passwort nur nötig, um den Lademodus zu ändern.",
       "proxmox": "Proxmox VE oder Datacenter Manager. Adresse z. B. https://192.168.1.5:8006 (VE) oder https://10.10.20.22:8443 (Datacenter Manager). Token: Datacenter → Permissions → API Tokens (VE) bzw. Zugriffskontrolle → API-Token (Datacenter Manager). Token-ID z. B. root{'@'}pam!smartboard. Rolle Auditor reicht.",
-      "fritzbox": "Adresse der FRITZ!Box (meist http://fritz.box). Benutzer und Passwort eines FRITZ!Box-Kontos mit Recht „Smart Home“ (System → FRITZ!Box-Benutzer). Liest Steckdosen mit Leistung, Energie, Spannung und Temperatur, Heizkörperregler, Sensoren und Lampen."
+      "fritzbox": "Adresse der FRITZ!Box (meist http://fritz.box). Benutzer und Passwort eines FRITZ!Box-Kontos mit Recht „Smart Home“ (System → FRITZ!Box-Benutzer). Liest Steckdosen mit Leistung, Energie, Spannung und Temperatur, Heizkörperregler, Sensoren und Lampen.",
+      "cloudflare": "API-Token unter dash.cloudflare.com → Mein Profil → API-Token → Token erstellen. Rechte: Zone → Zone → Lesen, Zone → Analytics → Lesen, optional Konto → Cloudflare Tunnel → Lesen. Zeigt je Domain Anfragen, Besucher, Datenverkehr, Cache-Quote, Bedrohungen und 4xx/5xx-Fehler der letzten 24 h sowie den Status deiner Tunnel."
     },
     "permit_join": "Anlernen",
     "commission": "Matter-Gerät koppeln",
@@ -663,7 +676,8 @@
     "token_secret": "API-Token-Secret",
     "insecure": "Selbstsigniertes Zertifikat erlauben",
     "include": "Anzeigen",
-    "kind": "Art"
+    "kind": "Art",
+    "zones": "Zonen (leer = alle, sonst kommagetrennt)"
   },
   "integrationPlaceholders": {
     "home_assistant": {
@@ -1226,5 +1240,11 @@
   "mail": {
     "unread": "ungelesen",
     "none": "Keine E-Mails"
+  },
+  "issues": {
+    "ok": "Alles in Ordnung",
+    "integration": "Integration",
+    "offline": "Keine Antwort",
+    "log": "Protokoll"
   }
 }
